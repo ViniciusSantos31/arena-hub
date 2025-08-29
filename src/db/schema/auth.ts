@@ -1,4 +1,6 @@
+import { relations } from "drizzle-orm";
 import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { matchesTable } from "./match";
 import { usersTable } from "./user";
 
 export const sessionsTable = pgTable("session", {
@@ -55,17 +57,12 @@ export const organizationsTable = pgTable("organization", {
   metadata: text("metadata"),
 });
 
-export const membersTable = pgTable("member", {
-  id: text("id").primaryKey(),
-  organizationId: text("organization_id")
-    .notNull()
-    .references(() => organizationsTable.id, { onDelete: "cascade" }),
-  userId: text("user_id")
-    .notNull()
-    .references(() => usersTable.id, { onDelete: "cascade" }),
-  role: text("role").default("member").notNull(),
-  createdAt: timestamp("created_at").notNull(),
-});
+export const organizationsRelations = relations(
+  organizationsTable,
+  ({ many }) => ({
+    matches: many(matchesTable),
+  }),
+);
 
 export const invitationsTable = pgTable("invitation", {
   id: text("id").primaryKey(),
