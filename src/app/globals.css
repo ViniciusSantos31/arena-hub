@@ -6,8 +6,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-nunito-sans);
+  --font-mono: var(--font-nunito-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -41,6 +41,7 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --animate-shadow-pulse: shadow-animation 3s infinite;
 }
 
 :root {
@@ -114,9 +115,31 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/50 font-sans;
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@keyframes border-animation {
+  0%,
+  100% {
+    border-color: var(--color-primary);
+    border-width: 2px;
+  }
+  50% {
+    border-color: var(--color-accent);
+    border-width: 3px;
+  }
+}
+
+@keyframes shadow-animation {
+  0%,
+  100% {
+    box-shadow: 0 0 0px;
+  }
+  50% {
+    box-shadow: 0 0 5px var(--color-amber-300);
   }
 }
