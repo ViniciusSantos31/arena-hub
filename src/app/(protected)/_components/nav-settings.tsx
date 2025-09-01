@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/collapsible";
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -18,11 +17,9 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 
-export function NavMain({
-  title,
+export const NavSettings = ({
   items,
 }: {
-  title?: string;
   items: {
     title: string;
     url: string;
@@ -33,10 +30,9 @@ export function NavMain({
       url: string;
     }[];
   }[];
-}) {
+}) => {
   return (
     <SidebarGroup>
-      {title && <SidebarGroupLabel>{title}</SidebarGroupLabel>}
       <SidebarMenu>
         {items.map((item) =>
           item.items ? (
@@ -83,4 +79,4 @@ export function NavMain({
       </SidebarMenu>
     </SidebarGroup>
   );
-}
+};

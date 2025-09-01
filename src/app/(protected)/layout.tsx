@@ -10,7 +10,7 @@ export default function ProtectedLayout({
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
-        <SidebarInset className="flex-1 p-4">{children}</SidebarInset>
+        <SidebarInset className="flex-1">{children}</SidebarInset>
       </div>
     </SidebarProvider>
   );

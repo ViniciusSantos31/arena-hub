@@ -1,17 +1,16 @@
 "use client";
 
 import {
-  AudioWaveform,
-  Command,
-  GalleryVerticalEnd,
-  PieChart,
-  Settings2,
-  TicketIcon,
+  Globe2Icon,
+  HelpCircleIcon,
+  InfoIcon,
+  PlusCircleIcon,
+  SettingsIcon,
+  StarsIcon,
   Users2Icon,
 } from "lucide-react";
 import * as React from "react";
 
-import { GroupSwitcher } from "@/app/(protected)/_components/group-switcher";
 import { NavMain } from "@/app/(protected)/_components/nav-main";
 import { NavUser } from "@/app/(protected)/_components/nav-user";
 import {
@@ -21,7 +20,8 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { NavMatches } from "./nav-matches";
+import { NavGroups } from "./nav-groups";
+import { NavSettings } from "./nav-settings";
 
 // This is sample data.
 const data = {
@@ -29,72 +29,53 @@ const data = {
     name: "shadcn",
     email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
+    url: "/profile",
   },
-  groups: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
   navMain: [
     {
-      title: "Dashboard",
+      title: "Obter Pro",
       url: "#",
-      icon: PieChart,
+      icon: StarsIcon,
     },
     {
-      title: "Participantes",
+      title: "Encontre sua turma",
+      url: "#",
+      icon: Globe2Icon,
+    },
+  ],
+  navGroups: [
+    {
+      title: "Criar grupo",
+      url: "#",
+      icon: PlusCircleIcon,
+    },
+    {
+      title: "Entrar em grupo",
       url: "#",
       icon: Users2Icon,
     },
+  ],
+  groups: [
     {
-      title: "Convites",
+      name: "Inimigos do volêi",
       url: "#",
-      icon: TicketIcon,
-    },
-    {
-      title: "Configurações",
-      url: "/settings/general",
-      icon: Settings2,
-      items: [
-        {
-          title: "Geral",
-          url: "#",
-        },
-        {
-          title: "Limites",
-          url: "#",
-        },
-        {
-          title: "Pagamentos",
-          url: "#",
-        },
-      ],
     },
   ],
-  matches: [
+  settings: [
     {
-      name: "Futebol dos amigos",
-      url: "#",
+      title: "Configurações da conta",
+      url: "/settings/account",
+      icon: SettingsIcon,
     },
     {
-      name: "Inimigos do vôlei",
-      url: "#",
+      title: "Ajuda e feedback",
+      url: "/settings/help",
+      icon: HelpCircleIcon,
     },
     {
-      name: "Ciclismo radical",
-      url: "#",
+      title: "Sobre",
+      url: "/settings/about",
+      icon: InfoIcon,
     },
   ],
 };
@@ -103,16 +84,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <GroupSwitcher groups={data.groups} />
+        <NavUser user={data.user} />
       </SidebarHeader>
       <SidebarContent>
+        <NavGroups groups={data.groups} />
         <NavMain items={data.navMain} />
-        <NavMatches matches={data.matches} />
+        <NavMain items={data.navGroups} />
+        {/* <NavMain title="Geral" items={data.navMain} /> */}
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
       <SidebarRail />
+      <SidebarFooter>
+        <NavSettings items={data.settings} />
+      </SidebarFooter>
     </Sidebar>
   );
 }

@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuAction,
   SidebarMenuButton,
@@ -19,10 +18,10 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-export function NavMatches({
-  matches,
+export function NavGroups({
+  groups,
 }: {
-  matches: {
+  groups: {
     name: string;
     url: string;
   }[];
@@ -31,9 +30,8 @@ export function NavMatches({
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Partidas</SidebarGroupLabel>
       <SidebarMenu>
-        {matches.map((item) => (
+        {groups.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
               <a href={item.url}>
@@ -54,27 +52,21 @@ export function NavMatches({
               >
                 <DropdownMenuItem>
                   <EyeIcon className="text-muted-foreground" />
-                  <span>Visualizar partida</span>
+                  <span>Visualizar grupo</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Forward className="text-muted-foreground" />
-                  <span>Compartilhar partida</span>
+                  <span>Compartilhar grupo</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive">
                   <Trash2 className="text-muted-foreground" />
-                  <span>Excluir partida</span>
+                  <span>Sair do grupo</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
         ))}
-        <SidebarMenuItem>
-          <SidebarMenuButton className="text-sidebar-foreground/70">
-            <MoreHorizontal className="text-sidebar-foreground/70" />
-            <span>More</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>
   );
