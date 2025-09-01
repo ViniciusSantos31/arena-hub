@@ -46,12 +46,12 @@ const data = {
   navGroups: [
     {
       title: "Criar grupo",
-      url: "#",
+      url: "/group/create",
       icon: PlusCircleIcon,
     },
     {
       title: "Entrar em grupo",
-      url: "#",
+      url: "/group/join",
       icon: Users2Icon,
     },
   ],
@@ -90,7 +90,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavGroups groups={data.groups} />
         <NavMain items={data.navMain} />
         <NavMain items={data.navGroups} />
-        {/* <NavMain title="Geral" items={data.navMain} /> */}
       </SidebarContent>
       <SidebarRail />
       <SidebarFooter>

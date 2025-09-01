@@ -1,5 +1,6 @@
 import { AppSidebar } from "@/app/(protected)/_components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import React from "react";
 
 export default function ProtectedLayout({
   children,

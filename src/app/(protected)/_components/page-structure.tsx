@@ -15,7 +15,7 @@ export const PageHeaderContent = ({
     <div className="flex items-start justify-between space-x-2">
       <SidebarTrigger />
       <div className="flex flex-1 flex-col space-y-1">
-        <h1 className="font-mono text-xl font-bold">{title}</h1>
+        <PageTitle>{title}</PageTitle>
         {description && <PageDescription>{description}</PageDescription>}
       </div>
     </div>
@@ -27,7 +27,7 @@ export const PageHeader = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const PageTitle = ({ children }: { children: React.ReactNode }) => {
-  return <h1 className="font-mono text-xl font-bold">{children}</h1>;
+  return <h1 className="font-mono text-lg font-bold">{children}</h1>;
 };
 
 export const PageDescription = ({
