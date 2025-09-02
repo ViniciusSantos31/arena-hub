@@ -48,7 +48,7 @@ export const verificationsTable = pgTable("verification", {
   ),
 });
 
-export const organizationsTable = pgTable("organization", {
+export const organization = pgTable("organization", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   slug: text("slug").unique(),
@@ -57,18 +57,15 @@ export const organizationsTable = pgTable("organization", {
   metadata: text("metadata"),
 });
 
-export const organizationsRelations = relations(
-  organizationsTable,
-  ({ many }) => ({
-    matches: many(matchesTable),
-  }),
-);
+export const organizationsRelations = relations(organization, ({ many }) => ({
+  matches: many(matchesTable),
+}));
 
 export const invitationsTable = pgTable("invitation", {
   id: text("id").primaryKey(),
   organizationId: text("organization_id")
     .notNull()
-    .references(() => organizationsTable.id, { onDelete: "cascade" }),
+    .references(() => organization.id, { onDelete: "cascade" }),
   email: text("email").notNull(),
   role: text("role"),
   status: text("status").default("pending").notNull(),

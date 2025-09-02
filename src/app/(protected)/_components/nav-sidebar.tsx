@@ -16,10 +16,13 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 import Link from "next/link";
 
-export function NavMain({
+export function NavSidebar({
   title,
   items,
 }: {
@@ -28,6 +31,7 @@ export function NavMain({
     title: string;
     url: string;
     icon?: LucideIcon;
+    logo?: string;
     isActive?: boolean;
     items?: {
       title: string;
@@ -35,6 +39,8 @@ export function NavMain({
     }[];
   }[];
 }) {
+  const { open } = useSidebar();
+
   return (
     <SidebarGroup>
       {title && <SidebarGroupLabel>{title}</SidebarGroupLabel>}
@@ -49,8 +55,20 @@ export function NavMain({
             >
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
-                  <SidebarMenuButton tooltip={item.title}>
+                  <SidebarMenuButton
+                    tooltip={item.title}
+                    className={item.logo ? "p-0" : ""}
+                  >
                     {item.icon && <item.icon />}
+                    {item.logo && (
+                      <Image
+                        src={item.logo}
+                        alt={item.title}
+                        width={24}
+                        height={24}
+                        className={cn("h-6 w-6 rounded-sm object-cover")}
+                      />
+                    )}
                     <span>{item.title}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                   </SidebarMenuButton>
@@ -72,9 +90,21 @@ export function NavMain({
             </Collapsible>
           ) : (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild>
+              <SidebarMenuButton asChild tooltip={item.title}>
                 <Link href={item.url}>
                   {item.icon && <item.icon />}
+                  {item.logo && (
+                    <Image
+                      src={item.logo}
+                      alt={item.title}
+                      width={24}
+                      height={24}
+                      className={cn(
+                        "h-6 min-w-6 rounded-sm object-cover",
+                        !open && "h-4 min-w-4 rounded-full",
+                      )}
+                    />
+                  )}
                   <span>{item.title}</span>
                 </Link>
               </SidebarMenuButton>

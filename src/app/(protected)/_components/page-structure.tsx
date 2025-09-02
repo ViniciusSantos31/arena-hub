@@ -1,7 +1,11 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export const PageContainer = ({ children }: { children: React.ReactNode }) => {
-  return <div className="flex w-full flex-col space-y-2 py-4">{children}</div>;
+  return (
+    <div className="flex h-screen w-full flex-col space-y-4 overflow-hidden py-4">
+      {children}
+    </div>
+  );
 };
 
 export const PageHeaderContent = ({
@@ -23,7 +27,7 @@ export const PageHeaderContent = ({
 };
 
 export const PageHeader = ({ children }: { children: React.ReactNode }) => {
-  return <div className="flex flex-1 justify-between px-4">{children}</div>;
+  return <div className="flex justify-between px-4">{children}</div>;
 };
 
 export const PageTitle = ({ children }: { children: React.ReactNode }) => {
@@ -39,5 +43,9 @@ export const PageDescription = ({
 };
 
 export const PageContent = ({ children }: { children: React.ReactNode }) => {
-  return <div className="flex-1 px-4">{children}</div>;
+  return (
+    <div className="flex h-full flex-1 flex-col overflow-y-scroll px-4">
+      {children}
+    </div>
+  );
 };

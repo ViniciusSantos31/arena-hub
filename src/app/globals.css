@@ -143,3 +143,10 @@
     box-shadow: 0 0 5px var(--color-amber-300);
   }
 }
+
+@layer utilities {
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-primary) transparent;
+  }
+}

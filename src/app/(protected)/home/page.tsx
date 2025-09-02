@@ -1,4 +1,4 @@
-import { PlusIcon, SearchIcon } from "lucide-react";
+import { PlusIcon, SearchIcon, UsersIcon } from "lucide-react";
 import { GroupButton } from "./_components/group-button";
 
 export default function ProtectedPage() {
@@ -14,9 +14,10 @@ export default function ProtectedPage() {
         </span>
       </div>
 
-      <div className="grid w-full max-w-md grid-cols-2 gap-4">
+      <div className="grid w-full max-w-lg grid-cols-3 gap-4">
         <GroupButton label="Criar grupo" icon={PlusIcon} />
         <GroupButton label="Encontrar grupos" icon={SearchIcon} />
+        <GroupButton label="Meus grupos" icon={UsersIcon} />
       </div>
     </div>
   );

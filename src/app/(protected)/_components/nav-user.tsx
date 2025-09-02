@@ -34,16 +34,7 @@ const NavUserLoading = () => {
   );
 };
 
-export function NavUser({
-  user: _user,
-}: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-    url: string;
-  };
-}) {
+export function NavUser() {
   const { data: session } = authClient.useSession();
 
   if (!session?.user) {

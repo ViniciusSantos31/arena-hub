@@ -22,7 +22,7 @@ export default async function ProfilePage() {
   const user = session?.user;
 
   return (
-    <div className="flex w-full flex-col items-center space-y-3">
+    <div className="mt-2 flex w-full flex-col items-center space-y-3">
       <Avatar
         className={cn(
           "mb-4 h-32 w-32 rounded-lg",
