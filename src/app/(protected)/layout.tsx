@@ -12,9 +12,11 @@ export default async function ProtectedLayout({
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
-      <div className="flex min-h-screen w-full">
+      <div className="flex max-h-svh w-full">
         <AppSidebar />
-        <SidebarInset className="flex-1">{children}</SidebarInset>
+        <SidebarInset className="max-h-svh flex-1 overflow-hidden rounded-2xl">
+          {children}
+        </SidebarInset>
       </div>
     </SidebarProvider>
   );

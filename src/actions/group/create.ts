@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import z from "zod";
 
@@ -43,6 +44,8 @@ export const createGroup = actionClient
         },
       },
     });
+
+    revalidatePath("/", "layout");
 
     return org;
   });

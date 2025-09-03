@@ -147,6 +147,10 @@
 @layer utilities {
   .scroll-thin {
     scrollbar-width: thin;
-    scrollbar-color: var(--color-primary) transparent;
+    scrollbar-color: var(--color-accent) transparent;
+  }
+
+  .dark.scroll-thin {
+    scrollbar-color: var(--color-accent-foreground) transparent;
   }
 }

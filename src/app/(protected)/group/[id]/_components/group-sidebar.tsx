@@ -18,6 +18,7 @@ import {
   Gamepad2Icon,
   LogOutIcon,
   Medal,
+  PieChartIcon,
   Settings2Icon,
   Users2Icon,
 } from "lucide-react";
@@ -42,29 +43,37 @@ export async function GroupSidebar({
   return (
     <Sidebar
       collapsible="none"
-      className="sticky top-0 h-svh w-[calc(var(--sidebar-width-icon)+1px)]! border-l"
+      variant="floating"
+      className="absolute top-4 right-4 max-h-screen w-[calc(var(--sidebar-width-icon)+1px)]! pr-0"
       {...props}
     >
       <SidebarContent>
-        <SidebarGroup>
+        <SidebarGroup className="pr-0">
           <SidebarMenu>
+            <Tooltip content="Dashboard">
+              <SidebarMenuItem>
+                <SidebarMenuButton className="items-center justify-center">
+                  <PieChartIcon />
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </Tooltip>
             <Tooltip content="Membros">
               <SidebarMenuItem>
-                <SidebarMenuButton>
+                <SidebarMenuButton className="items-center justify-center">
                   <Users2Icon />
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </Tooltip>
             <Tooltip content="Partidas">
               <SidebarMenuItem>
-                <SidebarMenuButton>
+                <SidebarMenuButton className="items-center justify-center">
                   <Gamepad2Icon />
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </Tooltip>
             <Tooltip content="Classificações">
               <SidebarMenuItem>
-                <SidebarMenuButton>
+                <SidebarMenuButton className="items-center justify-center">
                   <Medal />
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -72,21 +81,21 @@ export async function GroupSidebar({
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="pr-0">
         <SidebarMenu>
           <Tooltip content="Configurações do grupo">
             <SidebarMenuItem>
-              <SidebarMenuButton>
+              <SidebarMenuButton className="items-center justify-center">
                 <Settings2Icon />
-                Configurações do grupo
+                <span className="sr-only">Configurações do grupo</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </Tooltip>
           <Tooltip content="Sair do grupo">
             <SidebarMenuItem>
-              <SidebarMenuButton className="text-destructive hover:bg-destructive/10 hover:text-destructive">
+              <SidebarMenuButton className="text-destructive hover:bg-destructive/10 hover:text-destructive items-center justify-center">
                 <LogOutIcon />
-                Sair do grupo
+                <span className="sr-only">Sair do grupo</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </Tooltip>
