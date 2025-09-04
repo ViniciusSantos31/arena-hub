@@ -1,11 +1,11 @@
 import { permanentRedirect } from "next/navigation";
 
 type GroupPageProps = {
-  params: Promise<{ id: string }>;
+  params: Promise<{ code: string }>;
 };
 
 export default async function GroupPage({ params }: GroupPageProps) {
-  const { id } = await params;
+  const { code } = await params;
 
-  return permanentRedirect(`/group/${id}/dashboard`);
+  return permanentRedirect(`/group/${code}/dashboard`);
 }

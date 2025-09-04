@@ -1,3 +1,5 @@
+"use server";
+
 import { db } from "@/db";
 import { organization } from "@/db/schema/auth";
 import { member } from "@/db/schema/member";

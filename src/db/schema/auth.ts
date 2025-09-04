@@ -53,6 +53,10 @@ export const organization = pgTable("organization", {
   name: text("name").notNull(),
   slug: text("slug").unique(),
   logo: text("logo"),
+  code: text("code")
+    .notNull()
+    .unique()
+    .$defaultFn(() => Math.random().toString(36).substring(2, 8).toUpperCase()),
   createdAt: timestamp("created_at").notNull(),
   metadata: text("metadata"),
 });

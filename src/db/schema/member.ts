@@ -1,12 +1,13 @@
-import { pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+import { integer, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import { organization } from "./auth";
 import { usersTable } from "./user";
 
 export const roleEnum = pgEnum("member_role", [
-  "owner",
   "member",
   "admin",
   "guest",
+  "owner",
 ]);
 
 export const member = pgTable("member", {
@@ -17,6 +18,14 @@ export const member = pgTable("member", {
   userId: text("user_id")
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
+  score: integer().notNull().default(25),
   role: roleEnum().default("member"),
   createdAt: timestamp("created_at").notNull(),
 });
+
+export const memberRelation = relations(member, ({ one }) => ({
+  user: one(usersTable, {
+    fields: [member.userId],
+    references: [usersTable.id],
+  }),
+}));

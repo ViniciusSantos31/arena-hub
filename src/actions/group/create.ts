@@ -33,17 +33,25 @@ export const createGroup = actionClient
 
     const { name, description, image } = parsedInput;
 
+    console.log("Creating group:", { name, description, image });
+
     const org = await auth.api.createOrganization({
       body: {
         name,
         userId: session.user.id,
         logo: image,
-        slug: name.toLowerCase().replace(/\s+/g, "-"),
+        code: Math.random().toString(36).substring(2, 8).toUpperCase(),
+        slug:
+          name.toLowerCase().replace(/\s+/g, "-") + session.user.id.slice(0, 5),
         metadata: {
           description,
         },
       },
     });
+
+    if (!org) {
+      throw new Error("Falha ao criar organização");
+    }
 
     revalidatePath("/", "layout");
 

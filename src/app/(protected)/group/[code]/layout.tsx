@@ -9,7 +9,7 @@ import {
   PageContent,
   PageHeader,
   PageHeaderContent,
-} from "../../../(protected)/_components/page-structure";
+} from "../../_components/page-structure";
 import { GroupNav } from "./_components/group-nav";
 
 export default async function GroupDetailsLayout({
@@ -17,10 +17,11 @@ export default async function GroupDetailsLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ id: string }>;
+  params: Promise<{ code: string }>;
 }) {
-  const { id } = await params;
-  const group = await getGroupDetails({ id });
+  const { code } = await params;
+
+  const group = await getGroupDetails({ code });
 
   if (!group.data) return notFound();
 

@@ -33,6 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { authClient } from "@/lib/auth-client";
 import { Separator } from "@radix-ui/react-separator";
 import { IconDotsVertical, IconTrendingUp } from "@tabler/icons-react";
 import { ColumnDef } from "@tanstack/react-table";
@@ -150,23 +151,23 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
             </div>
             <div className="flex flex-col gap-3">
               <Label htmlFor="role">Role</Label>
-              <Select defaultValue={item.role}>
+              <Select defaultValue={item.role as string}>
                 <SelectTrigger id="role" className="w-full">
                   <SelectValue placeholder="Select a role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="guest">Guest</SelectItem>
-                  <SelectItem value="member">Member</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="guest">Convidado</SelectItem>
+                  <SelectItem value="member">Membro</SelectItem>
+                  <SelectItem value="admin">Administrador</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </form>
         </div>
         <DrawerFooter>
-          <Button>Submit</Button>
+          <Button>Salvar</Button>
           <DrawerClose asChild>
-            <Button variant="outline">Done</Button>
+            <Button variant="outline">Feito</Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
@@ -239,9 +240,28 @@ export const columns: ColumnDef<z.infer<typeof schema>>[] = [
     accessorKey: "role",
     header: "Role",
     cell: ({ row }) => {
-      // if (isAssigned) {
-      //   return row.original.role;
-      // }
+      const isOwner = row.original.role === "owner";
+
+      const session = authClient.useSession();
+      if (!session) return null;
+
+      const { data } = session;
+      const isMe = data?.user.id === row.original.id;
+
+      const roles: Record<string, string> = {
+        member: "Membro",
+        guest: "Convidado",
+        admin: "Administrador",
+        owner: "Proprietário",
+      };
+
+      if (isMe && !isOwner && row.original.role) {
+        return roles[row.original.role];
+      }
+
+      if (isOwner) {
+        return "Proprietário";
+      }
 
       return (
         <form>
@@ -249,7 +269,7 @@ export const columns: ColumnDef<z.infer<typeof schema>>[] = [
             role
           </Label>
           <Select
-            defaultValue={row.original.role}
+            defaultValue={row.original.role as string}
             onValueChange={() => {
               toast.promise(
                 new Promise((resolve) => setTimeout(resolve, 1000)),
@@ -272,6 +292,7 @@ export const columns: ColumnDef<z.infer<typeof schema>>[] = [
               <SelectItem value="member">Membro</SelectItem>
               <SelectItem value="guest">Convidado</SelectItem>
               <SelectItem value="admin">Administrador</SelectItem>
+              <SelectItem value="owner">Proprietário</SelectItem>
             </SelectContent>
           </Select>
         </form>
@@ -280,26 +301,42 @@ export const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
   {
     id: "actions",
-    cell: () => (
-      <div className="flex w-full justify-end">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-              size="icon"
-            >
-              <IconDotsVertical />
-              <span className="sr-only">Abrir menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-32">
-            <DropdownMenuItem>Editar</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive">Expulsar</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    ),
+    cell: ({ row }) => {
+      const isOwner = row.original.role === "owner";
+
+      const session = authClient.useSession();
+      if (!session.data) return null;
+
+      const { data } = session;
+      const isMe = data?.user.id === row.original.id;
+
+      if (isOwner && !isMe) return null;
+
+      if (isMe) return null;
+
+      return (
+        <div className="flex w-full justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+                size="icon"
+              >
+                <IconDotsVertical />
+                <span className="sr-only">Abrir menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-32">
+              <DropdownMenuItem>Editar</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem variant="destructive">
+                Expulsar
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      );
+    },
   },
 ];
