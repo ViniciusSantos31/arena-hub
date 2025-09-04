@@ -1,5 +1,6 @@
 import { AppSidebar } from "@/app/(protected)/_components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 import { cookies } from "next/headers";
 import React from "react";
 
@@ -13,6 +14,7 @@ export default async function ProtectedLayout({
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <div className="flex max-h-svh w-full">
+        <Toaster richColors position="top-center" />
         <AppSidebar />
         <SidebarInset className="max-h-svh flex-1 overflow-hidden rounded-2xl">
           {children}

@@ -1,7 +1,7 @@
 import { getGroupDetails } from "@/actions/group/detail";
 import { Button } from "@/components/ui/button";
 import { SidebarInset } from "@/components/ui/sidebar";
-import { UploadIcon } from "lucide-react";
+import { MoreVerticalIcon, UploadIcon } from "lucide-react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import {
@@ -52,17 +52,20 @@ export default async function GroupDetailsLayout({
                   <h1 className="text-2xl font-bold">{name}</h1>
                 </div>
               </div>
-              <aside>
+              <aside className="space-x-2">
                 <Button variant={"outline"}>
                   <UploadIcon />
                   Convidar jogadores
+                </Button>
+                <Button size={"icon"} variant={"outline"}>
+                  <MoreVerticalIcon />
                 </Button>
               </aside>
             </section>
             {children}
           </PageContent>
+          <GroupNav />
         </PageContainer>
-        <GroupNav />
       </SidebarInset>
       {/* <GroupSidebar /> */}
     </div>

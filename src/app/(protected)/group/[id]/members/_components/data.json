@@ -1,0 +1,410 @@
+[
+  {
+    "id": 1,
+    "name": "Cover page",
+    "score": 5,
+    "role": "guest"
+  },
+  {
+    "id": 2,
+    "name": "Table of contents",
+    "score": 24,
+    "role": "guest"
+  },
+  {
+    "id": 3,
+    "name": "Executive summary",
+    "score": 13,
+    "role": "guest"
+  },
+  {
+    "id": 4,
+    "name": "Technical approach",
+    "score": 23,
+    "role": "guest"
+  },
+  {
+    "id": 5,
+    "name": "Design",
+    "score": 16,
+    "role": "guest"
+  },
+  {
+    "id": 6,
+    "name": "Capabilities",
+    "score": 8,
+    "role": "guest"
+  },
+  {
+    "id": 7,
+    "name": "Integration with existing systems",
+    "score": 21,
+    "role": "guest"
+  },
+  {
+    "id": 8,
+    "name": "Innovation and Advantages",
+    "score": 26,
+    "role": "guest"
+  },
+  {
+    "id": 9,
+    "name": "Overview of EMR's Innovative Solutions",
+    "score": 23,
+    "role": "guest"
+  },
+  {
+    "id": 10,
+    "name": "Advanced Algorithms and Machine Learning",
+    "score": 28,
+    "role": "guest"
+  },
+  {
+    "id": 11,
+    "name": "Adaptive Communication Protocols",
+    "score": 31,
+    "role": "guest"
+  },
+  {
+    "id": 12,
+    "name": "Advantages Over Current Technologies",
+    "score": 0,
+    "role": "guest"
+  },
+  {
+    "id": 13,
+    "name": "Past Performance",
+    "score": 33,
+    "role": "guest"
+  },
+  {
+    "id": 14,
+    "name": "Customer Feedback and Satisfaction Levels",
+    "score": 34,
+    "role": "guest"
+  },
+  {
+    "id": 15,
+    "name": "Implementation Challenges and Solutions",
+    "score": 35,
+    "role": "guest"
+  },
+  {
+    "id": 16,
+    "name": "Security Measures and Data Protection Policies",
+    "score": 36,
+    "role": "guest"
+  },
+  {
+    "id": 17,
+    "name": "Scalability and Future Proofing",
+    "score": 37,
+    "role": "guest"
+  },
+  {
+    "id": 18,
+    "name": "Cost-Benefit Analysis",
+    "score": 38,
+    "role": "guest"
+  },
+  {
+    "id": 19,
+    "name": "User Training and Onboarding Experience",
+    "score": 39,
+    "role": "guest"
+  },
+  {
+    "id": 20,
+    "name": "Future Development Roadmap",
+    "score": 40,
+    "role": "guest"
+  },
+  {
+    "id": 21,
+    "name": "System Architecture Overview",
+    "score": 18,
+    "role": "guest"
+  },
+  {
+    "id": 22,
+    "name": "Risk Management Plan",
+    "score": 22,
+    "role": "guest"
+  },
+  {
+    "id": 23,
+    "name": "Compliance Documentation",
+    "score": 27,
+    "role": "guest"
+  },
+  {
+    "id": 24,
+    "name": "API Documentation",
+    "score": 12,
+    "role": "guest"
+  },
+  {
+    "id": 25,
+    "name": "User Interface Mockups",
+    "score": 25,
+    "role": "guest"
+  },
+  {
+    "id": 26,
+    "name": "Database Schema",
+    "score": 20,
+    "role": "guest"
+  },
+  {
+    "id": 27,
+    "name": "Testing Methodology",
+    "score": 14,
+    "role": "guest"
+  },
+  {
+    "id": 28,
+    "name": "Deployment Strategy",
+    "score": 30,
+    "role": "guest"
+  },
+  {
+    "id": 29,
+    "name": "Budget Breakdown",
+    "score": 16,
+    "role": "guest"
+  },
+  {
+    "id": 30,
+    "name": "Market Analysis",
+    "score": 32,
+    "role": "guest"
+  },
+  {
+    "id": 31,
+    "name": "Competitor Comparison",
+    "score": 19,
+    "role": "guest"
+  },
+  {
+    "id": 32,
+    "name": "Maintenance Plan",
+    "score": 23,
+    "role": "guest"
+  },
+  {
+    "id": 33,
+    "name": "User Personas",
+    "score": 24,
+    "role": "guest"
+  },
+  {
+    "id": 34,
+    "name": "Accessibility Compliance",
+    "score": 21,
+    "role": "guest"
+  },
+  {
+    "id": 35,
+    "name": "Performance Metrics",
+    "score": 26,
+    "role": "guest"
+  },
+  {
+    "id": 36,
+    "name": "Disaster Recovery Plan",
+    "score": 17,
+    "role": "guest"
+  },
+  {
+    "id": 37,
+    "name": "Third-party Integrations",
+    "score": 28,
+    "role": "guest"
+  },
+  {
+    "id": 38,
+    "name": "User Feedback Summary",
+    "score": 15,
+    "role": "guest"
+  },
+  {
+    "id": 39,
+    "name": "Localization Strategy",
+    "score": 19,
+    "role": "guest"
+  },
+  {
+    "id": 40,
+    "name": "Mobile Compatibility",
+    "score": 31,
+    "role": "guest"
+  },
+  {
+    "id": 41,
+    "name": "Data Migration Plan",
+    "score": 22,
+    "role": "guest"
+  },
+  {
+    "id": 42,
+    "name": "Quality Assurance Protocols",
+    "score": 33,
+    "role": "guest"
+  },
+  {
+    "id": 43,
+    "name": "Stakeholder Analysis",
+    "score": 14,
+    "role": "guest"
+  },
+  {
+    "id": 44,
+    "name": "Environmental Impact Assessment",
+    "score": 27,
+    "role": "guest"
+  },
+  {
+    "id": 45,
+    "name": "Intellectual Property Rights",
+    "score": 20,
+    "role": "guest"
+  },
+  {
+    "id": 46,
+    "name": "Customer Support Framework",
+    "score": 25,
+    "role": "guest"
+  },
+  {
+    "id": 47,
+    "name": "Version Control Strategy",
+    "score": 18,
+    "role": "guest"
+  },
+  {
+    "id": 48,
+    "name": "Continuous Integration Pipeline",
+    "score": 29,
+    "role": "guest"
+  },
+  {
+    "id": 49,
+    "name": "Regulatory Compliance",
+    "score": 16,
+    "role": "guest"
+  },
+  {
+    "id": 50,
+    "name": "User Authentication System",
+    "score": 31,
+    "role": "guest"
+  },
+  {
+    "id": 51,
+    "name": "Data Analytics Framework",
+    "score": 24,
+    "role": "guest"
+  },
+  {
+    "id": 52,
+    "name": "Cloud Infrastructure",
+    "score": 19,
+    "role": "guest"
+  },
+  {
+    "id": 53,
+    "name": "Network Security Measures",
+    "score": 32,
+    "role": "guest"
+  },
+  {
+    "id": 54,
+    "name": "Project Timeline",
+    "score": 17,
+    "role": "guest"
+  },
+  {
+    "id": 55,
+    "name": "Resource Allocation",
+    "score": 30,
+    "role": "guest"
+  },
+  {
+    "id": 56,
+    "name": "Team Structure and Roles",
+    "score": 23,
+    "role": "guest"
+  },
+  {
+    "id": 57,
+    "name": "Communication Protocols",
+    "score": 18,
+    "role": "guest"
+  },
+  {
+    "id": 58,
+    "name": "Success Metrics",
+    "score": 33,
+    "role": "guest"
+  },
+  {
+    "id": 59,
+    "name": "Internationalization Support",
+    "score": 26,
+    "role": "guest"
+  },
+  {
+    "id": 60,
+    "name": "Backup and Recovery Procedures",
+    "score": 21,
+    "role": "guest"
+  },
+  {
+    "id": 61,
+    "name": "Monitoring and Alerting System",
+    "score": 28,
+    "role": "guest"
+  },
+  {
+    "id": 62,
+    "name": "Code Review Guidelines",
+    "score": 15,
+    "role": "guest"
+  },
+  {
+    "id": 63,
+    "name": "Documentation Standards",
+    "score": 30,
+    "role": "guest"
+  },
+  {
+    "id": 64,
+    "name": "Release Management Process",
+    "score": 25,
+    "role": "guest"
+  },
+  {
+    "id": 65,
+    "name": "Feature Prioritization Matrix",
+    "score": 22,
+    "role": "guest"
+  },
+  {
+    "id": 66,
+    "name": "Technical Debt Assessment",
+    "score": 27,
+    "role": "guest"
+  },
+  {
+    "id": 67,
+    "name": "Capacity Planning",
+    "score": 24,
+    "role": "guest"
+  },
+  {
+    "id": 68,
+    "name": "Service Level Agreements",
+    "score": 29,
+    "role": "guest"
+  }
+]

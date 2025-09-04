@@ -46,7 +46,7 @@ export const PageDescription = ({
 
 export const PageContent = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="flex h-full flex-1 flex-col overflow-y-scroll p-4">
+    <div className="flex h-full flex-1 flex-col overflow-y-scroll p-4 pr-2">
       {children}
     </div>
   );

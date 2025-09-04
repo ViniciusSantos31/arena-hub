@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body
-        className={`${nunitoSans.variable} ${nunito.variable} dark scroll-thin antialiased`}
+        className={`${nunitoSans.variable} ${nunito.variable} scroll-thin dark antialiased`}
       >
         {children}
       </body>
