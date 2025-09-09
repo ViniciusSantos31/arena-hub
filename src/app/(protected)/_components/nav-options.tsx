@@ -17,7 +17,7 @@ const options = {
     },
     {
       title: "Encontre sua turma",
-      url: "#",
+      url: "/feed",
       icon: Globe2Icon,
     },
   ],

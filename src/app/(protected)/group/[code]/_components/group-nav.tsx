@@ -14,8 +14,8 @@ export const GroupNav = () => {
   const segment = useSelectedLayoutSegment();
 
   return (
-    <nav className="flex w-full items-center justify-center @2xl:sticky @2xl:bottom-7">
-      <ul className="bg-background **:data-[active=true]:text-primary **:data-[active=true]:bg-primary/10 flex w-full justify-start gap-0.5 overflow-x-auto border-t border-b-0 p-2 py-3 **:data-[active=true]:pointer-events-none sm:justify-around @2xl:w-fit @2xl:justify-center @2xl:rounded-2xl @2xl:border @2xl:border-b @2xl:py-2">
+    <nav className="flex w-full items-center justify-center lg:sticky lg:bottom-4">
+      <ul className="bg-background **:data-[active=true]:text-primary **:data-[active=true]:bg-primary/10 flex w-full justify-start gap-0.5 overflow-x-auto border-t border-b-0 p-2 py-3 **:data-[active=true]:pointer-events-none sm:justify-around lg:w-fit lg:justify-center lg:rounded-2xl lg:border lg:border-b lg:py-2">
         <li>
           <Button data-active={segment === "dashboard"} variant="ghost" asChild>
             <Link href={"dashboard"}>

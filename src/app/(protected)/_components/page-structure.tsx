@@ -1,8 +1,20 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 
-export const PageContainer = ({ children }: { children: React.ReactNode }) => {
+export const PageContainer = ({
+  className,
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
+}) => {
   return (
-    <div className="@container relative flex h-screen w-full flex-col overflow-hidden rounded-2xl">
+    <div
+      className={cn(
+        "relative flex h-screen w-full flex-col overflow-hidden rounded-2xl",
+        className,
+      )}
+    >
       {children}
     </div>
   );
@@ -44,9 +56,20 @@ export const PageDescription = ({
   return <p className="text-muted-foreground">{children}</p>;
 };
 
-export const PageContent = ({ children }: { children: React.ReactNode }) => {
+export const PageContent = ({
+  className,
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
+}) => {
   return (
-    <div className="flex h-full flex-1 flex-col overflow-y-scroll p-4 pr-2">
+    <div
+      className={cn(
+        "@container flex h-full flex-1 flex-col overflow-y-scroll p-4 pr-2",
+        className,
+      )}
+    >
       {children}
     </div>
   );

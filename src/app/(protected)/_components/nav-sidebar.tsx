@@ -21,6 +21,7 @@ import {
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
+import { useSelectedLayoutSegments } from "next/navigation";
 
 export function NavSidebar({
   title,
@@ -40,6 +41,9 @@ export function NavSidebar({
   }[];
 }) {
   const { open } = useSidebar();
+  const segments = useSelectedLayoutSegments();
+
+  const currentPath = `/${segments.join("/")}`;
 
   return (
     <SidebarGroup>
@@ -90,7 +94,11 @@ export function NavSidebar({
             </Collapsible>
           ) : (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild tooltip={item.title}>
+              <SidebarMenuButton
+                asChild
+                tooltip={item.title}
+                isActive={currentPath === item.url}
+              >
                 <Link href={item.url}>
                   {item.icon && <item.icon />}
                   {item.logo && (

@@ -28,13 +28,13 @@ export default async function GroupDetailsLayout({
   const { name, logo } = group.data;
 
   return (
-    <div className="flex min-h-svh w-full">
+    <div className="flex min-h-svh w-full pb-4">
       <SidebarInset className="flex-1 overflow-hidden rounded-2xl">
         <PageContainer>
           <PageHeader>
             <PageHeaderContent title="Visualizar grupo" />
           </PageHeader>
-          <PageContent>
+          <PageContent className="h-fit">
             <section className="mb-4 flex flex-col justify-between gap-3 @lg:flex-row @lg:items-center">
               <div className="flex flex-1 flex-col space-y-1">
                 <span className="text-muted-foreground text-sm">
