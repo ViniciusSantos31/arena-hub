@@ -58,6 +58,7 @@ export const schema = z.object({
   id: z.string(),
   name: z.string(),
   score: z.number(),
+  memberId: z.string(),
   role: z.enum(["admin", "member", "guest", "owner"]).nullable(),
 });
 

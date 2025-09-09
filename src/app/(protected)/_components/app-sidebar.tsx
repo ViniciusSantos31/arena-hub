@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { NavUser } from "@/app/(protected)/_components/nav-user";
+import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -9,6 +10,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { NavGroups } from "./nav-groups";
+import { NavLogout } from "./nav-logout";
 import { NavOptions } from "./nav-options";
 import { NavSettings } from "./nav-settings";
 
@@ -27,6 +29,8 @@ export async function AppSidebar({
       <SidebarRail />
       <SidebarFooter className="p-0">
         <NavSettings />
+        <Separator />
+        <NavLogout />
       </SidebarFooter>
     </Sidebar>
   );

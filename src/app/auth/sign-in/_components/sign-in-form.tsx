@@ -25,7 +25,7 @@ export function SignInForm({
   const { formState } = methods;
 
   const onSubmit = async (data: SignInFormValues) => {
-    await authClient.signIn.email({ ...data, callbackURL: "/" });
+    await authClient.signIn.email({ ...data, callbackURL: "/home" });
   };
 
   return (

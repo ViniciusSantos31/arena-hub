@@ -18,6 +18,16 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
+const GroupNotFound = () => {
+  return (
+    <Alert variant={"destructive"} className="w-full py-2">
+      <InfoIcon />
+      <AlertTitle>Grupo não encontrado</AlertTitle>
+      <AlertDescription>Verifique o código e tente novamente.</AlertDescription>
+    </Alert>
+  );
+};
+
 const GroupPreviewLoading = () => {
   return (
     <section className="flex w-full animate-pulse flex-col items-center justify-center space-y-2 rounded-xl border px-2">
@@ -34,6 +44,7 @@ const GroupPreviewLoading = () => {
         </div>
         <Button
           variant={"default"}
+          size={"sm"}
           className="bg-accent pointer-events-none w-fit animate-pulse text-transparent"
         >
           Entrar
@@ -85,7 +96,7 @@ const GroupPreview = ({
           </span>
         </div>
         {isAlreadyMember ? (
-          <Button variant={"default"} className="w-fit" asChild>
+          <Button variant={"default"} size={"sm"} className="w-fit" asChild>
             <Link href={`/group/${code}/members`}>Ver grupo</Link>
           </Button>
         ) : (
@@ -93,6 +104,7 @@ const GroupPreview = ({
             onClick={() => handleJoinGroup(code)}
             variant={"default"}
             className="w-fit"
+            size={"sm"}
             disabled={joinGroupAction.isExecuting || joinGroupAction.isPending}
           >
             Entrar
@@ -156,6 +168,7 @@ export default function JoinGroupPage() {
             isAlreadyMember={data.data.isAlreadyMember}
           />
         )}
+        {!!data?.serverError && !isPending && <GroupNotFound />}
 
         <section className="flex w-full flex-col items-center space-y-1">
           <div className="text-muted-foreground inline-flex w-full items-center justify-center gap-2 text-sm">

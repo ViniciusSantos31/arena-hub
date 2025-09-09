@@ -63,4 +63,11 @@ export const auth = betterAuth({
   user: {
     modelName: "usersTable",
   },
+  advanced: {
+    cookies: {
+      session_token: {
+        name: "@arena-hub/auth",
+      },
+    },
+  },
 });

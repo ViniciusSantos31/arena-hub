@@ -60,5 +60,6 @@ export const listMembers = actionClient
       name: member.user.name,
       score: member.score,
       role: member.role,
+      memberId: member.id,
     }));
   });
