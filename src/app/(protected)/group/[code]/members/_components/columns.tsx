@@ -64,16 +64,8 @@ function UpdateRoleCell({ row }: { row: Row<z.infer<typeof schema>> }) {
   const { data } = session;
   const isMe = data?.user.id === row.original.id;
 
-  const roles: Record<string, string> = {
-    member: "Membro",
-    guest: "Convidado",
-    admin: "Administrador",
-    owner: "Proprietário",
-  };
-
-  if (isMe && !isOwner && row.original.role) {
-    return roles[row.original.role];
-  }
+  const isAbleToChangeRole =
+    data?.user.id !== row.original.id && data?.user.id && !isMe;
 
   if (isOwner) {
     return "Proprietário";
@@ -85,6 +77,7 @@ function UpdateRoleCell({ row }: { row: Row<z.infer<typeof schema>> }) {
         role
       </Label>
       <Select
+        disabled={!isAbleToChangeRole}
         defaultValue={row.original.role as string}
         onValueChange={(value) => {
           return toast.promise(
@@ -295,7 +288,7 @@ export const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
   {
     accessorKey: "score",
-    header: () => <div className="w-full text-left">Score</div>,
+    header: () => <div className="w-full">Score</div>,
     cell: ({ row }) => <UpdateScoreCell row={row} />,
   },
   {

@@ -47,21 +47,6 @@ export default function GroupDashboardPage() {
               </span>
             </div>
           </div>
-          {/* <Separator className="my-5" /> */}
-          {/* <Card>
-            <CardHeader>
-              <CardTitle>
-                <CalendarClock />
-                Próxima partida
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col">
-                <span className="text-card-foreground">Próxima partida</span>
-                <span className="text-muted-foreground text-sm">Em breve</span>
-              </div>
-            </CardContent>
-          </Card> */}
         </CardContent>
         <CardFooter className="md:hidden">
           <Button variant={"outline"} size={"sm"} asChild className="ml-auto">

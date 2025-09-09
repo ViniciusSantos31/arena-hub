@@ -12,7 +12,7 @@ export default async function MembersPage({
     organizationCode: code,
   });
 
-  if (!response.data) {
+  if ((response.data && response.data.length === 0) || !response.data) {
     return null;
   }
 
