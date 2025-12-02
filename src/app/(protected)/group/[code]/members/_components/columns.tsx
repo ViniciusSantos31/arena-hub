@@ -38,7 +38,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import z from "zod";
-import { schema } from "./data-table";
+import { schema } from "./members-table";
 
 function UpdateRoleCell({ row }: { row: Row<z.infer<typeof schema>> }) {
   const { code } = useParams<{ code: string }>();

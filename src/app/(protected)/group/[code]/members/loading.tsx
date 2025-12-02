@@ -13,7 +13,7 @@ export default function GroupMembersLoading() {
             <Skeleton className="bg-card h-4 w-40" />
             <Skeleton className="h-8 min-w-8 bg-transparent" />
           </div>
-          {Array.from({ length: 5 }).map((_, i) => (
+          {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
               className="flex h-14 max-h-[53px] items-center space-x-4 border-b px-4 last:border-b-0"

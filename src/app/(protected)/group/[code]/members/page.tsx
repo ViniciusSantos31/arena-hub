@@ -1,5 +1,5 @@
 import { listMembers } from "@/actions/member/list";
-import { DataTable } from "./_components/data-table";
+import { MembersTable } from "./_components/members-table";
 
 export default async function MembersPage({
   params,
@@ -18,5 +18,5 @@ export default async function MembersPage({
 
   const members = response.data;
 
-  return <DataTable data={members} />;
+  return <MembersTable data={members} />;
 }

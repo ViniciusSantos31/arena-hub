@@ -68,8 +68,13 @@ export const getOrganizationByCode = actionClient
       where: and(eq(member.userId, userId), eq(member.organizationId, org.id)),
     });
 
+    const participantsCount = await db.query.member.findMany({
+      where: eq(member.organizationId, org.id),
+    });
+
     return {
       ...org,
       isAlreadyMember: !!membership,
+      participants: participantsCount.length,
     };
   });

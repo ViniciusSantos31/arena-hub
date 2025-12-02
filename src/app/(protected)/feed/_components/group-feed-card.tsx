@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,7 +11,17 @@ import {
 import { cn } from "@/lib/utils";
 import { Lock } from "lucide-react";
 
-export const GroupFeedCard = () => {
+type GroupFeedCardProps = {
+  group: {
+    name: string;
+    description: string;
+    isPrivate: boolean;
+    lastActivity: string;
+    logo: string | null;
+  };
+};
+
+export const GroupFeedCard = ({ group }: GroupFeedCardProps) => {
   return (
     <Card
       className={cn(
@@ -22,28 +32,28 @@ export const GroupFeedCard = () => {
       )}
     >
       <CardHeader>
-        <Avatar className="size-10 rounded-none">
+        <Avatar className="size-10 rounded-lg">
+          <AvatarImage src={group.logo || undefined} />
           <AvatarFallback>GH</AvatarFallback>
         </Avatar>
-        <CardTitle>Nome do grupo</CardTitle>
-        <CardDescription>Descrição breve do grupo.</CardDescription>
+        <CardTitle>{group.name}</CardTitle>
+        <CardDescription>{group.description}</CardDescription>
       </CardHeader>
       <CardContent>
-        <span className="text-muted-foreground flex items-center text-sm font-medium">
-          <Lock className="mr-1 mb-0.5 inline-block size-3" />
-          Grupo privado
-        </span>
+        {group.isPrivate && (
+          <span className="text-muted-foreground flex items-center text-sm font-medium">
+            <Lock className="mr-1 mb-0.5 inline-block size-3" />
+            Grupo privado
+          </span>
+        )}
         <span className="text-muted-foreground text-xs">
-          Última atividade em: 12/12/2022
+          Última atividade em: {group.lastActivity}
         </span>
       </CardContent>
       <CardFooter className="flex flex-col gap-2 @xl:flex-row">
         <Button variant={"outline"} className="w-full @xl:ml-auto @xl:w-fit">
           Entrar no grupo
         </Button>
-        {/* <Button variant={"outline"} className="w-full @xl:w-fit">
-          Solicitar entrada
-        </Button> */}
       </CardFooter>
     </Card>
   );

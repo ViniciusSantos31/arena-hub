@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { useMutation } from "@tanstack/react-query";
 import { InfoIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -55,17 +56,19 @@ const GroupPreviewLoading = () => {
 };
 
 const GroupPreview = ({
-  name,
-  participants,
-  code,
   isAlreadyMember = false,
+  group,
 }: {
-  name: string;
-  participants: number;
-  code: string;
   isAlreadyMember: boolean;
+  group: {
+    name: string;
+    logo: string | null;
+    code: string;
+    participants: number;
+  };
 }) => {
   const router = useRouter();
+  const { name, logo, code, participants } = group;
 
   const joinGroupAction = useAction(joinGroupByCode, {
     onSuccess: () => {
@@ -83,8 +86,17 @@ const GroupPreview = ({
   return (
     <section className="flex w-full flex-col items-center justify-center space-y-2 rounded-xl border px-2">
       <div className="flex w-full items-center">
-        <div className="border-border bg-accent relative flex aspect-square h-11 w-11 flex-1 overflow-clip rounded-lg border" />
-
+        {logo ? (
+          <Image
+            src={logo}
+            alt={`Banner do grupo ${name}`}
+            width={100}
+            height={100}
+            className="bg-accent aspect-square h-11 w-11 rounded-lg border object-cover"
+          />
+        ) : (
+          <div className="border-border bg-accent relative flex aspect-square h-11 w-11 flex-1 overflow-clip rounded-lg border" />
+        )}
         <div className="from-background inset-0 bottom-0 flex h-full w-full flex-col justify-end bg-linear-to-t via-transparent to-transparent p-2">
           <span className="text-foreground line-clamp-2 text-sm font-bold md:text-base">
             {name}
@@ -162,9 +174,7 @@ export default function JoinGroupPage() {
         {isPending && <GroupPreviewLoading />}
         {data?.data && !isPending && (
           <GroupPreview
-            name={data.data.name}
-            participants={12}
-            code={data.data.code}
+            group={data.data}
             isAlreadyMember={data.data.isAlreadyMember}
           />
         )}

@@ -42,6 +42,8 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --animate-shadow-pulse: shadow-animation 3s infinite;
+  --animate-bounce: bounce 1.5s infinite;
+  --animate-bounce-rotate: bounceWithRotation 2s infinite;
 }
 
 :root {
@@ -122,25 +124,60 @@
   }
 }
 
-@keyframes border-animation {
-  0%,
-  100% {
-    border-color: var(--color-primary);
-    border-width: 2px;
+@layer base {
+  @keyframes bounce {
+    0%,
+    100% {
+      transform: translateY(0px) scale(1);
+    }
+    50% {
+      transform: translateY(-20px) scale(1.1);
+    }
   }
-  50% {
-    border-color: var(--color-accent);
-    border-width: 3px;
-  }
-}
 
-@keyframes shadow-animation {
-  0%,
-  100% {
-    box-shadow: 0 0 0px;
+  @keyframes bounceWithRotation {
+    0% {
+      transform: translateY(0px) scale(1) rotate(0deg);
+      animation-timing-function: ease-in;
+    }
+    25% {
+      transform: translateY(-15px) scale(1.05) rotate(90deg);
+      animation-timing-function: ease-out;
+    }
+    50% {
+      transform: translateY(-20px) scale(1.1) rotate(270deg);
+      animation-timing-function: ease-in;
+    }
+    75% {
+      transform: translateY(-15px) scale(1.05) rotate(300deg);
+      animation-timing-function: ease-out;
+    }
+    100% {
+      transform: translateY(0px) scale(1) rotate(360deg);
+      animation-timing-function: ease-in;
+    }
   }
-  50% {
-    box-shadow: 0 0 5px var(--color-amber-300);
+
+  @keyframes border-animation {
+    0%,
+    100% {
+      border-color: var(--color-primary);
+      border-width: 2px;
+    }
+    50% {
+      border-color: var(--color-accent);
+      border-width: 3px;
+    }
+  }
+
+  @keyframes shadow-animation {
+    0%,
+    100% {
+      box-shadow: 0 0 0px;
+    }
+    50% {
+      box-shadow: 0 0 5px var(--color-amber-300);
+    }
   }
 }
 
