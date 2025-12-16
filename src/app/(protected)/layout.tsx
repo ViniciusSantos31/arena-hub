@@ -1,7 +1,8 @@
 import { AppSidebar } from "@/app/(protected)/_components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
-import { cookies } from "next/headers";
+import { auth } from "@/lib/auth";
+import { cookies, headers } from "next/headers";
 import React from "react";
 
 export default async function ProtectedLayout({
@@ -11,6 +12,13 @@ export default async function ProtectedLayout({
 }) {
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
+
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  console.log({ session });
+
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <div className="flex max-h-svh w-full">

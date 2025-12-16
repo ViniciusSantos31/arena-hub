@@ -11,13 +11,13 @@ import z from "zod";
 export const getGroupDetails = actionClient
   .inputSchema(z.object({ code: z.string() }))
   .action(async ({ parsedInput }) => {
-    const session = await auth.api.getSession({
+    const activeSession = await auth.api.getSession({
       headers: await headers(),
     });
 
     const { code } = parsedInput;
 
-    if (!session) {
+    if (!activeSession) {
       throw new Error("Usuário não autenticado");
     }
 

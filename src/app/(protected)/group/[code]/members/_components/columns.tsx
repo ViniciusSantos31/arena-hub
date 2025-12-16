@@ -40,11 +40,21 @@ import { toast } from "sonner";
 import z from "zod";
 import { schema } from "./members-table";
 
+type Role = z.infer<typeof schema>["role"];
+
+const roles: Record<keyof Role, string> = {
+  admin: "Administrador",
+  member: "Membro",
+  guest: "Convidado",
+  owner: "Proprietário",
+};
+
 function UpdateRoleCell({ row }: { row: Row<z.infer<typeof schema>> }) {
   const { code } = useParams<{ code: string }>();
-  const isOwner = row.original.role === "owner";
 
   const session = authClient.useSession();
+  const { data: member } = authClient.useActiveMember();
+  const { data: organization } = authClient.useActiveOrganization();
 
   const updateMemberRoleAction = useOptimisticAction(updateMemberRole, {
     currentState: row.original.role,
@@ -62,13 +72,17 @@ function UpdateRoleCell({ row }: { row: Row<z.infer<typeof schema>> }) {
   });
 
   const { data } = session;
+
   const isMe = data?.user.id === row.original.id;
+  const isAdmin = member?.role === "admin";
+  const isOwner = member?.role === "owner";
 
-  const isAbleToChangeRole =
-    data?.user.id !== row.original.id && data?.user.id && !isMe;
+  const isAbleToChangeRole = isAdmin || isOwner;
 
-  if (isOwner) {
-    return "Proprietário";
+  if (!isAbleToChangeRole) {
+    return (
+      <span>{roles[row.original.role as keyof Role] || "Desconhecido"}</span>
+    );
   }
 
   return (

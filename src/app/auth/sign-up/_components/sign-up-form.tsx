@@ -16,6 +16,11 @@ export function SignUpForm({
 }: React.ComponentProps<"form">) {
   const methods = useForm({
     resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
   });
 
   const { formState } = methods;
@@ -23,7 +28,7 @@ export function SignUpForm({
   const onSubmit = async (data: SignUpFormValues) => {
     await authClient.signUp.email(data, {
       onSuccess: () => {
-        redirect("/");
+        redirect("/home");
       },
     });
   };
@@ -42,9 +47,14 @@ export function SignUpForm({
               Cadastre-se para começar
             </p>
           </div>
-          <InputField name="name" label="Nome" />
-          <InputField name="email" label="Email" />
-          <InputField name="password" label="Senha" type="password" />
+          <InputField name="name" label="Nome" placeholder="Seu nome" />
+          <InputField name="email" label="Email" placeholder="m@exemplo.com" />
+          <InputField
+            name="password"
+            label="Senha"
+            type="password"
+            placeholder="********"
+          />
 
           <Button
             type="submit"
