@@ -44,7 +44,7 @@ export async function GroupSidebar({
     <Sidebar
       collapsible="none"
       variant="floating"
-      className="absolute top-4 right-4 max-h-screen w-[calc(var(--sidebar-width-icon)+1px)]! pr-0"
+      className="absolute top-4 right-4 max-h-dvh w-[calc(var(--sidebar-width-icon)+1px)]! pr-0"
       {...props}
     >
       <SidebarContent>

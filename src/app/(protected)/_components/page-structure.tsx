@@ -11,7 +11,7 @@ export const PageContainer = ({
   return (
     <div
       className={cn(
-        "relative flex h-screen w-full flex-col overflow-hidden rounded-2xl",
+        "relative flex h-dvh w-full flex-col overflow-hidden rounded-2xl",
         className,
       )}
     >

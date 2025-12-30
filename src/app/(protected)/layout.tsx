@@ -21,10 +21,10 @@ export default async function ProtectedLayout({
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
-      <div className="flex max-h-svh w-full">
+      <div className="flex max-h-dvh w-full">
         <Toaster richColors position="top-center" />
         <AppSidebar />
-        <SidebarInset className="max-h-svh flex-1 overflow-hidden rounded-2xl">
+        <SidebarInset className="max-h-dvh flex-1 overflow-hidden rounded-2xl">
           {children}
         </SidebarInset>
       </div>

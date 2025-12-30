@@ -8,6 +8,7 @@ import { ac, admin, guest, member } from "./permissions";
 
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET!,
+  trustedOrigins: ["http://192.168.0.8:3000", "http://localhost:3000"],
   database: drizzleAdapter(db, {
     provider: "pg",
     schema,

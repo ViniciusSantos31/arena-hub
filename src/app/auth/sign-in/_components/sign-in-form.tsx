@@ -43,7 +43,12 @@ export function SignInForm({
             </p>
           </div>
 
-          <InputField name="email" placeholder="m@example.com" label="Email" />
+          <InputField
+            name="email"
+            type="email"
+            placeholder="m@example.com"
+            label="Email"
+          />
           <InputField
             name="password"
             type="password"

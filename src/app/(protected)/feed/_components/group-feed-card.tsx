@@ -26,7 +26,7 @@ export const GroupFeedCard = ({ group }: GroupFeedCardProps) => {
     <Card
       className={cn(
         "dark:bg-background from-transparent to-transparent",
-        "hover:bg-accent hover:from-accent transition-colors",
+        "hover:bg-accent hover:from-accent/10 transition-colors",
         "cursor-pointer",
         "flex-1",
       )}
