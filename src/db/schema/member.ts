@@ -28,4 +28,8 @@ export const memberRelation = relations(member, ({ one }) => ({
     fields: [member.userId],
     references: [usersTable.id],
   }),
+  organization: one(organization, {
+    fields: [member.organizationId],
+    references: [organization.id],
+  }),
 }));

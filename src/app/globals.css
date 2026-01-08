@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@plugin "tailwind-scrollbar";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -44,6 +46,7 @@
   --animate-shadow-pulse: shadow-animation 3s infinite;
   --animate-bounce: bounce 1.5s infinite;
   --animate-bounce-rotate: bounceWithRotation 2s infinite;
+  --scrollbar-thin: thin;
 }
 
 :root {
@@ -117,10 +120,33 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50 font-sans;
+    @apply border-border outline-ring/50 selection:bg-primary selection:text-primary-foreground font-sans;
+  }
+
+  button[data-variant="default"] {
+    @apply selection:bg-accent/50 selection:text-accent-foreground;
+  }
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  ::-webkit-scrollbar {
+    @apply h-3 w-3;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-accent rounded-full border-4 border-transparent bg-clip-padding;
+  }
+
+  input[type="number"] {
+    appearance: textfield;
+    -moz-appearance: textfield;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground h-dvh;
   }
 }
 
@@ -189,6 +215,8 @@
   }
 
   .dark.scroll-thin {
+    scrollbar-width: thin;
+    border-color: var(--color-border);
     scrollbar-color: var(--color-secondary-foreground) transparent;
   }
 }

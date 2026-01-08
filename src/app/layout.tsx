@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import { ThemeProvider } from "@/components/theme-provider";
+import type { Metadata, Viewport } from "next";
 import { Nunito, Nunito_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
@@ -19,17 +20,33 @@ export const metadata: Metadata = {
     "A plataforma definitiva para gerenciamento de grupos e partidas.",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  interactiveWidget: "resizes-content",
+  initialScale: 1,
+  maximumScale: 1,
+  minimumScale: 1,
+  viewportFit: "auto",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" suppressHydrationWarning>
       <body
-        className={`${nunitoSans.variable} ${nunito.variable} dark scroll-thin antialiased`}
+        className={`${nunitoSans.variable} ${nunito.variable} bg-sidebar antialiased`}
       >
-        <Providers>{children}</Providers>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Providers>{children}</Providers>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -3,18 +3,55 @@
 import { createGroup } from "@/actions/group/create";
 import { uploadImage } from "@/actions/image/upload";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { InputField } from "@/components/ui/input/field";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { UploadInput } from "@/components/upload-input";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2Icon } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2Icon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm, UseFormReturn } from "react-hook-form";
+import { GroupFeedCard } from "../../feed/_components/group-feed-card";
 import { CreateGroupFormData, createGroupSchema } from "./_schema/create";
+
+const GroupFeedCardPreview = ({
+  methods,
+  image,
+  className,
+}: {
+  methods: UseFormReturn<CreateGroupFormData>;
+  image: File | null;
+  className?: string;
+}) => {
+  const { name, description, isPrivate } = methods.watch();
+  return (
+    <div
+      className={cn(
+        "sticky top-0 flex max-h-full w-full flex-1 gap-0 sm:space-x-3 lg:h-full lg:flex-col lg:space-y-3",
+        className,
+      )}
+    >
+      <Card className="from-card/50 to-background hidden h-full flex-1 border-0 bg-transparent bg-linear-to-l lg:flex lg:bg-linear-to-t" />
+      <GroupFeedCard
+        preview
+        group={{
+          name: name || "Nome do grupo",
+          description: description || "Descrição do grupo",
+          isPrivate: isPrivate || false,
+          logo: image ? URL.createObjectURL(image) : null,
+        }}
+      />
+      <Card className="from-card/50 to-background hidden h-full flex-1 border-0 bg-transparent bg-linear-to-r sm:flex lg:bg-linear-to-b" />
+    </div>
+  );
+};
 
 export default function CreateGroupPage() {
   const methods = useForm({
@@ -22,6 +59,8 @@ export default function CreateGroupPage() {
     defaultValues: {
       name: "",
       description: "",
+      isPrivate: false,
+      maxPlayers: 10,
     },
   });
 
@@ -31,7 +70,7 @@ export default function CreateGroupPage() {
 
   const createGroupAction = useAction(createGroup, {
     onSuccess({ data }) {
-      router.push(`/group/${data?.id}`);
+      router.push(`/group/${data?.code}`);
     },
   });
 
@@ -66,62 +105,132 @@ export default function CreateGroupPage() {
   }
 
   return (
-    <main className="flex h-full w-full flex-col items-center justify-center">
+    <main className="flex h-full w-full flex-col items-center justify-start gap-4 lg:flex-row">
       <Form {...methods}>
         <form
           onSubmit={methods.handleSubmit(onSubmit)}
-          className="border-border flex w-full max-w-lg flex-col rounded-lg border p-8"
+          className="flex w-full max-w-2xl flex-1 flex-col space-y-2 rounded-lg p-2 md:p-4 lg:p-8"
         >
-          <div className="flex flex-col items-start space-x-2 sm:flex-row sm:items-center">
-            {image ? (
-              <Image
-                src={URL.createObjectURL(image)}
-                alt="Preview"
-                width={100}
-                height={100}
-                className="bg-accent mb-4 flex aspect-square h-28 max-h-28 w-28 max-w-28 items-center justify-center overflow-clip rounded-lg border object-cover sm:mb-0"
-              />
-            ) : (
-              <div className="bg-accent mb-4 aspect-square h-28 max-h-28 w-28 max-w-28 rounded-lg border sm:mb-0" />
-            )}
-            <div className="space-y-2">
-              <Label>Imagem do grupo</Label>
-              <Input
-                type="file"
-                placeholder="Escolha uma imagem"
-                accept="image/*"
-                lang="pt"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    setImage(file);
-                  }
-                }}
-              />
-            </div>
-          </div>
-          <div className="mt-4 space-y-4">
+          <UploadInput
+            label="Imagem do grupo"
+            onChange={(e) => {
+              const file = e.target.files?.[0] || null;
+              setImage(file);
+            }}
+          />
+
+          <div className="space-y-4">
             <InputField
               name="name"
               label="Nome do grupo"
               placeholder="Nome do grupo"
             />
-            <InputField
-              name="description"
-              label="Descrição"
-              placeholder="Descrição do grupo"
-            />
+            <div className="flex w-full items-center space-x-4">
+              <div className="flex-1 space-y-2">
+                <Label htmlFor="maxPlayers">Máximo de jogadores</Label>
+                <Controller
+                  name="maxPlayers"
+                  control={methods.control}
+                  render={({ field }) => (
+                    <div className="flex w-full flex-1">
+                      <Input
+                        {...field}
+                        type="number"
+                        min="2"
+                        max="100"
+                        placeholder="10"
+                        className="w-full rounded-r-none"
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                      <div className="flex max-h-full flex-col">
+                        <Button
+                          type="button"
+                          size={"icon"}
+                          variant="outline"
+                          className="h-1/2 w-5 rounded-sm rounded-l-none rounded-br-none border-b-0 border-l-0 px-0.5 py-0"
+                          onClick={() => {
+                            const newValue = Math.min(
+                              Number(field.value) + 1,
+                              100,
+                            );
+                            field.onChange(newValue);
+                          }}
+                        >
+                          <ChevronUp />
+                        </Button>
+                        <Button
+                          type="button"
+                          size={"icon"}
+                          variant="outline"
+                          className="h-1/2 w-5 rounded-sm rounded-l-none rounded-tr-none border-l-0 px-0.5 py-0"
+                          onClick={() => {
+                            const newValue = Math.max(
+                              Number(field.value) - 1,
+                              2,
+                            );
+                            field.onChange(newValue);
+                          }}
+                        >
+                          <ChevronDown />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                />
+              </div>
+              <div className="mt-5 flex items-center space-x-2">
+                <Controller
+                  name="isPrivate"
+                  control={methods.control}
+                  render={({ field }) => (
+                    <Switch
+                      id="isPrivate"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  )}
+                />
+                <Label htmlFor="isPrivate">Grupo privado</Label>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description">Descrição</Label>
+              <Controller
+                name="description"
+                control={methods.control}
+                render={({ field }) => (
+                  <Textarea
+                    {...field}
+                    placeholder="Descreva seu grupo..."
+                    className="min-h-[120px] resize-none"
+                  />
+                )}
+              />
+            </div>
           </div>
-          <footer className="mt-4">
+          <GroupFeedCardPreview
+            methods={methods}
+            image={image}
+            className="mt-4 lg:hidden"
+          />
+
+          <footer className="mt-6">
             <Button
               type="submit"
               disabled={!methods.formState.isValid || !image || isCreating}
+              className="w-full"
             >
               Criar grupo
             </Button>
           </footer>
         </form>
       </Form>
+      <GroupFeedCardPreview
+        methods={methods}
+        image={image}
+        className="hidden lg:flex"
+      />
     </main>
   );
 }

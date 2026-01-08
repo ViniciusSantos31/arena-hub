@@ -20,6 +20,8 @@ export const createGroup = actionClient
         .min(10, "A descrição do grupo deve conter pelo menos 10 caracteres")
         .max(500, "A descrição do grupo deve conter no máximo 500 caracteres"),
       image: z.string(),
+      isPrivate: z.boolean().optional(),
+      maxPlayers: z.number().optional(),
     }),
   )
   .action(async ({ parsedInput }) => {
@@ -31,15 +33,15 @@ export const createGroup = actionClient
       throw new Error("Usuário não autenticado");
     }
 
-    const { name, description, image } = parsedInput;
-
-    console.log("Creating group:", { name, description, image });
+    const { name, description, image, isPrivate, maxPlayers } = parsedInput;
 
     const org = await auth.api.createOrganization({
       body: {
         name,
         userId: session.user.id,
         logo: image,
+        private: isPrivate ?? false,
+        maxPlayers: maxPlayers ?? 10,
         code: Math.random().toString(36).substring(2, 8).toUpperCase(),
         slug:
           name.toLowerCase().replace(/\s+/g, "-") + session.user.id.slice(0, 5),

@@ -24,6 +24,17 @@ export const auth = betterAuth({
               type: "string",
               description: "The organization's unique code",
             },
+            private: {
+              type: "boolean",
+              description: "Whether the organization is private or public",
+              defaultValue: false,
+            },
+            maxPlayers: {
+              type: "number",
+              description:
+                "Maximum number of players allowed in the organization",
+              defaultValue: 10,
+            },
           },
         },
         member: {

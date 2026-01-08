@@ -1,7 +1,7 @@
 "use client";
 
 import { listAllGroups } from "@/actions/group/list-all-groups";
-import { LoadingAnimation } from "@/components/loading-animation";
+import { LoadingPage } from "@/components/loading-page";
 import { useQuery } from "@tanstack/react-query";
 import { GroupFeedCard } from "./_components/group-feed-card";
 import { SearchInput } from "./_components/search-input";
@@ -13,12 +13,7 @@ export default function FeedPage() {
   });
 
   if (!data || isLoading) {
-    return (
-      <main className="text-muted-foreground flex h-full w-full flex-col items-center justify-center font-mono">
-        <LoadingAnimation />
-        Carregando grupos...
-      </main>
-    );
+    return <LoadingPage />;
   }
 
   return (
@@ -31,11 +26,9 @@ export default function FeedPage() {
           <GroupFeedCard
             key={group.id}
             group={{
-              name: group.name,
+              ...group,
               description: group.description || "Sem descrição",
-              isPrivate: false,
-              lastActivity: group.createdAt.toLocaleDateString(),
-              logo: group.logo || null,
+              createdAt: group.createdAt.toLocaleDateString(),
             }}
           />
         ))}

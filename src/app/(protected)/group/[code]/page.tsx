@@ -1,6 +1,5 @@
 import { getGroupDetails } from "@/actions/group/detail";
-import { auth } from "@/lib/auth";
-import { permanentRedirect } from "next/navigation";
+import { redirect } from "next/navigation";
 
 type GroupPageProps = {
   params: Promise<{ code: string }>;
@@ -14,9 +13,10 @@ export default async function GroupPage({ params }: GroupPageProps) {
     return null;
   }
 
-  await auth.api.setActiveOrganization({
-    body: { organizationId: group.id },
-  });
+  // await auth.api.setActiveOrganization({
+  //   headers: await headers(),
+  //   body: { organizationId: group.id },
+  // });
 
-  return permanentRedirect(`/group/${code}/dashboard`);
+  return redirect(`/group/${code}/dashboard`);
 }

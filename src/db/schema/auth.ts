@@ -1,6 +1,13 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
 import { matchesTable } from "./match";
+import { member } from "./member";
 import { usersTable } from "./user";
 
 export const sessionsTable = pgTable("session", {
@@ -53,6 +60,8 @@ export const organization = pgTable("organization", {
   name: text("name").notNull(),
   slug: text("slug").unique(),
   logo: text("logo"),
+  private: boolean("private").notNull().default(false),
+  maxPlayers: integer("max_players").notNull().default(10),
   code: text("code")
     .notNull()
     .unique()
@@ -63,6 +72,7 @@ export const organization = pgTable("organization", {
 
 export const organizationsRelations = relations(organization, ({ many }) => ({
   matches: many(matchesTable),
+  members: many(member),
 }));
 
 export const invitationsTable = pgTable("invitation", {

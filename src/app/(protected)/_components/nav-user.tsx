@@ -7,6 +7,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
+import Link from "next/link";
 
 const NavUserLoading = () => {
   return (
@@ -46,11 +47,12 @@ export function NavUser() {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <a href="/profile">
-          <SidebarMenuButton
-            size="lg"
-            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-          >
+        <SidebarMenuButton
+          size="lg"
+          asChild
+          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+        >
+          <Link href="/profile">
             <Avatar className="h-8 w-8 rounded-lg">
               {user.image && <AvatarImage src={user.image} alt={user.name} />}
               <AvatarFallback className="rounded-lg">
@@ -63,8 +65,8 @@ export function NavUser() {
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">{user.name}</span>
             </div>
-          </SidebarMenuButton>
-        </a>
+          </Link>
+        </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>
   );

@@ -97,7 +97,7 @@ export function NavSidebar({
               <SidebarMenuButton
                 asChild
                 tooltip={item.title}
-                isActive={currentPath === item.url}
+                isActive={currentPath.startsWith(item.url)}
               >
                 <Link href={item.url}>
                   {item.icon && <item.icon />}

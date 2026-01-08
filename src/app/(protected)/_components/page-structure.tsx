@@ -1,3 +1,4 @@
+import { ModeToggle } from "@/components/mode-toggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 
@@ -40,7 +41,10 @@ export const PageHeaderContent = ({
 
 export const PageHeader = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="flex justify-between border-b px-4 py-4">{children}</div>
+    <div className="flex border-b px-4 py-4">
+      <div className="mr-2 flex flex-1 justify-between">{children}</div>
+      <ModeToggle />
+    </div>
   );
 };
 
@@ -66,7 +70,7 @@ export const PageContent = ({
   return (
     <div
       className={cn(
-        "@container flex h-full flex-1 flex-col overflow-y-scroll p-4 pr-2",
+        "@container flex h-full flex-1 flex-col overflow-y-auto p-4 pr-2",
         className,
       )}
     >

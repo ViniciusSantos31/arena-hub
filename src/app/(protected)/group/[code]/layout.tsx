@@ -1,8 +1,9 @@
 import { getGroupDetails } from "@/actions/group/detail";
+import { getUserMembershipStatus } from "@/actions/group/membership";
 import { Button } from "@/components/ui/button";
 import { MoreVerticalIcon, UploadIcon } from "lucide-react";
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import { notFound, redirect, RedirectType } from "next/navigation";
 import {
   PageContainer,
   PageContent,
@@ -23,6 +24,12 @@ export default async function GroupDetailsLayout({
   const group = await getGroupDetails({ code });
 
   if (!group.data) return notFound();
+
+  const userIsMember = await getUserMembershipStatus({
+    organizationId: group.data.id,
+  });
+
+  if (!userIsMember.data) return redirect("/home", RedirectType.replace);
 
   const { name, logo } = group.data;
 

@@ -25,12 +25,21 @@ export const listAllGroups = actionClient.action(async () => {
     throw new Error("Unauthorized");
   }
 
-  const response = await db.query.organization.findMany();
+  const response = await db.query.organization.findMany({
+    with: {
+      members: {
+        where: (members, { eq }) => eq(members.userId, session.user.id),
+      },
+    },
+  });
 
   return response.map((group) => ({
     id: group.id,
     name: group.name,
     logo: group.logo,
+    code: group.code,
+    isPrivate: group.private,
+    isMember: group.members.length > 0,
     description: transformGroupMetadata(group.metadata),
     createdAt: group.createdAt,
   }));
