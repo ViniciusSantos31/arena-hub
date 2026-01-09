@@ -1,0 +1,43 @@
+import {
+  PiBasketball,
+  PiPersonSimpleRun,
+  PiSoccerBall,
+  PiSpinnerBall,
+  PiTennisBall,
+  PiVolleyball,
+} from "react-icons/pi";
+
+export const getSportColor = (sport: string) => {
+  const colors: { [key: string]: string } = {
+    futebol:
+      "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100",
+    basquete:
+      "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100",
+    volei: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100",
+    tenis:
+      "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100",
+    futsal:
+      "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100",
+    corrida: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100",
+  };
+  return colors[sport] || "bg-gray-100 text-gray-800";
+};
+
+export const getSportIconById = (id: string) => {
+  switch (id) {
+    case "futebol":
+      return PiSoccerBall;
+    case "futsal":
+      return PiSpinnerBall;
+    case "volei":
+      return PiVolleyball;
+    case "basquete":
+      return PiBasketball;
+    case "tenis":
+      return PiTennisBall;
+    case "corrida":
+      return PiPersonSimpleRun;
+    default:
+      return null;
+  }
+};

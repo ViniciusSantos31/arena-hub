@@ -29,7 +29,7 @@ export const PageHeaderContent = ({
   description?: string;
 }) => {
   return (
-    <div className="flex items-start justify-between space-x-2">
+    <div className="flex items-center justify-between space-x-2">
       <SidebarTrigger />
       <div className="flex flex-1 flex-col space-y-1">
         <PageTitle>{title}</PageTitle>
@@ -70,7 +70,7 @@ export const PageContent = ({
   return (
     <div
       className={cn(
-        "@container flex h-full flex-1 flex-col overflow-y-auto p-4 pr-2",
+        "@container flex h-full flex-1 flex-col overflow-y-scroll p-4 pr-2",
         className,
       )}
     >

@@ -1,8 +1,9 @@
 "use client";
 
 import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
+import { LucideIcon } from "lucide-react";
 import { useState } from "react";
-import { Button } from "./ui/button";
 import {
   Dialog,
   DialogContent,
@@ -13,69 +14,74 @@ import {
 } from "./ui/dialog";
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
 } from "./ui/drawer";
 
-type ResponsiveDialogProps = {
-  open: boolean;
-  onOpenChange?: () => void;
-  title: string;
-  description?: string;
-  content: React.ReactNode;
+type ReponsiveModalProps = {
+  className?: string;
   children?: React.ReactNode;
+  content: React.ReactNode;
+  title?: string;
+  description?: string;
+  open?: boolean;
+  icon?: LucideIcon;
+  onOpenChange?: (open: boolean) => void;
 };
 
 export const ResponsiveDialog = ({
   title,
+  icon: Icon,
   description,
-  content,
-  open,
-  onOpenChange,
   children,
-}: ResponsiveDialogProps) => {
-  const [isOpen, setIsOpen] = useState(open);
+  content,
+  onOpenChange,
+  open = false,
+  className,
+}: ReponsiveModalProps) => {
   const isMobile = useIsMobile();
-
-  const handleOpenChange = (open: boolean) => {
-    onOpenChange?.();
-    setIsOpen(open);
-  };
+  const [isOpen, setIsOpen] = useState(false);
 
   if (isMobile) {
     return (
-      <Drawer open={isOpen} onOpenChange={handleOpenChange}>
+      <Drawer open={open ?? isOpen} onOpenChange={onOpenChange ?? setIsOpen}>
         {children && <DrawerTrigger asChild>{children}</DrawerTrigger>}
-        <DrawerContent>
-          <DrawerHeader className="text-left">
-            <DrawerTitle>{title}</DrawerTitle>
-            <DrawerDescription>{description}</DrawerDescription>
+        <DrawerContent className={className}>
+          <DrawerHeader>
+            <DrawerTitle className="flex items-center gap-2">
+              {Icon && <Icon className="h-5 w-5" />}
+              {title}
+            </DrawerTitle>
+            <DrawerDescription className="text-start">
+              {description}
+            </DrawerDescription>
           </DrawerHeader>
-          {content}
-          <DrawerFooter className="pt-2">
-            <DrawerClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DrawerClose>
-          </DrawerFooter>
+          <div className="space-y-6 overflow-y-auto">{content}</div>
         </DrawerContent>
       </Drawer>
     );
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      {children && <DialogTrigger asChild>{children}</DialogTrigger>}
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+    <Dialog open={open ?? isOpen} onOpenChange={onOpenChange ?? setIsOpen}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent
+        className={cn(
+          "flex max-h-[90vh] flex-col overflow-clip px-0 pb-0 sm:max-w-md",
+          className,
+        )}
+      >
+        <DialogHeader className="h-fit px-4">
+          <DialogTitle className="flex items-center gap-1">
+            {Icon && <Icon className="h-5 w-5" />}
+            {title}
+          </DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        {content}
+        <div className="flex h-full flex-col overflow-y-auto">{content}</div>
       </DialogContent>
     </Dialog>
   );

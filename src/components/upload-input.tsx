@@ -54,7 +54,7 @@ export const UploadInput = (props: UploadInputProps) => {
           alt="upload image"
           width={128}
           height={128}
-          className="bg-card size-20 rounded-xl border object-contain p-1"
+          className="bg-card size-20 rounded-xl border object-cover p-1"
         />
       ) : (
         <div className="bg-card flex size-20 items-center justify-center rounded-xl border text-white transition-colors">
