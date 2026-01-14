@@ -15,7 +15,7 @@ import {
   TrophyIcon,
   UsersIcon,
 } from "lucide-react";
-import { CreateMatchDialog } from "./_components/create-match-modal";
+import { CreateMatchDialog } from "../_components/create-match-modal";
 
 export default function MatchesLayout({
   children,

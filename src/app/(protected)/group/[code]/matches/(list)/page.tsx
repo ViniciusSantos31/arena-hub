@@ -1,4 +1,4 @@
-import { MatchCard } from "./_components/match-card";
+import { MatchCard } from "../_components/match-card";
 
 export default function MatchesPage() {
   return (

@@ -16,15 +16,15 @@ export const MatchCard = () => {
   const progressValue = (filledPlayers * 100) / MAX_PLAYERS;
 
   return (
-    <Link href={"details"} className="group w-full rounded-xl">
-      <Card>
+    <Link href={"matches/id"} className="group w-full rounded-xl">
+      <Card className="h-full">
         <CardHeader>
           <CardTitle>Arena Hub FC</CardTitle>
           <CardDescription>
             Futebol 7 • Masculino • Domingo, 25 de Agosto • 10:00 AM
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex h-full flex-col">
           <div className="mb-2 flex items-center justify-between">
             <div>
               <p>
@@ -52,7 +52,7 @@ export const MatchCard = () => {
               <p className="text-muted-foreground text-sm">1h30min</p>
             </div>
           </div>
-          <div className="mt-2">
+          <div className="mt-auto">
             <Label className="mb-4">Participantes:</Label>
             <AvatarStack />
           </div>

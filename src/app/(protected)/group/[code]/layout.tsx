@@ -28,7 +28,7 @@ export default async function GroupDetailsLayout({
 
   if (!userIsMember.data) return redirect("/home", RedirectType.replace);
 
-  const { name, logo } = group.data;
+  const { name } = group.data;
 
   return (
     <PageContainer>
@@ -37,7 +37,7 @@ export default async function GroupDetailsLayout({
       </PageHeader>
       <PageContent className="relative h-full *:first:mb-4">
         {children}
-        <GroupNav />
+        <GroupNav code={code} />
       </PageContent>
     </PageContainer>
   );

@@ -22,8 +22,10 @@ export default function GroupDashboardPage() {
   return (
     <main className="grid w-full gap-4 @2xl:grid-cols-2">
       <section className="flex w-full flex-1 flex-wrap gap-4">
+        <MatchCard />
+
         {/* Matches Section */}
-        <Card className="bg-card w-full border shadow-sm">
+        <Card className="bg-card @container/card w-full border shadow-sm">
           <CardHeader className="border-b pb-6">
             <CardTitle className="text-foreground flex items-center gap-3 font-medium">
               <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg">
@@ -31,7 +33,7 @@ export default function GroupDashboardPage() {
               </div>
               Estatísticas de Partidas
             </CardTitle>
-            <CardAction className="hidden md:flex">
+            <CardAction className="hidden @[26rem]/card:flex">
               <Button
                 variant="default"
                 size="default"
@@ -67,7 +69,7 @@ export default function GroupDashboardPage() {
               </span>
             </div>
           </CardContent>
-          <CardFooter className="border-t md:hidden">
+          <CardFooter className="flex border-t @[26rem]/card:hidden">
             <Button
               variant="outline"
               size="default"
@@ -81,12 +83,11 @@ export default function GroupDashboardPage() {
             </Button>
           </CardFooter>
         </Card>
-        <MatchCard />
       </section>
 
       <section className="flex h-fit w-full flex-1 flex-wrap gap-4">
         {/* Members Section */}
-        <Card className="bg-card w-full border shadow-sm">
+        <Card className="bg-card @container/card w-full border shadow-sm">
           <CardHeader className="border-b">
             <CardTitle className="text-foreground flex items-center gap-3 font-medium">
               <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg">
@@ -94,7 +95,7 @@ export default function GroupDashboardPage() {
               </div>
               Gerenciamento de Membros
             </CardTitle>
-            <CardAction className="hidden md:flex">
+            <CardAction className="hidden @[28rem]/card:flex">
               <Button variant="outline" size="default" asChild>
                 <Link href="#" aria-label="Ver todos os membros">
                   Ver Membros
@@ -119,7 +120,7 @@ export default function GroupDashboardPage() {
               </div>
             </div>
           </CardContent>
-          <CardFooter className="border-t md:hidden">
+          <CardFooter className="flex border-t @[28rem]/card:hidden">
             <Button
               variant="outline"
               size="default"
@@ -135,7 +136,7 @@ export default function GroupDashboardPage() {
         </Card>
 
         {/* Rankings Section */}
-        <Card className="bg-card w-full border shadow-sm">
+        <Card className="bg-card @container/card w-full border shadow-sm">
           <CardHeader className="border-b">
             <CardTitle className="text-foreground flex items-center gap-3 font-medium">
               <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg">
@@ -143,7 +144,7 @@ export default function GroupDashboardPage() {
               </div>
               Ranking de Performance
             </CardTitle>
-            <CardAction className="hidden md:flex">
+            <CardAction className="hidden @[28rem]/card:flex">
               <Button variant="outline" size="default" asChild>
                 <Link href="#" aria-label="Ver todas as classificações">
                   Ver Ranking Completo
@@ -192,7 +193,7 @@ export default function GroupDashboardPage() {
               </div>
             </div>
           </CardContent>
-          <CardFooter className="border-t md:hidden">
+          <CardFooter className="flex border-t @[28rem]/card:hidden">
             <Button
               variant="outline"
               size="default"
