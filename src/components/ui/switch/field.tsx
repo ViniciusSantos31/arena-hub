@@ -1,5 +1,6 @@
+import { cn } from "@/lib/utils";
 import { useFormContext } from "react-hook-form";
-import { Input } from ".";
+import { Switch } from ".";
 import {
   FormControl,
   FormDescription,
@@ -10,22 +11,35 @@ import {
 } from "../form";
 import { FieldBaseProps } from "../types/field";
 
-type InputFieldProps = FieldBaseProps<React.ComponentProps<typeof Input>>;
+type SwitchExtraProps = {
+  sideLabel?: "left" | "right";
+};
 
-export const InputField = ({
+type SwitchFieldProps = FieldBaseProps<
+  React.ComponentProps<typeof Switch> & SwitchExtraProps
+>;
+
+export const SwitchField = ({
   name,
   label,
   description,
   extraContentLabel,
+  sideLabel = "right",
   ...props
-}: InputFieldProps) => {
+}: SwitchFieldProps) => {
   const { control } = useFormContext();
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem>
+        <FormItem
+          className={cn(
+            "flex-row",
+            sideLabel === "right" &&
+              "flex flex-row-reverse items-center justify-end",
+          )}
+        >
           {label && (
             <FormLabel>
               {label}
@@ -33,7 +47,11 @@ export const InputField = ({
             </FormLabel>
           )}
           <FormControl>
-            <Input {...field} {...props} />
+            <Switch
+              checked={field.value}
+              onCheckedChange={field.onChange}
+              {...props}
+            />
           </FormControl>
           {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />

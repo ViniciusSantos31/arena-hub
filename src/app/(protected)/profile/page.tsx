@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
+import { getAvatarFallback } from "@/utils/avatar";
 import { headers } from "next/headers";
 import Link from "next/link";
 
@@ -23,26 +24,25 @@ export default async function ProfilePage() {
 
   return (
     <div className="mt-2 flex w-full flex-col items-center space-y-3">
-      <Avatar
-        className={cn(
-          "mb-4 h-32 w-32 rounded-lg",
-          "ring-offset-background ring-primary relative overflow-visible ring-2 ring-offset-3",
-          user?.image
-            ? "ring-offset-background ring-2 ring-offset-2"
-            : "bg-muted",
-        )}
-      >
-        {user?.image && <AvatarImage src={user.image} alt={user?.name} />}
-        <AvatarFallback className="text-2xl">
-          {user?.name
-            .split(" ")
-            .map((n) => n[0])
-            .join("")}
-        </AvatarFallback>
-        <Badge className="text-background absolute -bottom-3 left-1/2 z-10 -translate-x-1/2 font-bold uppercase">
+      <div className="relative">
+        <Avatar
+          className={cn(
+            "mb-4 h-32 w-32 rounded-full",
+            "ring-offset-background ring-primary ring-2 ring-offset-3",
+            user?.image
+              ? "ring-offset-background ring-2 ring-offset-2"
+              : "bg-muted",
+          )}
+        >
+          {user?.image && <AvatarImage src={user.image} alt={user?.name} />}
+          <AvatarFallback className="text-2xl">
+            {getAvatarFallback(user?.name)}
+          </AvatarFallback>
+        </Avatar>
+        <Badge className="text-background absolute bottom-1 left-1/2 z-10 -translate-x-1/2 font-bold uppercase">
           Pro
         </Badge>
-      </Avatar>
+      </div>
       <div className="flex flex-col items-center">
         <span className="text-2xl font-bold">{user?.name}</span>
         <span className="text-muted-foreground">{user?.email}</span>

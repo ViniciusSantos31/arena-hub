@@ -1,5 +1,5 @@
 import { useFormContext } from "react-hook-form";
-import { Input } from ".";
+import { Select } from ".";
 import {
   FormControl,
   FormDescription,
@@ -10,21 +10,21 @@ import {
 } from "../form";
 import { FieldBaseProps } from "../types/field";
 
-type InputFieldProps = FieldBaseProps<React.ComponentProps<typeof Input>>;
+type SelectFieldProps = FieldBaseProps<React.ComponentProps<typeof Select>>;
 
-export const InputField = ({
+export const SelectField = ({
   name,
   label,
   description,
   extraContentLabel,
   ...props
-}: InputFieldProps) => {
+}: SelectFieldProps) => {
   const { control } = useFormContext();
   return (
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <FormItem>
           {label && (
             <FormLabel>
@@ -33,7 +33,12 @@ export const InputField = ({
             </FormLabel>
           )}
           <FormControl>
-            <Input {...field} {...props} />
+            <Select
+              {...field}
+              {...props}
+              onValueChange={field.onChange}
+              aria-invalid={!!fieldState.error}
+            />
           </FormControl>
           {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />

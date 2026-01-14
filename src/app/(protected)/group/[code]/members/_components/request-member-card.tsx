@@ -1,21 +1,31 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getAvatarFallback } from "@/utils/avatar";
+import { Check, X } from "lucide-react";
 
-interface MemberCardProps {
+interface RequestMemberCardProps {
   member: {
     id?: string;
     name?: string;
     email?: string;
     image?: string | null;
-    role?: string;
-    score?: number;
-    gamesPlayed?: number;
+    requestDate?: string;
   };
+  onAccept?: (memberId: string) => void;
+  onReject?: (memberId: string) => void;
+  loading?: boolean;
 }
 
-export const MemberCard = ({ member }: MemberCardProps) => {
+export const RequestMemberCard = ({
+  member,
+  onAccept,
+  onReject,
+  loading = false,
+}: RequestMemberCardProps) => {
   return (
     <Card className="bg-muted/30 hover:bg-muted/50 transition-all duration-200 dark:border-0">
       <CardContent>
@@ -32,20 +42,29 @@ export const MemberCard = ({ member }: MemberCardProps) => {
               <p className="text-muted-foreground truncate text-sm">
                 {member.email}
               </p>
-              <Badge variant="outline" className="text-xs">
-                {member.role}
+              <Badge variant="secondary" className="text-xs">
+                Solicitação pendente
               </Badge>
             </div>
           </div>
-          <div className="mt-4 flex items-center gap-6 @md:mt-0">
-            <div>
-              <p className="text-sm font-medium">{member.score ?? 0}</p>
-              <p className="text-muted-foreground text-xs">Nota</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">{member.gamesPlayed ?? 0}</p>
-              <p className="text-muted-foreground text-xs">Partidas</p>
-            </div>
+          <div className="mt-4 ml-auto flex items-center gap-2 @md:mt-0">
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => onReject?.(member.id!)}
+              disabled={loading || !member.id}
+            >
+              <X className="h-4 w-4" />
+              Recusar
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => onAccept?.(member.id!)}
+              disabled={loading || !member.id}
+            >
+              <Check className="h-4 w-4" />
+              Aceitar
+            </Button>
           </div>
         </div>
       </CardContent>
@@ -53,7 +72,7 @@ export const MemberCard = ({ member }: MemberCardProps) => {
   );
 };
 
-export const MemberCardLoading = () => {
+export const RequestMemberCardLoading = () => {
   return (
     <Card className="bg-muted/30 animate-pulse dark:border-0">
       <CardContent>
@@ -63,18 +82,12 @@ export const MemberCardLoading = () => {
             <div className="flex flex-col space-y-1 @md:space-y-0.5">
               <div className="bg-muted h-5 w-32 rounded @md:h-5.5" />
               <div className="bg-muted h-5 w-1/2 rounded @md:w-48" />
-              <div className="bg-muted h-5.5 w-20 rounded" />
+              <div className="bg-muted h-5.5 w-28 rounded" />
             </div>
           </div>
-          <div className="mt-4 flex items-center gap-6 @md:mt-0">
-            <div>
-              <div className="bg-muted h-4 w-8 rounded" />
-              <div className="bg-muted mt-1 h-3.5 w-16 rounded" />
-            </div>
-            <div>
-              <div className="bg-muted h-4 w-8 rounded" />
-              <div className="bg-muted mt-1 h-3 w-16 rounded" />
-            </div>
+          <div className="mt-4 flex items-center gap-2 @md:mt-0">
+            <div className="bg-muted h-9 w-20 rounded" />
+            <div className="bg-muted h-9 w-20 rounded" />
           </div>
         </div>
       </CardContent>

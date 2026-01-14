@@ -46,6 +46,7 @@ export const listMembers = cache(
               id: true,
               email: true,
               name: true,
+              image: true,
             },
           },
         },
@@ -59,7 +60,9 @@ export const listMembers = cache(
 
       return members.map((member) => ({
         id: member.user.id,
+        image: member.user.image,
         name: member.user.name,
+        email: member.user.email,
         score: member.score,
         role: member.role,
         memberId: member.id,

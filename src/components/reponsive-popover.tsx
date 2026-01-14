@@ -5,14 +5,6 @@ import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
 import { useState } from "react";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
-import {
   Drawer,
   DrawerContent,
   DrawerDescription,
@@ -20,6 +12,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "./ui/drawer";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 type ReponsiveModalProps = {
   className?: string;
@@ -32,7 +25,7 @@ type ReponsiveModalProps = {
   onOpenChange?: (open: boolean) => void;
 };
 
-export const ResponsiveDialog = ({
+export const ResponsivePopover = ({
   title,
   icon: Icon,
   description,
@@ -49,7 +42,7 @@ export const ResponsiveDialog = ({
     return (
       <Drawer open={open ?? isOpen} onOpenChange={onOpenChange ?? setIsOpen}>
         {children && <DrawerTrigger asChild>{children}</DrawerTrigger>}
-        <DrawerContent className={cn("w-full", className)}>
+        <DrawerContent className={className}>
           <DrawerHeader>
             <DrawerTitle className="flex items-center gap-2">
               {Icon && <Icon className="h-5 w-5" />}
@@ -59,30 +52,23 @@ export const ResponsiveDialog = ({
               {description}
             </DrawerDescription>
           </DrawerHeader>
-          <div className="w-full space-y-6 overflow-y-auto">{content}</div>
+          <div className="space-y-6 overflow-y-auto">{content}</div>
         </DrawerContent>
       </Drawer>
     );
   }
 
   return (
-    <Dialog open={open ?? isOpen} onOpenChange={onOpenChange ?? setIsOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent
+    <Popover open={open ?? isOpen} onOpenChange={onOpenChange ?? setIsOpen}>
+      <PopoverTrigger asChild>{children}</PopoverTrigger>
+      <PopoverContent
         className={cn(
           "flex max-h-[90vh] flex-col overflow-clip px-0 pb-0 sm:max-w-md",
           className,
         )}
       >
-        <DialogHeader className="h-fit px-4">
-          <DialogTitle className="flex items-center gap-1">
-            {Icon && <Icon className="h-5 w-5" />}
-            {title}
-          </DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
-        </DialogHeader>
         <div className="flex h-full flex-col overflow-y-auto">{content}</div>
-      </DialogContent>
-    </Dialog>
+      </PopoverContent>
+    </Popover>
   );
 };

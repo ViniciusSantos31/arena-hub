@@ -7,6 +7,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
+import { getAvatarFallback } from "@/utils/avatar";
 import Link from "next/link";
 
 const NavUserLoading = () => {
@@ -56,10 +57,7 @@ export function NavUser() {
             <Avatar className="h-8 w-8 rounded-lg">
               {user.image && <AvatarImage src={user.image} alt={user.name} />}
               <AvatarFallback className="rounded-lg">
-                {user.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
+                {getAvatarFallback(user.name)}
               </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">

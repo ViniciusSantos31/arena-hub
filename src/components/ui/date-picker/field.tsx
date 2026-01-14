@@ -1,5 +1,5 @@
 import { useFormContext } from "react-hook-form";
-import { Input } from ".";
+import { DatePicker } from ".";
 import {
   FormControl,
   FormDescription,
@@ -10,21 +10,23 @@ import {
 } from "../form";
 import { FieldBaseProps } from "../types/field";
 
-type InputFieldProps = FieldBaseProps<React.ComponentProps<typeof Input>>;
+type DatePickerFieldProps = FieldBaseProps<
+  React.ComponentProps<typeof DatePicker>
+>;
 
-export const InputField = ({
+export const DatePickerField = ({
   name,
   label,
   description,
   extraContentLabel,
   ...props
-}: InputFieldProps) => {
+}: DatePickerFieldProps) => {
   const { control } = useFormContext();
   return (
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <FormItem>
           {label && (
             <FormLabel>
@@ -33,7 +35,11 @@ export const InputField = ({
             </FormLabel>
           )}
           <FormControl>
-            <Input {...field} {...props} />
+            <DatePicker
+              {...field}
+              {...props}
+              aria-invalid={!!fieldState.error}
+            />
           </FormControl>
           {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />

@@ -1,5 +1,5 @@
 import { useFormContext } from "react-hook-form";
-import { Input } from ".";
+import { Textarea } from ".";
 import {
   FormControl,
   FormDescription,
@@ -10,15 +10,15 @@ import {
 } from "../form";
 import { FieldBaseProps } from "../types/field";
 
-type InputFieldProps = FieldBaseProps<React.ComponentProps<typeof Input>>;
+type TextareaFieldProps = FieldBaseProps<React.ComponentProps<typeof Textarea>>;
 
-export const InputField = ({
+export const TextareaField = ({
   name,
   label,
   description,
   extraContentLabel,
   ...props
-}: InputFieldProps) => {
+}: TextareaFieldProps) => {
   const { control } = useFormContext();
   return (
     <FormField
@@ -33,7 +33,7 @@ export const InputField = ({
             </FormLabel>
           )}
           <FormControl>
-            <Input {...field} {...props} />
+            <Textarea {...field} {...props} />
           </FormControl>
           {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />

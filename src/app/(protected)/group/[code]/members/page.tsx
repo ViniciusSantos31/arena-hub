@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserPlus, Users } from "lucide-react";
 import { MemberCard } from "./_components/member-card";
+import { RequestMemberCard } from "./_components/request-member-card";
 
 export default async function MembersPage({
   params,
@@ -71,14 +72,23 @@ export default async function MembersPage({
         </TabsContent>
 
         <TabsContent value="pending">
-          {/* <Card>
-            <CardHeader>
-              <CardTitle>Solicitações Pendentes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              
-            </CardContent>
-          </Card> */}
+          {response.data.length > 0 ? (
+            <div className="flex flex-col gap-4">
+              {response.data.map((member) => (
+                <RequestMemberCard
+                  key={member.id}
+                  member={{
+                    ...member,
+                  }}
+                />
+              ))}
+              {/* <MembersTable data={response.data} /> */}
+            </div>
+          ) : (
+            <div className="text-muted-foreground py-8 text-center">
+              Nenhum membro ativo encontrado
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>
