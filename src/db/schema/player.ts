@@ -18,6 +18,6 @@ export const playersTable = pgTable("player", {
     .$onUpdateFn(() => new Date()),
 });
 
-export const playersRelations = relations(playersTable, ({ many }) => ({
-  match: many(matchesTable),
+export const playersRelations = relations(playersTable, ({ one }) => ({
+  match: one(matchesTable),
 }));

@@ -6,6 +6,7 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
+import dayjs from "dayjs";
 import { ResponsivePopover } from "../../reponsive-popover";
 import { Label } from "../label";
 
@@ -60,7 +61,7 @@ export function DatePicker({
           selected={value as Date}
           onSelect={handleSelect}
           disabled={{
-            before: minDate ?? new Date(0),
+            before: minDate ?? dayjs(0).toDate(),
             after: maxDate ?? undefined,
           }}
           className="w-full"

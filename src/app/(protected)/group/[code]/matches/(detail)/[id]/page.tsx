@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { getAvatarFallback } from "@/utils/avatar";
+import { formatDate } from "@/utils/date";
 import {
   ChevronLeftIcon,
   MoreVerticalIcon,
@@ -104,7 +105,7 @@ export default function MatchDetailPage({
             <div className="flex flex-col justify-center gap-1">
               <CardTitle>{match.title}</CardTitle>
               <CardDescription>
-                {new Date(match.date).toLocaleDateString()} • {match.time}
+                {formatDate(match.date)} • {match.time}
               </CardDescription>
             </div>
           </div>
@@ -118,7 +119,7 @@ export default function MatchDetailPage({
           <div className="mb-2 flex items-center justify-between">
             <div>
               <p>
-                {12} de {20}
+                {match.currentPlayers} de {match.maxPlayers}
               </p>
               <p className="text-muted-foreground text-sm">vagas preenchidas</p>
             </div>

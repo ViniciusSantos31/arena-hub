@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { getAvatarFallback } from "@/utils/avatar";
+import { formatDate } from "@/utils/date";
 import { EyeIcon, Lock } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useRouter } from "next/navigation";
@@ -26,7 +27,7 @@ type GroupFeedCardProps =
         isMember?: boolean;
         description: string;
         isPrivate?: boolean;
-        createdAt?: string;
+        createdAt: string;
         logo: string | null;
       };
     }
@@ -37,7 +38,7 @@ type GroupFeedCardProps =
         description: string;
         isPrivate: boolean;
         logo: string | null;
-        createdAt?: string;
+        createdAt: string;
         code?: string;
         isMember?: string;
       };
@@ -159,12 +160,7 @@ export const GroupFeedCard = ({
       </CardHeader>
       <CardContent className="mt-auto flex min-h-5 flex-row items-center justify-between">
         <span className="text-muted-foreground text-xs">
-          Criado em:{" "}
-          {preview
-            ? new Date().toLocaleDateString("pt-BR")
-            : group.createdAt
-              ? new Date(group.createdAt).toLocaleDateString("pt-BR")
-              : "N/A"}
+          Criado em: {formatDate(group.createdAt)}
         </span>
         {group.isPrivate && (
           <span className="text-muted-foreground flex items-center text-sm font-medium">

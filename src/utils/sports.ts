@@ -7,8 +7,16 @@ import {
   PiVolleyball,
 } from "react-icons/pi";
 
-export const getSportColor = (sport: string) => {
-  const colors: { [key: string]: string } = {
+export type Sport =
+  | "futebol"
+  | "basquete"
+  | "volei"
+  | "tenis"
+  | "futsal"
+  | "corrida";
+
+export const getSportColor = (sport: Sport) => {
+  const colors: { [key in Sport]: string } = {
     futebol:
       "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100",
     basquete:
@@ -23,7 +31,7 @@ export const getSportColor = (sport: string) => {
   return colors[sport] || "bg-gray-100 text-gray-800";
 };
 
-export const getSportIconById = (id: string) => {
+export const getSportIconById = (id: Sport) => {
   switch (id) {
     case "futebol":
       return PiSoccerBall;
@@ -41,3 +49,14 @@ export const getSportIconById = (id: string) => {
       return null;
   }
 };
+
+export const sportOptions: { id: Sport; name: string }[] = [
+  { id: "futebol", name: "Futebol" },
+  { id: "futsal", name: "Futsal" },
+  { id: "volei", name: "Vôlei" },
+  { id: "basquete", name: "Basquete" },
+  { id: "tenis", name: "Tênis" },
+  { id: "corrida", name: "Corrida" },
+];
+
+export const sportsIds = sportOptions.map((option) => option.id);
