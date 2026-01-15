@@ -12,7 +12,6 @@ import { getOrgIdByCode } from "../group/get-org-by-code";
 
 import { getDateWithTime } from "@/utils/date";
 import utc from "dayjs/plugin/utc";
-import { revalidatePath } from "next/cache";
 
 dayjs.extend(utc);
 
@@ -59,10 +58,8 @@ export const createMatch = actionClient
       .values({
         ...data,
         date: dayjs(dateTimeUTC).toDate(),
-        time: dayjs(dateTimeUTC).format("HH:mm"),
+        time: dayjs(dateTimeUTC).utc().format("HH:mm"),
         organizationId,
       })
       .onConflictDoNothing();
-
-    revalidatePath(`/group/${code}/matches`);
   });

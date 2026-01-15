@@ -1,4 +1,5 @@
 import { listNextMatch } from "@/actions/match/list";
+import { Card, CardContent } from "@/components/ui/card";
 import { MatchCard } from "../../matches/_components/match-card";
 
 export const NextMatchCard = async ({ code }: { code: string }) => {
@@ -8,5 +9,13 @@ export const NextMatchCard = async ({ code }: { code: string }) => {
     return <MatchCard match={response.data} />;
   }
 
-  return null;
+  return (
+    <Card className="w-full border-dashed">
+      <CardContent className="flex h-64 items-center justify-center">
+        <div className="text-muted-foreground text-center">
+          Nenhuma próxima partida encontrada
+        </div>
+      </CardContent>
+    </Card>
+  );
 };

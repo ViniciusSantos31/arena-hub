@@ -14,7 +14,7 @@ export const formatDate = (
 
 export const getDateWithTime = (date: Date | string, time: string): Date => {
   const [hours, minutes] = time.split(":").map(Number);
-  return dayjs(date).add(hours, "hour").add(minutes, "minute").toDate();
+  return dayjs(date).set("hour", hours).set("minute", minutes).toDate();
 };
 
 export const formatDateUTC = (

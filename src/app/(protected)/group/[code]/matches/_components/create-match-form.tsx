@@ -8,6 +8,7 @@ import { Form } from "@/components/ui/form";
 import { InputField } from "@/components/ui/input/field";
 import { SelectField } from "@/components/ui/select/field";
 import { TextareaField } from "@/components/ui/textarea/field";
+import { queryClient } from "@/lib/react-query";
 import { categoryOptions } from "@/utils/categories";
 import { sportOptions } from "@/utils/sports";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,6 +43,7 @@ export const CreateMatchForm = ({ setOpen }: CreateMatchFormProps) => {
   const createMatchAction = useAction(createMatch, {
     onSuccess: () => {
       setOpen(false);
+      queryClient.invalidateQueries({ queryKey: ["matches", code] });
       toast.success("Partida criada com sucesso!");
     },
     onError: () => {
@@ -96,7 +98,6 @@ export const CreateMatchForm = ({ setOpen }: CreateMatchFormProps) => {
             name="minPlayers"
             label="Mínimo de Jogadores"
             type="number"
-            min={8}
             placeholder="Ex: 10"
           />
           <InputField

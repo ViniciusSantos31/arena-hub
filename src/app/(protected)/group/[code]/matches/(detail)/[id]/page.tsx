@@ -1,5 +1,6 @@
 "use client";
 
+import { matchDetails } from "@/actions/match/list";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,8 +13,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { matchStatusEnum } from "@/db/schema/match";
 import { getAvatarFallback } from "@/utils/avatar";
 import { formatDate } from "@/utils/date";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   ChevronLeftIcon,
   MoreVerticalIcon,
@@ -24,49 +27,9 @@ import {
 import { useRouter } from "next/navigation";
 import { use } from "react";
 import { PiSoccerBall } from "react-icons/pi";
+import MatchDetailLoading from "./loading";
 
-interface Player {
-  id: string;
-  name: string;
-  avatar?: string;
-  score?: number;
-}
-
-type Status = "open" | "full" | "closed" | "canceled";
-
-interface Match {
-  id: string;
-  title: string;
-  date: string;
-  time: string;
-  location: string;
-  maxPlayers: number;
-  currentPlayers: number;
-  description: string;
-  status: Status;
-  players: Player[];
-}
-
-// Mock data - replace with actual data fetching
-const mockMatch: Match = {
-  id: "1",
-  title: "Futebol no Parque",
-  date: "2024-01-20",
-  time: "18:00",
-  location: "Parque Ibirapuera, São Paulo",
-  maxPlayers: 10,
-  currentPlayers: 6,
-  description: "Partida amistosa de futebol. Venha se divertir conosco!",
-  status: "closed",
-  players: [
-    { id: "1", name: "João Silva", score: 10 },
-    { id: "2", name: "Maria Santos", score: 8 },
-    { id: "3", name: "Pedro Oliveira", score: 7 },
-    { id: "4", name: "Ana Costa", score: 9 },
-    { id: "5", name: "Carlos Lima", score: 6 },
-    { id: "6", name: "Lucia Ferreira", score: 5 },
-  ],
-};
+type Status = (typeof matchStatusEnum.enumValues)[number];
 
 export default function MatchDetailPage({
   params,
@@ -74,7 +37,13 @@ export default function MatchDetailPage({
   params: Promise<{ id: string; code: string }>;
 }) {
   const { id } = use(params);
-  const match = mockMatch; // Replace with actual data fetching using params.id
+
+  const { data: match, isLoading } = useQuery({
+    queryKey: ["match", id],
+    enabled: !!id,
+    queryFn: async () => matchDetails({ matchId: id }).then((res) => res.data),
+    placeholderData: keepPreviousData,
+  });
 
   const router = useRouter();
 
@@ -84,11 +53,27 @@ export default function MatchDetailPage({
   };
 
   const matchStatusConfig: Record<Status, { label: string; color: string }> = {
-    open: { label: "Aberta", color: "bg-primary" },
-    full: { label: "Cheia", color: "bg-yellow-500" },
-    closed: { label: "Fechada", color: "bg-muted text-muted-foreground" },
+    open_registration: { label: "Inscrições Abertas", color: "bg-green-500" },
+    closed_registration: {
+      label: "Inscrições Fechadas",
+      color: "bg-yellow-500",
+    },
+    completed: { label: "Concluída", color: "bg-blue-500 text-white" },
+    scheduled: { label: "Agendada", color: "bg-purple-500 text-white" },
+    team_sorted: {
+      label: "Times Sorteados",
+      color: "bg-indigo-500 text-white",
+    },
     canceled: { label: "Cancelada", color: "bg-red-500 text-white" },
   };
+
+  const filledPlayers = match?.players.length ?? 0;
+  const maxPlayers = match?.maxPlayers ?? 1;
+  const progressValue = (filledPlayers * 100) / maxPlayers;
+
+  if (isLoading || !id || !match) {
+    return <MatchDetailLoading />;
+  }
 
   return (
     <main className="flex flex-col gap-4">
@@ -103,9 +88,12 @@ export default function MatchDetailPage({
               <PiSoccerBall className="text-muted-foreground h-5 w-5" />
             </div>
             <div className="flex flex-col justify-center gap-1">
-              <CardTitle>{match.title}</CardTitle>
+              <CardTitle>{match?.title}</CardTitle>
               <CardDescription>
-                {formatDate(match.date)} • {match.time}
+                {formatDate(
+                  match.date,
+                  "dddd[,] DD [de] MMM [de] YYYY [•] HH[:]mm",
+                )}
               </CardDescription>
             </div>
           </div>
@@ -119,18 +107,18 @@ export default function MatchDetailPage({
           <div className="mb-2 flex items-center justify-between">
             <div>
               <p>
-                {match.currentPlayers} de {match.maxPlayers}
+                {filledPlayers} de {maxPlayers}
               </p>
               <p className="text-muted-foreground text-sm">vagas preenchidas</p>
             </div>
           </div>
           <div className="mb-4 w-full">
-            <Progress value={60} className="h-1" />
+            <Progress value={progressValue} className="h-1" />
           </div>
         </CardContent>
         <CardFooter className="w-full space-x-2 border-t">
           <Button
-            disabled={match.status !== "open"}
+            disabled={match.status !== "open_registration"}
             className="flex-1 @md:flex-none"
             onClick={handleJoinMatch}
           >
@@ -161,24 +149,27 @@ export default function MatchDetailPage({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {match.players.map((player) => (
-              <div
-                key={player.id}
-                className="flex items-center justify-between"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="bg-muted/50 flex h-10 w-10 items-center justify-center rounded-full">
-                    {getAvatarFallback(player.name)}
+            {match.players.map(
+              (player) =>
+                player && (
+                  <div
+                    key={player.id}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="bg-muted/50 flex h-10 w-10 items-center justify-center rounded-full">
+                        {getAvatarFallback(player.name)}
+                      </div>
+                      <span>{player.name}</span>
+                    </div>
+                    {player.score !== undefined && (
+                      <span className="text-muted-foreground text-sm font-medium">
+                        {player.score} pts
+                      </span>
+                    )}
                   </div>
-                  <span>{player.name}</span>
-                </div>
-                {player.score !== undefined && (
-                  <span className="text-muted-foreground text-sm font-medium">
-                    {player.score} pts
-                  </span>
-                )}
-              </div>
-            ))}
+                ),
+            )}
           </CardContent>
           <div className="relative flex items-center py-4">
             <div className="border-muted-foreground/30 flex-1 divide-dashed border-t border-dashed"></div>

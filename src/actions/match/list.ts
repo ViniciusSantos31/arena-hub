@@ -93,3 +93,47 @@ export const listNextMatch = actionClient
       players: response.players.map((player) => player.user ?? undefined) ?? [],
     };
   });
+
+export const matchDetails = actionClient
+  .inputSchema(
+    z.object({
+      matchId: z.string().uuid(),
+    }),
+  )
+  .action(async ({ parsedInput }) => {
+    const { matchId } = parsedInput;
+
+    const response = await db.query.matchesTable.findFirst({
+      where: (matchesTable, { eq }) => eq(matchesTable.id, matchId),
+      with: {
+        players: {
+          columns: {
+            score: true,
+          },
+          with: {
+            user: {
+              columns: {
+                id: true,
+                image: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!response) {
+      throw new Error("Match not found");
+    }
+
+    return {
+      ...response,
+      date: fromUTCDate(response.date),
+      players:
+        response.players.map((player) => ({
+          ...player.user,
+          score: player.score,
+        })) ?? [],
+    };
+  });
