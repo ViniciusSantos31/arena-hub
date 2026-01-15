@@ -19,5 +19,12 @@ export const playersTable = pgTable("player", {
 });
 
 export const playersRelations = relations(playersTable, ({ one }) => ({
-  match: one(matchesTable),
+  match: one(matchesTable, {
+    fields: [playersTable.matchId],
+    references: [matchesTable.id],
+  }),
+  user: one(usersTable, {
+    fields: [playersTable.userId],
+    references: [usersTable.id],
+  }),
 }));

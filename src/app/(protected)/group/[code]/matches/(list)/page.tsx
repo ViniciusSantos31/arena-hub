@@ -1,12 +1,52 @@
-import { MatchCard } from "../_components/match-card";
+"use client";
 
-export default function MatchesPage() {
+import { listMatches } from "@/actions/match/list";
+import { useQuery } from "@tanstack/react-query";
+import { use } from "react";
+import { MatchCard, MatchCardLoading } from "../_components/match-card";
+
+export default function MatchesPage({
+  params,
+}: {
+  params: Promise<{ code: string }>;
+}) {
+  const { code } = use(params);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["matches"],
+    // enabled: !!code,
+    queryFn: () =>
+      listMatches({
+        code,
+      }),
+  });
+
+  if (!isLoading && data?.data?.length === 0) {
+    return (
+      <div className="mx-auto my-auto flex h-full flex-col items-center justify-center gap-2">
+        <h2 className="text-2xl font-semibold">Nenhuma partida encontrada.</h2>
+        <span className="text-muted-foreground">
+          Crie uma nova partida para começar a jogar!
+        </span>
+      </div>
+    );
+  }
+
+  if (isLoading && !data) {
+    return (
+      <div className="space-y-4">
+        <MatchCardLoading />
+        <MatchCardLoading />
+        <MatchCardLoading />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4">
-      <MatchCard />
-      <MatchCard />
-      <MatchCard />
-      <MatchCard />
+      {data?.data?.map((match) => (
+        <MatchCard key={match.id} match={match} />
+      ))}
     </div>
   );
 }

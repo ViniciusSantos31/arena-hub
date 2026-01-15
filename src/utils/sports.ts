@@ -59,4 +59,17 @@ export const sportOptions: { id: Sport; name: string }[] = [
   { id: "corrida", name: "Corrida" },
 ];
 
+const sportLabels: { [key in Sport]: string } = {
+  futebol: "Futebol",
+  basquete: "Basquete",
+  volei: "Vôlei",
+  tenis: "Tênis",
+  futsal: "Futsal",
+  corrida: "Corrida",
+};
+
+export const getSportLabelById = (id: string) => {
+  return sportLabels[id as Sport] || "Desconhecido";
+};
+
 export const sportsIds = sportOptions.map((option) => option.id);

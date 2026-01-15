@@ -10,6 +10,7 @@ export const CreateMatchDialog = ({
   children: React.ReactNode;
 }) => {
   const [open, setOpen] = useState(false);
+
   return (
     <ResponsiveDialog
       title="Criar Partida"
@@ -17,7 +18,7 @@ export const CreateMatchDialog = ({
       open={open}
       className="h-fit w-full md:max-w-xl lg:max-w-[calc(100vw-32rem)]"
       onOpenChange={() => setOpen(!open)}
-      content={<CreateMatchForm />}
+      content={<CreateMatchForm setOpen={setOpen} />}
     >
       {children}
     </ResponsiveDialog>

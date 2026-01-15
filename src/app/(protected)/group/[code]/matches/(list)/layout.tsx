@@ -37,8 +37,7 @@ export default function MatchesLayout({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                size="sm"
-                className="flex-1 @xl:flex-none"
+                className="flex-1 @xl:flex-none only:@xl:flex-none"
               >
                 <FilterIcon className="h-4 w-4" />
                 <span className="hidden @sm:inline">Filtros</span>
@@ -63,7 +62,7 @@ export default function MatchesLayout({
           </DropdownMenu>
 
           <CreateMatchDialog>
-            <Button size="sm" className="flex-1 @xl:flex-none">
+            <Button className="flex-1 @xl:flex-none only:@xl:flex-none">
               <PlusIcon className="h-4 w-4" />
               <span className="hidden @sm:inline">Criar Partida</span>
               <span className="@sm:hidden">Criar</span>

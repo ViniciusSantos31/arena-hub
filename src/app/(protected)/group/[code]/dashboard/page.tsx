@@ -16,13 +16,19 @@ import {
   UsersIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { MatchCard } from "../matches/_components/match-card";
+import { use } from "react";
+import { NextMatchCard } from "./_components/next-match-card";
 
-export default function GroupDashboardPage() {
+export default function GroupDashboardPage({
+  params,
+}: {
+  params: Promise<{ code: string }>;
+}) {
+  const { code } = use(params);
   return (
     <main className="grid w-full gap-4 @2xl:grid-cols-2">
       <section className="flex w-full flex-1 flex-wrap gap-4">
-        <MatchCard />
+        <NextMatchCard code={code} />
 
         {/* Matches Section */}
         <Card className="bg-card @container/card w-full border shadow-sm">

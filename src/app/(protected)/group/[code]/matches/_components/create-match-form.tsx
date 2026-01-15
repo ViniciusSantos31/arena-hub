@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 
+import { createMatch } from "@/actions/match/create";
 import { DatePickerField } from "@/components/ui/date-picker/field";
 import { Form } from "@/components/ui/form";
 import { InputField } from "@/components/ui/input/field";
@@ -11,10 +12,17 @@ import { categoryOptions } from "@/utils/categories";
 import { sportOptions } from "@/utils/sports";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
+import { useAction } from "next-safe-action/hooks";
+import { useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { CreateMatchFormData, createMatchSchema } from "../_schema/create";
 
-export const CreateMatchForm = () => {
+type CreateMatchFormProps = {
+  setOpen: (open: boolean) => void;
+};
+
+export const CreateMatchForm = ({ setOpen }: CreateMatchFormProps) => {
   const methods = useForm<CreateMatchFormData>({
     resolver: zodResolver(createMatchSchema),
     defaultValues: {
@@ -29,10 +37,24 @@ export const CreateMatchForm = () => {
     },
   });
 
+  const { code } = useParams<{ code: string }>();
+
+  const createMatchAction = useAction(createMatch, {
+    onSuccess: () => {
+      setOpen(false);
+      toast.success("Partida criada com sucesso!");
+    },
+    onError: () => {
+      toast.error("Ocorreu um erro ao criar a partida. Tente novamente.");
+    },
+  });
+
   const handleSubmit = (data: CreateMatchFormData) => {
-    // Handle form submission logic here
-    console.log(data);
+    createMatchAction.execute({ ...data, organizationCode: code });
   };
+
+  const disableButton =
+    createMatchAction.isExecuting || methods.formState.isSubmitting;
 
   return (
     <Form {...methods}>
@@ -116,10 +138,15 @@ export const CreateMatchForm = () => {
         />
 
         <div className="mt-auto flex gap-4 pb-4">
-          <Button type="button" variant="outline" className="flex-1">
+          <Button
+            type="button"
+            variant="outline"
+            className="flex-1"
+            disabled={disableButton}
+          >
             Cancelar
           </Button>
-          <Button type="submit" className="flex-1">
+          <Button type="submit" className="flex-1" disabled={disableButton}>
             Criar Partida
           </Button>
         </div>

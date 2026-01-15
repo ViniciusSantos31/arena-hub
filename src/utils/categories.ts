@@ -16,4 +16,14 @@ export const categoryOptions: { id: Category; name: string }[] = [
   { id: "mixed", name: "Misto" },
 ];
 
+export const categoryLabels: { [key in Category]: string } = {
+  female: "Feminino",
+  male: "Masculino",
+  mixed: "Misto",
+};
+
+export const getCategoryLabelById = (id: string) => {
+  return categoryLabels[id as Category] || "Desconhecido";
+};
+
 export const categoriesIds = categoryOptions.map((option) => option.id);

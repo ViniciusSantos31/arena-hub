@@ -33,7 +33,17 @@ export const InputField = ({
             </FormLabel>
           )}
           <FormControl>
-            <Input {...field} {...props} />
+            <Input
+              {...field}
+              {...props}
+              onChange={(e) => {
+                if (props.type === "number") {
+                  field.onChange(Number(e.target.value));
+                  return;
+                }
+                field.onChange(e);
+              }}
+            />
           </FormControl>
           {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />

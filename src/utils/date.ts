@@ -1,6 +1,8 @@
 import dayjs from "dayjs";
+import ptBR from "dayjs/locale/pt-br";
 import utc from "dayjs/plugin/utc";
 
+dayjs.locale(ptBR);
 dayjs.extend(utc);
 
 export const formatDate = (
@@ -8,6 +10,11 @@ export const formatDate = (
   format: string = "DD/MM/YYYY",
 ): string => {
   return dayjs(date).format(format);
+};
+
+export const getDateWithTime = (date: Date | string, time: string): Date => {
+  const [hours, minutes] = time.split(":").map(Number);
+  return dayjs(date).add(hours, "hour").add(minutes, "minute").toDate();
 };
 
 export const formatDateUTC = (
