@@ -12,7 +12,9 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { UploadInput } from "@/components/upload-input";
 import { cn } from "@/lib/utils";
+import { formatDate } from "@/utils/date";
 import { zodResolver } from "@hookform/resolvers/zod";
+import dayjs from "dayjs";
 import { ChevronDown, ChevronUp, Loader2Icon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useRouter } from "next/navigation";
@@ -45,6 +47,7 @@ const GroupFeedCardPreview = ({
           name: name || "Nome do grupo",
           description: description || "Descrição do grupo",
           isPrivate: isPrivate || false,
+          createdAt: formatDate(dayjs().toDate()),
           logo: image ? URL.createObjectURL(image) : null,
         }}
       />
