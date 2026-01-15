@@ -13,8 +13,8 @@ export default function MatchesPage({
   const { code } = use(params);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["matches"],
-    // enabled: !!code,
+    queryKey: ["matches", code],
+    enabled: !!code,
     queryFn: () =>
       listMatches({
         code,

@@ -1,6 +1,10 @@
+"use client";
+
 import { getGroupDetails } from "@/actions/group/detail";
-import { getUserMembershipStatus } from "@/actions/group/membership";
-import { notFound, redirect, RedirectType } from "next/navigation";
+import { getUserMembership } from "@/actions/group/membership";
+import { useQuery } from "@tanstack/react-query";
+import { redirect, RedirectType } from "next/navigation";
+import { use } from "react";
 import {
   PageContainer,
   PageContent,
@@ -8,27 +12,50 @@ import {
   PageHeaderContent,
 } from "../../_components/page-structure";
 import { GroupNav } from "./_components/group-nav";
+import { LoadingGroupPage } from "./_components/loading-page";
+import { useMemberStore } from "./_store/group";
 
-export default async function GroupDetailsLayout({
+export default function GroupDetailsLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
   params: Promise<{ code: string }>;
 }) {
-  const { code } = await params;
+  const { code } = use(params);
+  const memberStore = useMemberStore();
 
-  const group = await getGroupDetails({ code });
-
-  if (!group.data) return notFound();
-
-  const userIsMember = await getUserMembershipStatus({
-    organizationId: group.data.id,
+  const { data: group, isLoading: isLoadingGroup } = useQuery({
+    queryKey: ["group-details", code],
+    enabled: !!code,
+    queryFn: () => getGroupDetails({ code }).then((res) => res.data),
   });
 
-  if (!userIsMember.data) return redirect("/home", RedirectType.replace);
+  const { data: membership, isLoading: isLoadingMembership } = useQuery({
+    queryKey: ["user-membership", code],
+    enabled: !!code,
+    queryFn: async () => {
+      const membership = await getUserMembership({ organizationCode: code });
+      if (
+        membership.data &&
+        (!memberStore.member ||
+          memberStore.member.organizationId !== membership.data.organizationId)
+      ) {
+        memberStore.setMember(membership.data);
+      }
 
-  const { name } = group.data;
+      return membership.data;
+    },
+  });
+
+  if (isLoadingGroup || isLoadingMembership) {
+    return <LoadingGroupPage />;
+  }
+
+  const { name } = group || { name: "" };
+
+  if (!membership && !isLoadingMembership)
+    return redirect("/home", RedirectType.replace);
 
   return (
     <PageContainer>

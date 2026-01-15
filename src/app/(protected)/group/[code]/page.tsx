@@ -1,5 +1,6 @@
 import { getGroupDetails } from "@/actions/group/detail";
 import { redirect } from "next/navigation";
+import { LoadingGroupPage } from "./_components/loading-page";
 
 type GroupPageProps = {
   params: Promise<{ code: string }>;
@@ -10,13 +11,8 @@ export default async function GroupPage({ params }: GroupPageProps) {
   const { data: group } = await getGroupDetails({ code });
 
   if (!group) {
-    return null;
+    return <LoadingGroupPage />;
   }
-
-  // await auth.api.setActiveOrganization({
-  //   headers: await headers(),
-  //   body: { organizationId: group.id },
-  // });
 
   return redirect(`/group/${code}/dashboard`);
 }

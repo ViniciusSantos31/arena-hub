@@ -1,7 +1,9 @@
 "use client";
 
 import { ResponsiveDialog } from "@/components/responsive-dialog";
+import { useGuard } from "@/hooks/use-guard";
 import { useState } from "react";
+import { useMemberStore } from "../../_store/group";
 import { CreateMatchForm } from "./create-match-form";
 
 export const CreateMatchDialog = ({
@@ -10,6 +12,20 @@ export const CreateMatchDialog = ({
   children: React.ReactNode;
 }) => {
   const [open, setOpen] = useState(false);
+
+  const canCreateMatch = useGuard({
+    action: "match:create",
+  });
+
+  console.log(
+    "Can create match:",
+    canCreateMatch(useMemberStore.getState().member),
+    useMemberStore.getState().member,
+  );
+
+  if (!canCreateMatch(useMemberStore.getState().member)) {
+    return null;
+  }
 
   return (
     <ResponsiveDialog

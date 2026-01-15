@@ -40,14 +40,9 @@ export default function GroupDashboardPage({
               Estatísticas de Partidas
             </CardTitle>
             <CardAction className="hidden @[26rem]/card:flex">
-              <Button
-                variant="default"
-                size="default"
-                asChild
-                className="bg-primary hover:bg-primary/90"
-              >
-                <Link href="#" aria-label="Criar nova partida">
-                  Nova Partida
+              <Button asChild className="ml-auto">
+                <Link href={`/group/${code}/matches`} aria-label="Ver partidas">
+                  Ver partidas
                   <ArrowRightIcon className="h-4 w-4" />
                 </Link>
               </Button>
@@ -82,8 +77,8 @@ export default function GroupDashboardPage({
               asChild
               className="ml-auto"
             >
-              <Link href="#" aria-label="Criar nova partida">
-                Nova Partida
+              <Link href={`/group/${code}/matches`} aria-label="Ver partidas">
+                Ver partidas
                 <ArrowRightIcon className="h-4 w-4" />
               </Link>
             </Button>

@@ -54,15 +54,8 @@ export default async function MembersPage({
           {response.data.length > 0 ? (
             <div className="flex flex-col gap-4">
               {response.data.map((member) => (
-                <MemberCard
-                  key={member.id}
-                  member={{
-                    ...member,
-                    role: "Membro",
-                  }}
-                />
+                <MemberCard key={member.id} member={member} />
               ))}
-              {/* <MembersTable data={response.data} /> */}
             </div>
           ) : (
             <div className="text-muted-foreground py-8 text-center">
@@ -82,7 +75,6 @@ export default async function MembersPage({
                   }}
                 />
               ))}
-              {/* <MembersTable data={response.data} /> */}
             </div>
           ) : (
             <div className="text-muted-foreground py-8 text-center">
