@@ -31,7 +31,10 @@ export const JoinMatchButton = ({
       queryClient.invalidateQueries({
         predicate(query) {
           return (
-            query.queryKey[0] === "players" || query.queryKey[0] === "player"
+            query.queryKey[0] === "players" ||
+            query.queryKey[0] === "player" ||
+            query.queryKey[0] === "match" ||
+            query.queryKey[0] === "matches"
           );
         },
       });

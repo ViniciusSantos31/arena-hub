@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useGuard } from "@/hooks/use-guard";
 import { formatDate } from "@/utils/date";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { MoreVerticalIcon, ShuffleIcon } from "lucide-react";
@@ -44,6 +45,10 @@ export const MatchDetailCard = ({ id, code }: { id: string; code: string }) => {
   const filledPlayers = match?.players.length ?? 0;
   const maxPlayers = match?.maxPlayers ?? 1;
   const progressValue = (filledPlayers * 100) / maxPlayers;
+
+  const canModifyMatch = useGuard({
+    action: ["match:update", "team:create"],
+  });
 
   if (isLoading || !match || !id) {
     return <MatchDetailCardLoading />;
@@ -88,16 +93,18 @@ export const MatchDetailCard = ({ id, code }: { id: string; code: string }) => {
       <CardFooter className="w-full space-x-2 border-t">
         <JoinMatchButton match={match} organizationCode={code} />
 
-        <div className="ml-auto flex gap-2">
-          <Button variant="outline" className="hidden @sm:flex">
-            <ShuffleIcon />
-            <span className="hidden @md:block">Realizar sorteio</span>
-            <span className="@md:hidden">Sortear</span>
-          </Button>
-          <Button size={"icon"} variant={"outline"}>
-            <MoreVerticalIcon />
-          </Button>
-        </div>
+        {canModifyMatch && (
+          <div className="ml-auto flex gap-2">
+            <Button variant="outline" className="hidden @sm:flex">
+              <ShuffleIcon />
+              <span className="hidden @md:block">Realizar sorteio</span>
+              <span className="@md:hidden">Sortear</span>
+            </Button>
+            <Button size={"icon"} variant={"outline"}>
+              <MoreVerticalIcon />
+            </Button>
+          </div>
+        )}
       </CardFooter>
     </Card>
   );

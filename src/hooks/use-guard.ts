@@ -1,18 +1,27 @@
+import { useMemberStore } from "@/app/(protected)/group/[code]/_store/group";
+import { Role } from "@/utils/role";
 import { useCallback } from "react";
 
 interface Member {
   id: string;
-  role: "member" | "admin" | "guest" | "owner" | null;
+  role: Role | null;
 }
 
 interface UseGuardProps {
-  action: string;
+  action: Array<ALL_PERMISSIONS>;
 }
 
-const ROLE_PERMISSIONS: Record<
-  "member" | "admin" | "guest" | "owner",
-  readonly string[]
-> = {
+type ALL_PERMISSIONS =
+  | "match:create"
+  | "match:read"
+  | "match:join"
+  | "match:update"
+  | "match:delete"
+  | "team:create"
+  | "team:update"
+  | "match:join_queue";
+
+const ROLE_PERMISSIONS: Record<Role, ALL_PERMISSIONS[]> = {
   owner: [
     "match:create",
     "match:read",
@@ -25,6 +34,7 @@ const ROLE_PERMISSIONS: Record<
   admin: [
     "match:create",
     "match:read",
+    "match:join",
     "match:update",
     "match:delete",
     "team:create",
@@ -32,19 +42,20 @@ const ROLE_PERMISSIONS: Record<
   ],
   member: ["match:read", "match:join"],
   guest: ["match:read", "match:join_queue"],
-} as const;
+};
 
 export const useGuard = ({ action }: UseGuardProps) => {
   const canPerformAction = useCallback(
     (member: Member | null) => {
       if (!member || !member.role) return false;
 
-      // Check role-based permissions
       const rolePermissions = ROLE_PERMISSIONS[member.role] || [];
-      return rolePermissions.includes(action);
+      return action.every((act) => rolePermissions.includes(act));
     },
     [action],
   );
 
-  return canPerformAction;
+  const memberStore = useMemberStore();
+
+  return canPerformAction(memberStore.member);
 };

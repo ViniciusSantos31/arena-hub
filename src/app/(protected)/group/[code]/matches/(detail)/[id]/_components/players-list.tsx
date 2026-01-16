@@ -5,13 +5,26 @@ import { getAvatarFallback } from "@/utils/avatar";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 export const PlayersList = ({ id }: { id: string }) => {
-  const { data: players } = useQuery({
+  const { data: players, isLoading } = useQuery({
     queryKey: ["players", id],
     enabled: !!id,
     queryFn: async () =>
       listMatchPlayers({ matchId: id }).then((res) => res.data),
     placeholderData: keepPreviousData,
   });
+
+  if (isLoading) {
+    return (
+      <CardContent className="space-y-4">
+        {[...Array(5)].map((_, index) => (
+          <div
+            key={index}
+            className="bg-muted h-10 w-full animate-pulse rounded-md"
+          />
+        ))}
+      </CardContent>
+    );
+  }
 
   return (
     <CardContent className="space-y-4">
