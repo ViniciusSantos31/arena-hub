@@ -10,7 +10,7 @@ export const matchStatusEnum = pgEnum("match_status", [
   "closed_registration",
   "team_sorted",
   "completed",
-  "canceled",
+  "cancelled",
 ]);
 
 export const matchesTable = pgTable("match", {

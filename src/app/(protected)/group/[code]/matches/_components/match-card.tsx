@@ -10,7 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { matchesTable } from "@/db/schema/match";
 import { getCategoryLabelById } from "@/utils/categories";
 import { formatDate } from "@/utils/date";
-import { getSportLabelById } from "@/utils/sports";
+import { getSportIconById, getSportLabelById, Sport } from "@/utils/sports";
 import Link from "next/link";
 import { AvatarStack } from "./avatar-stack";
 
@@ -31,19 +31,28 @@ export const MatchCard = ({ match }: MatchCardProps) => {
   const filledPlayers = match.players.length;
   const progressValue = (match.players.length * 100) / match.maxPlayers;
 
+  const SportIcon = getSportIconById(match.sport as Sport);
+
   return (
     <Link href={`matches/${match.id}`} className="group w-full rounded-xl">
       <Card className="h-full">
         <CardHeader>
-          <CardTitle>{match.title}</CardTitle>
-          <CardDescription>
-            {getSportLabelById(match.sport)} •{" "}
-            {getCategoryLabelById(match.category)} •{" "}
-            {formatDate(
-              match.date,
-              "dddd[,] DD [de] MMM [de] YYYY [•] HH[:]mm",
-            )}
-          </CardDescription>
+          <div className="flex flex-1 items-center gap-2">
+            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg">
+              <SportIcon className="text-muted-foreground h-5 w-5" />
+            </div>
+            <div className="flex flex-col justify-center gap-1">
+              <CardTitle>{match.title}</CardTitle>
+              <CardDescription>
+                {getSportLabelById(match.sport)} •{" "}
+                {getCategoryLabelById(match.category)} •{" "}
+                {formatDate(
+                  match.date,
+                  "dddd[,] DD [de] MMM [de] YYYY [•] HH[:]mm",
+                )}
+              </CardDescription>
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="flex h-full flex-col">
           <div className="mb-2 flex items-center justify-between">

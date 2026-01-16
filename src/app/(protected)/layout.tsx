@@ -4,6 +4,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { cookies } from "next/headers";
 import React from "react";
 
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
 export default async function ProtectedLayout({
   children,
 }: {
@@ -16,6 +18,7 @@ export default async function ProtectedLayout({
     <SidebarProvider defaultOpen={defaultOpen}>
       <Toaster richColors position="top-center" />
       <AppSidebar />
+      <ReactQueryDevtools />
       <SidebarInset className="flex">{children}</SidebarInset>
     </SidebarProvider>
   );

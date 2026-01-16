@@ -9,13 +9,17 @@ import { getOrgIdByCode } from "./get-org-by-code";
 
 export const getUserMembership = actionClient
   .inputSchema(
-    z.object({
-      organizationCode: z.string(),
-    }),
+    z
+      .object({
+        organizationCode: z.string(),
+      })
+      .or(
+        z.object({
+          organizationId: z.string(),
+        }),
+      ),
   )
   .action(async ({ parsedInput }) => {
-    const { organizationCode } = parsedInput;
-
     const session = await auth.api.getSession({
       headers: await headers(),
     });
@@ -24,9 +28,26 @@ export const getUserMembership = actionClient
       return false;
     }
 
-    const orgId = await getOrgIdByCode({
-      code: organizationCode,
-    }).then((res) => res.data);
+    const organizationCode =
+      "organizationCode" in parsedInput
+        ? parsedInput.organizationCode
+        : undefined;
+
+    const organizationId =
+      "organizationId" in parsedInput ? parsedInput.organizationId : undefined;
+
+    if (!organizationCode && !organizationId) {
+      throw new Error("Organization identifier is required");
+    }
+
+    let orgId: string | undefined;
+    orgId = organizationId;
+
+    if (!orgId) {
+      orgId = await getOrgIdByCode({
+        code: organizationCode!,
+      }).then((res) => res.data);
+    }
 
     if (!orgId) {
       throw new Error("Organização não encontrada");

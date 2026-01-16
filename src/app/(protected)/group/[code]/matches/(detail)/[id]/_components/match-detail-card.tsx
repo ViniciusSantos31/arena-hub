@@ -1,6 +1,4 @@
-import { matchDetails } from "@/actions/match/list";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
@@ -11,21 +9,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { useGuard } from "@/hooks/use-guard";
 import { formatDate } from "@/utils/date";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { MoreVerticalIcon, ShuffleIcon } from "lucide-react";
-import { PiSoccerBall } from "react-icons/pi";
+import { getSportIconById, Sport } from "@/utils/sports";
 import { JoinMatchButton } from "../_components/join-match-button";
+import { useMatch } from "../_hooks/useMatch";
 import { Status } from "../page";
+import { AdvancedSettingsSection } from "./advanced-settings-section";
 
-export const MatchDetailCard = ({ id, code }: { id: string; code: string }) => {
-  const { data: match, isLoading } = useQuery({
-    queryKey: ["match", id],
-    enabled: !!id,
-    queryFn: async () => matchDetails({ matchId: id }).then((res) => res.data),
-    placeholderData: keepPreviousData,
-  });
+export const MatchDetailCard = ({ code }: { code: string }) => {
+  const { data: match, isLoading } = useMatch();
 
   const matchStatusConfig: Record<Status, { label: string; color: string }> = {
     open_registration: { label: "Inscrições Abertas", color: "bg-green-500" },
@@ -39,18 +31,16 @@ export const MatchDetailCard = ({ id, code }: { id: string; code: string }) => {
       label: "Times Sorteados",
       color: "bg-indigo-500 text-white",
     },
-    canceled: { label: "Cancelada", color: "bg-red-500 text-white" },
+    cancelled: { label: "Cancelada", color: "bg-red-500 text-white" },
   };
 
   const filledPlayers = match?.players.length ?? 0;
   const maxPlayers = match?.maxPlayers ?? 1;
   const progressValue = (filledPlayers * 100) / maxPlayers;
 
-  const canModifyMatch = useGuard({
-    action: ["match:update", "team:create"],
-  });
+  const SportIcon = getSportIconById(match?.sport as Sport);
 
-  if (isLoading || !match || !id) {
+  if (isLoading || !match) {
     return <MatchDetailCardLoading />;
   }
 
@@ -59,7 +49,7 @@ export const MatchDetailCard = ({ id, code }: { id: string; code: string }) => {
       <CardHeader>
         <div className="flex flex-1 items-center gap-2">
           <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg">
-            <PiSoccerBall className="text-muted-foreground h-5 w-5" />
+            <SportIcon className="text-muted-foreground h-5 w-5" />
           </div>
           <div className="flex flex-col justify-center gap-1">
             <CardTitle>{match?.title}</CardTitle>
@@ -92,19 +82,7 @@ export const MatchDetailCard = ({ id, code }: { id: string; code: string }) => {
       </CardContent>
       <CardFooter className="w-full space-x-2 border-t">
         <JoinMatchButton match={match} organizationCode={code} />
-
-        {canModifyMatch && (
-          <div className="ml-auto flex gap-2">
-            <Button variant="outline" className="hidden @sm:flex">
-              <ShuffleIcon />
-              <span className="hidden @md:block">Realizar sorteio</span>
-              <span className="@md:hidden">Sortear</span>
-            </Button>
-            <Button size={"icon"} variant={"outline"}>
-              <MoreVerticalIcon />
-            </Button>
-          </div>
-        )}
+        <AdvancedSettingsSection />
       </CardFooter>
     </Card>
   );

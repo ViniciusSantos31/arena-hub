@@ -46,7 +46,7 @@ export const getSportIconById = (id: Sport) => {
     case "corrida":
       return PiPersonSimpleRun;
     default:
-      return null;
+      return PiSoccerBall;
   }
 };
 

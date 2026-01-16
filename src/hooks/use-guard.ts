@@ -59,3 +59,10 @@ export const useGuard = ({ action }: UseGuardProps) => {
 
   return canPerformAction(memberStore.member);
 };
+
+export const can = (member: Member | null, action: ALL_PERMISSIONS[]) => {
+  if (!member || !member.role) return false;
+
+  const rolePermissions = ROLE_PERMISSIONS[member.role] || [];
+  return action.every((act) => rolePermissions.includes(act));
+};

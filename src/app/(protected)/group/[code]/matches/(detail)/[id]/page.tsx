@@ -27,7 +27,7 @@ export default function MatchDetailPage({
         Voltar para as Partidas
       </Button>
 
-      <MatchDetailCard id={id} code={code} />
+      <MatchDetailCard code={code} />
 
       <div className="space-y-4">
         <Card>
