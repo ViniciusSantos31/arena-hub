@@ -116,7 +116,11 @@ const ViewGroupButton = ({ code }: { code?: string }) => {
 const JoinButtonPreview = ({ isPrivate }: { isPrivate?: boolean }) => {
   if (isPrivate) {
     return (
-      <Button variant={"outline"} className="w-full @xl:ml-auto @xl:w-fit">
+      <Button
+        variant={"outline"}
+        type="button"
+        className="w-full @xl:ml-auto @xl:w-fit"
+      >
         <Lock />
         Solicitar acesso
       </Button>
@@ -124,7 +128,11 @@ const JoinButtonPreview = ({ isPrivate }: { isPrivate?: boolean }) => {
   }
 
   return (
-    <Button variant={"outline"} className="w-full @xl:ml-auto @xl:w-fit">
+    <Button
+      variant={"outline"}
+      type="button"
+      className="w-full @xl:ml-auto @xl:w-fit"
+    >
       Entrar no grupo
     </Button>
   );

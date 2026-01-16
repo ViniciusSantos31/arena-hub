@@ -33,14 +33,15 @@ export const listAllGroups = actionClient.action(async () => {
     },
   });
 
-  return response.map((group) => ({
-    id: group.id,
-    name: group.name,
-    logo: group.logo,
-    code: group.code,
-    isPrivate: group.private,
-    isMember: group.members.length > 0,
-    description: transformGroupMetadata(group.metadata),
-    createdAt: group.createdAt,
-  }));
+  return response
+    .filter((data) => data.members.length === 0)
+    .map((group) => ({
+      id: group.id,
+      name: group.name,
+      logo: group.logo,
+      code: group.code,
+      isPrivate: group.private,
+      description: transformGroupMetadata(group.metadata),
+      createdAt: group.createdAt,
+    }));
 });

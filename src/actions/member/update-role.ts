@@ -5,6 +5,7 @@ import { member } from "@/db/schema/member";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
 import { and, eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import z from "zod";
@@ -39,9 +40,6 @@ export const updateMemberRole = actionClient
         { message: "Usuário não autenticado" },
         { status: 401 },
       );
-      throw new Error("Usuário não autenticado", {
-        cause: "unauthenticated",
-      });
     }
     const response = await getOrgIdByCode({ code });
 
@@ -64,9 +62,6 @@ export const updateMemberRole = actionClient
         { message: "Usuário não é membro de nenhuma organização" },
         { status: 403 },
       );
-      throw new Error("Usuário não é membro de nenhuma organização", {
-        cause: "forbidden",
-      });
     }
 
     const userRoleLevel = roleLevel[userMember.role ?? "guest"];
@@ -76,9 +71,6 @@ export const updateMemberRole = actionClient
         { message: "Permissão insuficiente" },
         { status: 403 },
       );
-      throw new Error("Permissão insuficiente", {
-        cause: "forbidden",
-      });
     }
 
     await auth.api
@@ -95,4 +87,6 @@ export const updateMemberRole = actionClient
           cause: "internal",
         });
       });
+
+    revalidatePath(`/group/${code}/members`);
   });

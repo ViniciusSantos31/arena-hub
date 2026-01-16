@@ -1,7 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { getAvatarFallback } from "@/utils/avatar";
+import { Role } from "@/utils/role";
+import { MemberRoleBadge } from "./member-role-badge";
 
 interface MemberCardProps {
   member: {
@@ -9,7 +10,7 @@ interface MemberCardProps {
     name?: string;
     email?: string;
     image?: string | null;
-    role?: string;
+    role?: Role;
     score?: number;
     gamesPlayed?: number;
   };
@@ -32,9 +33,10 @@ export const MemberCard = ({ member }: MemberCardProps) => {
               <p className="text-muted-foreground truncate text-sm">
                 {member.email}
               </p>
-              <Badge variant="outline" className="text-xs">
-                {member.role}
-              </Badge>
+              <MemberRoleBadge
+                memberRole={member.role as Role}
+                memberId={member.id ?? ""}
+              />
             </div>
           </div>
           <div className="mt-4 flex items-center gap-6 @md:mt-0">

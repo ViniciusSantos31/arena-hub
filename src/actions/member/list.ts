@@ -2,7 +2,7 @@ import { db } from "@/db";
 import { member } from "@/db/schema/member";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
-import { getRoleLabel, Role } from "@/utils/role";
+import { Role } from "@/utils/role";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { cache } from "react";
@@ -57,16 +57,17 @@ export const listMembers = cache(
           role: true,
           userId: true,
         },
+        orderBy: (member, { desc }) => [desc(member.createdAt)],
       });
 
       return members.map((member) => ({
-        id: member.user.id,
+        id: member.id,
         image: member.user.image,
         name: member.user.name,
         email: member.user.email,
         score: member.score,
-        role: getRoleLabel(member.role as Role),
-        memberId: member.id,
+        role: member.role as Role,
+        userId: member.userId,
       }));
     }),
 );
