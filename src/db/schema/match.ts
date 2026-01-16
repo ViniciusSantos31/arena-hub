@@ -27,7 +27,7 @@ export const matchesTable = pgTable("match", {
   category: text("category").notNull(),
   location: text("location").notNull(),
   description: text("description"),
-  status: matchStatusEnum("status").notNull().default("scheduled"),
+  status: matchStatusEnum("status").notNull().default("open_registration"),
   minPlayers: integer("min_players").notNull(),
   maxPlayers: integer("max_players").notNull(),
   scheduledTo: timestamp("scheduled_to"),

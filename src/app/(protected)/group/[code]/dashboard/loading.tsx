@@ -83,7 +83,7 @@ export default function GroupDashboardLoading() {
         </Card>
 
         {/* Rankings Section Loading */}
-        <Card className="bg-card @container/card w-full border shadow-sm">
+        {/* <Card className="bg-card @container/card w-full border shadow-sm">
           <CardHeader className="border-b">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -118,7 +118,7 @@ export default function GroupDashboardLoading() {
           <CardFooter className="flex border-t @[28rem]/card:hidden">
             <Skeleton className="ml-auto h-10 w-36" />
           </CardFooter>
-        </Card>
+        </Card> */}
       </section>
     </main>
   );

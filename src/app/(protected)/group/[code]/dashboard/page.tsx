@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,7 +11,6 @@ import {
   ArrowRightIcon,
   PlayIcon,
   TrendingUpIcon,
-  TrophyIcon,
   UsersIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -137,7 +135,7 @@ export default function GroupDashboardPage({
         </Card>
 
         {/* Rankings Section */}
-        <Card className="bg-card @container/card w-full border shadow-sm">
+        {/* <Card className="bg-card @container/card w-full border shadow-sm">
           <CardHeader className="border-b">
             <CardTitle className="text-foreground flex items-center gap-3 font-medium">
               <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg">
@@ -207,7 +205,7 @@ export default function GroupDashboardPage({
               </Link>
             </Button>
           </CardFooter>
-        </Card>
+        </Card> */}
       </section>
     </main>
   );

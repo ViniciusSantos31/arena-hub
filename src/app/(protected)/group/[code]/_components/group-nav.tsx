@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import {
   Gamepad2Icon,
   LucideIcon,
-  MedalIcon,
   PieChartIcon,
   Users2Icon,
 } from "lucide-react";
@@ -37,7 +36,7 @@ const NavLink = ({
           className="flex w-full flex-1 flex-col items-center justify-center text-xs sm:flex-row"
         >
           <Icon className="size-4" />
-          <span className="max-[28rem]:text-[8px]">{title}</span>
+          <span className="max-[28rem]:text-xs">{title}</span>
         </Link>
       </Button>
     </li>
@@ -64,11 +63,11 @@ export const GroupNav = ({ code }: { code: string }) => {
           title="Partidas"
           icon={Gamepad2Icon}
         />
-        <NavLink
+        {/* <NavLink
           href={buildHref("/rankings")}
           title="Classificações"
           icon={MedalIcon}
-        />
+        /> */}
       </ul>
     </nav>
   );

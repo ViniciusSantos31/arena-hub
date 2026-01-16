@@ -4,7 +4,7 @@ import { getUserMatchPlayer, joinMatch } from "@/actions/match/join";
 import { Button } from "@/components/ui/button";
 import { queryClient } from "@/lib/react-query";
 import { useQuery } from "@tanstack/react-query";
-import { PlayIcon, XCircleIcon } from "lucide-react";
+import { PlayIcon, UserRoundMinusIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 import { Status } from "../page";
@@ -66,7 +66,7 @@ export const JoinMatchButton = ({
           match.status !== "open_registration" || joinMatchAction.isExecuting
         }
       >
-        <XCircleIcon />
+        <UserRoundMinusIcon />
         <span className="hidden @md:block">Sair da Partida</span>
         <span className="@md:hidden">Sair</span>
       </Button>
