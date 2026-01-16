@@ -185,9 +185,13 @@ export default function JoinGroupPage() {
             <Separator className="flex-1" /> ou <Separator className="flex-1" />
           </div>
           <div className="flex w-full max-w-md flex-col justify-center gap-1">
-            <Button variant={"outline"}>Encontre grupos</Button>
-            <Button variant={"link"} className="w-fit self-center px-0">
-              Crie um novo grupo
+            <Button asChild variant={"outline"}>
+              <Link href="/feed" className="w-full">
+                Encontre grupos
+              </Link>
+            </Button>
+            <Button asChild variant={"link"} className="w-fit self-center px-0">
+              <Link href="/group/create">Crie um novo grupo</Link>
             </Button>
           </div>
         </section>

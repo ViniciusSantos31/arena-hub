@@ -14,16 +14,15 @@ import { getSportIconById, Sport } from "@/utils/sports";
 import { JoinMatchButton } from "../_components/join-match-button";
 import { useMatch } from "../_hooks/useMatch";
 import { Status } from "../page";
-import { AdvancedSettingsSection } from "./advanced-settings-section";
 
 export const MatchDetailCard = ({ code }: { code: string }) => {
   const { data: match, isLoading } = useMatch();
 
   const matchStatusConfig: Record<Status, { label: string; color: string }> = {
-    open_registration: { label: "Inscrições Abertas", color: "bg-green-500" },
+    open_registration: { label: "Inscrições Abertas", color: "bg-primary" },
     closed_registration: {
       label: "Inscrições Fechadas",
-      color: "bg-yellow-500",
+      color: "bg-secondary text-secondary-foreground",
     },
     completed: { label: "Concluída", color: "bg-blue-500 text-white" },
     scheduled: { label: "Agendada", color: "bg-purple-500 text-white" },
@@ -31,7 +30,10 @@ export const MatchDetailCard = ({ code }: { code: string }) => {
       label: "Times Sorteados",
       color: "bg-indigo-500 text-white",
     },
-    cancelled: { label: "Cancelada", color: "bg-red-500 text-white" },
+    cancelled: {
+      label: "Cancelada",
+      color: "bg-destructive text-background",
+    },
   };
 
   const filledPlayers = match?.players.length ?? 0;
@@ -82,7 +84,6 @@ export const MatchDetailCard = ({ code }: { code: string }) => {
       </CardContent>
       <CardFooter className="w-full space-x-2 border-t">
         <JoinMatchButton match={match} organizationCode={code} />
-        <AdvancedSettingsSection />
       </CardFooter>
     </Card>
   );

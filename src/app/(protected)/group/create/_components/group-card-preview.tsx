@@ -2,7 +2,6 @@
 
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { formatDate } from "@/utils/date";
 import dayjs from "dayjs";
 import { UseFormReturn } from "react-hook-form";
 import { GroupFeedCard } from "../../../feed/_components/group-feed-card";
@@ -32,7 +31,7 @@ export const GroupFeedCardPreview = ({
           name: name || "Nome do grupo",
           description: description || "Descrição do grupo",
           isPrivate: isPrivate || false,
-          createdAt: formatDate(dayjs().toDate()),
+          createdAt: dayjs().toDate().toISOString(),
           logo: image ? URL.createObjectURL(image) : null,
         }}
       />

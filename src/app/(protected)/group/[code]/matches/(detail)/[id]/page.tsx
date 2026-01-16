@@ -6,8 +6,10 @@ import { matchStatusEnum } from "@/db/schema/match";
 import { ChevronLeftIcon, Users2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { use } from "react";
+import { AdvancedSettingsSection } from "./_components/advanced-settings-section";
 import { MatchDetailCard } from "./_components/match-detail-card";
 import { PlayersList } from "./_components/players-list";
+import TeamsList from "./_components/teams-list";
 
 export type Status = (typeof matchStatusEnum.enumValues)[number];
 
@@ -26,6 +28,8 @@ export default function MatchDetailPage({
         <ChevronLeftIcon />
         Voltar para as Partidas
       </Button>
+
+      <AdvancedSettingsSection />
 
       <MatchDetailCard code={code} />
 
@@ -49,6 +53,45 @@ export default function MatchDetailPage({
           </div>
         </Card>
       </div>
+      <TeamsList
+        teams={[]}
+        // teams={[
+        //   {
+        //     averageScore: 35,
+        //     id: "team1",
+        //     name: "Time A",
+        //     players: [
+        //       {
+        //         id: "player1",
+        //         name: "João Silva",
+        //         score: 40,
+        //       },
+        //       {
+        //         id: "player2",
+        //         name: "Maria Oliveira",
+        //         score: 30,
+        //       },
+        //     ],
+        //   },
+        //   {
+        //     averageScore: 35,
+        //     id: "team2",
+        //     name: "Time B",
+        //     players: [
+        //       {
+        //         id: "player3",
+        //         name: "Carlos Pereira",
+        //         score: 35,
+        //       },
+        //       {
+        //         id: "player2",
+        //         name: "Maria Oliveira",
+        //         score: 30,
+        //       },
+        //     ],
+        //   },
+        // ]}
+      />
     </main>
   );
 }
