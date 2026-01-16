@@ -1,25 +1,15 @@
 "use client";
 
-import {
-  Globe2Icon,
-  PlusCircleIcon,
-  StarsIcon,
-  Users2Icon,
-} from "lucide-react";
+import { Globe2Icon, PlusCircleIcon, Users2Icon } from "lucide-react";
 import { NavSidebar } from "./nav-sidebar";
 
 const options = {
   navMain: [
-    {
-      title: "Obter Pro",
-      url: "#",
-      icon: StarsIcon,
-    },
-    {
-      title: "Encontre sua turma",
-      url: "/feed",
-      icon: Globe2Icon,
-    },
+    // {
+    //   title: "Obter Pro",
+    //   url: "#",
+    //   icon: StarsIcon,
+    // },
   ],
   navGroups: [
     {
@@ -32,14 +22,14 @@ const options = {
       url: "/group/join",
       icon: Users2Icon,
     },
+    {
+      title: "Encontre sua turma",
+      url: "/feed",
+      icon: Globe2Icon,
+    },
   ],
 };
 
 export const NavOptions = () => {
-  return (
-    <>
-      <NavSidebar items={options.navMain} />
-      <NavSidebar items={options.navGroups} />
-    </>
-  );
+  return <NavSidebar title="Social" items={options.navGroups} />;
 };

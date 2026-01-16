@@ -2,12 +2,20 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
+const PUBLIC_ROUTES = ["/"];
+const AUTH_ROUTES = ["/auth/sign-in", "/auth/sign-up"];
+
 export async function middleware(request: NextRequest) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
-  const isPublicRoute = request.nextUrl.pathname.startsWith("/auth");
+  const isPublicRoute = PUBLIC_ROUTES.some((route) =>
+    request.nextUrl.pathname.startsWith(route),
+  );
+  const isAuthRoute = AUTH_ROUTES.some((route) =>
+    request.nextUrl.pathname.startsWith(route),
+  );
   const isApiRoute = request.nextUrl.pathname.startsWith("/api");
 
   if (isApiRoute) return NextResponse.next();
@@ -23,7 +31,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/auth/sign-in", request.url));
   }
 
-  if (session && isPublicRoute) {
+  if (session && isAuthRoute) {
     return NextResponse.redirect(new URL("/home", request.url));
   }
 

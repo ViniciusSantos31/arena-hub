@@ -9,6 +9,7 @@ export async function NavGroups() {
 
   return (
     <NavSidebar
+      title="Meus grupos"
       items={
         groups.map((group) => ({
           title: group?.name ?? "Grupo sem nome",

@@ -104,6 +104,7 @@ export function SignInForm({
                 />
               </svg>
               <span className="sr-only">Login with Google</span>
+              <span>Google</span>
             </Button>
             <Button
               disabled
@@ -118,7 +119,12 @@ export function SignInForm({
                 />
               </svg>
               <span className="sr-only">Login with Apple</span>
-              <Badge variant={"secondary"}>Em breve</Badge>
+              <Badge
+                variant={"secondary"}
+                className="bg-background dark:bg-transparent"
+              >
+                Em breve
+              </Badge>
             </Button>
 
             {/* <Button

@@ -47,7 +47,9 @@ export function NavSidebar({
 
   return (
     <SidebarGroup>
-      {title && <SidebarGroupLabel>{title}</SidebarGroupLabel>}
+      {title && items.length > 0 && (
+        <SidebarGroupLabel>{title}</SidebarGroupLabel>
+      )}
       <SidebarMenu>
         {items.map((item) =>
           item.items ? (

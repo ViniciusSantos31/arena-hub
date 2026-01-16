@@ -24,5 +24,5 @@ const options = {
 };
 
 export const NavSettings = () => {
-  return <NavSidebar items={options.settings} />;
+  return <NavSidebar title="Outros" items={options.settings} />;
 };
