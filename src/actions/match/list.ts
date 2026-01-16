@@ -130,10 +130,5 @@ export const matchDetails = actionClient
     return {
       ...response,
       date: fromUTCDate(response.date),
-      players:
-        response.players.map((player) => ({
-          ...player.user,
-          score: player.score,
-        })) ?? [],
     };
   });

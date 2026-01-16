@@ -1,9 +1,13 @@
+import { randomUUID } from "crypto";
 import { relations } from "drizzle-orm";
 import { integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import { matchesTable } from "./match";
 import { usersTable } from "./user";
 
 export const playersTable = pgTable("player", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => randomUUID()),
   userId: text("user_id").references(() => usersTable.id, {
     onDelete: "cascade",
   }),
