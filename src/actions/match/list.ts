@@ -25,7 +25,7 @@ export const listMatches = actionClient
     const response = await db.query.matchesTable.findMany({
       where: (matchesTable, { eq }) =>
         eq(matchesTable.organizationId, organizationId),
-      orderBy: (matchesTable, { asc }) => [asc(matchesTable.date)],
+      orderBy: (matchesTable, { desc }) => [desc(matchesTable.date)],
       with: {
         players: {
           with: {
@@ -44,7 +44,7 @@ export const listMatches = actionClient
     return response.map((match) => ({
       ...match,
       date: fromUTCDate(match.date),
-      players: match.players.map((player) => player.user ?? undefined) ?? [],
+      players: match.players?.map((player) => player.user ?? undefined) ?? [],
     }));
   });
 

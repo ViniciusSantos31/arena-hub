@@ -39,15 +39,22 @@ export const ResponsiveDialog = ({
   children,
   content,
   onOpenChange,
-  open = false,
+  open,
   className,
 }: ReponsiveModalProps) => {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
 
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (onOpenChange) {
+      onOpenChange(open);
+    }
+  };
+
   if (isMobile) {
     return (
-      <Drawer open={open ?? isOpen} onOpenChange={onOpenChange ?? setIsOpen}>
+      <Drawer open={open ?? isOpen} onOpenChange={handleOpenChange}>
         {children && <DrawerTrigger asChild>{children}</DrawerTrigger>}
         <DrawerContent className={cn("w-full", className)}>
           <DrawerHeader>
@@ -59,15 +66,17 @@ export const ResponsiveDialog = ({
               {description}
             </DrawerDescription>
           </DrawerHeader>
-          <div className="w-full space-y-6 overflow-y-auto">{content}</div>
+          <div className="w-full space-y-6 overflow-y-auto px-4 pb-4">
+            {content}
+          </div>
         </DrawerContent>
       </Drawer>
     );
   }
 
   return (
-    <Dialog open={open ?? isOpen} onOpenChange={onOpenChange ?? setIsOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+    <Dialog open={open ?? isOpen} onOpenChange={handleOpenChange}>
+      {children && <DialogTrigger asChild>{children}</DialogTrigger>}
       <DialogContent
         className={cn(
           "flex max-h-[90vh] flex-col overflow-clip px-0 pb-0 sm:max-w-md",
@@ -81,7 +90,9 @@ export const ResponsiveDialog = ({
           </DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <div className="flex h-full flex-col overflow-y-auto">{content}</div>
+        <div className="flex h-full flex-col overflow-y-auto px-4 pb-4">
+          {content}
+        </div>
       </DialogContent>
     </Dialog>
   );

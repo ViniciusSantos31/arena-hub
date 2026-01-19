@@ -7,7 +7,7 @@ import z from "zod/v4";
 export const listMatchPlayers = actionClient
   .inputSchema(
     z.object({
-      matchId: z.string().uuid(),
+      matchId: z.string(),
     }),
   )
   .action(async ({ parsedInput }) => {
@@ -28,6 +28,8 @@ export const listMatchPlayers = actionClient
 
     return response.map((player) => ({
       ...player,
-      ...player.user,
+      name: player.user?.name,
+      image: player.user?.image,
+      userId: player.user?.id,
     }));
   });

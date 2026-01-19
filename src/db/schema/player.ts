@@ -14,6 +14,7 @@ export const playersTable = pgTable("player", {
   matchId: text("match_id").references(() => matchesTable.id, {
     onDelete: "cascade",
   }),
+  teamId: integer("team_id"),
   score: integer("score").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")

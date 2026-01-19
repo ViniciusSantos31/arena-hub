@@ -62,7 +62,7 @@ export const CreateMatchForm = ({ setOpen }: CreateMatchFormProps) => {
     <Form {...methods}>
       <form
         onSubmit={methods.handleSubmit(handleSubmit)}
-        className="flex h-full flex-col space-y-6 border-t px-4 pt-4"
+        className="flex h-full flex-col space-y-6 border-t pt-4"
       >
         <div className="grid grid-cols-1">
           <InputField

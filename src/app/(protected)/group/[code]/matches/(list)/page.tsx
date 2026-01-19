@@ -12,7 +12,7 @@ export default function MatchesPage({
 }) {
   const { code } = use(params);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["matches", code],
     enabled: !!code,
     queryFn: () =>
@@ -20,6 +20,19 @@ export default function MatchesPage({
         code,
       }),
   });
+
+  if (isError) {
+    return (
+      <div className="mx-auto my-auto flex h-full flex-col items-center justify-center gap-2">
+        <h2 className="text-2xl font-semibold">
+          Ocorreu um erro ao carregar as partidas.
+        </h2>
+        <span className="text-muted-foreground">
+          Tente novamente mais tarde.
+        </span>
+      </div>
+    );
+  }
 
   if (!isLoading && data?.data?.length === 0) {
     return (
