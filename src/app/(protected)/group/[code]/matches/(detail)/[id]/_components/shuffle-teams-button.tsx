@@ -5,7 +5,9 @@ import { ResponsiveDialog } from "@/components/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { InputField } from "@/components/ui/input/field";
+import { useWebSocket } from "@/hooks/use-websocket";
 import { queryClient } from "@/lib/react-query";
+import { WebSocketMessageType } from "@/lib/websocket/types";
 import { useMutation } from "@tanstack/react-query";
 import { DicesIcon, ShuffleIcon } from "lucide-react";
 import { Fragment, useState } from "react";
@@ -19,6 +21,8 @@ export const ShuffleTeamsButton = () => {
 
   const { data: match } = useMatch();
   const memberStore = useMemberStore();
+
+  const { sendEvent } = useWebSocket();
 
   const methods = useForm({
     defaultValues: { nTeams: 2 },
@@ -51,6 +55,14 @@ export const ShuffleTeamsButton = () => {
       if (teamListCard) {
         teamListCard.scrollIntoView({ behavior: "smooth" });
       }
+
+      sendEvent({
+        event: WebSocketMessageType.MATCH_STATUS_UPDATED,
+        payload: {
+          matchId: match?.id || "",
+          status: "team_sorted",
+        },
+      });
     },
   });
 

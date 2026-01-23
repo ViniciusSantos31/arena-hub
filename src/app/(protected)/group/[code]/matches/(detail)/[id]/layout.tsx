@@ -1,4 +1,5 @@
 import { db } from "@/db";
+import { WebSocketProvider } from "@/hooks/use-websocket";
 import { redirect } from "next/navigation";
 
 export default async function MatchDetailLayout({
@@ -18,5 +19,5 @@ export default async function MatchDetailLayout({
     redirect(`/group/${code}/matches`);
   }
 
-  return children;
+  return <WebSocketProvider>{children}</WebSocketProvider>;
 }

@@ -15,6 +15,7 @@ import { useQuery } from "@tanstack/react-query";
 import { DicesIcon, Grid2x2CheckIcon, Settings2Icon } from "lucide-react";
 import { Fragment } from "react";
 import { useMatch } from "../_hooks/useMatch";
+import { TeamsListRealtime } from "./teams-list-realtime";
 
 interface TeamsListProps {
   matchId: string;
@@ -95,39 +96,41 @@ export default function TeamsList({ matchId }: TeamsListProps) {
   }
 
   return (
-    <Card id="team-list-card">
-      <CardHeader className="border-b">
-        <CardTitle className="text-foreground flex items-center gap-3 font-medium">
-          <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg">
-            <Grid2x2CheckIcon className="text-muted-foreground h-5 w-5" />
-          </div>
-          Times
-        </CardTitle>
-        <CardAction>
-          {match?.status === "team_sorted" && (
-            <Button variant={"outline"} size={"icon"}>
-              <Settings2Icon />
-            </Button>
-          )}
-        </CardAction>
-      </CardHeader>
-      {data.teams.length === 0 && (
-        <CardContent className="flex flex-col items-center justify-center py-6 text-center">
-          <DicesIcon className="mb-3 size-11" />
-          <div className="space-y-1">
-            <span className="text-lg font-semibold">Calma lá!</span>
-            <p className="text-muted-foreground text-center text-sm">
-              Os times ainda não foram sorteados para essa partida.
-            </p>
-          </div>
-        </CardContent>
-      )}
-      {data.teams.map((team) => (
-        <Fragment key={team.team}>
-          <TeamCard team={team} />
-          <div className="my-6 h-px w-full border border-dashed last:hidden" />
-        </Fragment>
-      ))}
-    </Card>
+    <TeamsListRealtime matchId={matchId}>
+      <Card id="team-list-card">
+        <CardHeader className="border-b">
+          <CardTitle className="text-foreground flex items-center gap-3 font-medium">
+            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg">
+              <Grid2x2CheckIcon className="text-muted-foreground h-5 w-5" />
+            </div>
+            Times
+          </CardTitle>
+          <CardAction>
+            {match?.status === "team_sorted" && (
+              <Button variant={"outline"} size={"icon"}>
+                <Settings2Icon />
+              </Button>
+            )}
+          </CardAction>
+        </CardHeader>
+        {data.teams.length === 0 && (
+          <CardContent className="flex flex-col items-center justify-center py-6 text-center">
+            <DicesIcon className="mb-3 size-11" />
+            <div className="space-y-1">
+              <span className="text-lg font-semibold">Calma lá!</span>
+              <p className="text-muted-foreground text-center text-sm">
+                Os times ainda não foram sorteados para essa partida.
+              </p>
+            </div>
+          </CardContent>
+        )}
+        {data.teams.map((team) => (
+          <Fragment key={team.team}>
+            <TeamCard team={team} />
+            <div className="my-6 h-px w-full border border-dashed last:hidden" />
+          </Fragment>
+        ))}
+      </Card>
+    </TeamsListRealtime>
   );
 }

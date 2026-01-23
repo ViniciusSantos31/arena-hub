@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { formatDate } from "@/utils/date";
 import { getSportIconById, Sport } from "@/utils/sports";
 import { MatchStatusBadge } from "../../../_components/match-status-badge";
+import { MatchStatusBadgeRealtime } from "../../../_components/match-status-badge-realtime";
 import { JoinMatchButton } from "../_components/join-match-button";
 import { useMatch } from "../_hooks/useMatch";
 import { Status } from "../page";
@@ -46,7 +47,9 @@ export const MatchDetailCard = ({ code }: { code: string }) => {
           </div>
         </div>
         <CardAction>
-          <MatchStatusBadge status={match.status as Status} />
+          <MatchStatusBadgeRealtime matchId={match.id}>
+            <MatchStatusBadge status={match.status as Status} />
+          </MatchStatusBadgeRealtime>
         </CardAction>
       </CardHeader>
       <CardContent>

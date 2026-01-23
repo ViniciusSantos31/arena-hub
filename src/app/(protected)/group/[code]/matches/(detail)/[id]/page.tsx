@@ -3,11 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { matchStatusEnum } from "@/db/schema/match";
+import { useWebSocket } from "@/hooks/use-websocket";
 import { ChevronLeftIcon, Users2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { use } from "react";
+import { use, useEffect } from "react";
 import { AdvancedSettingsSection } from "./_components/advanced-settings-section";
 import { MatchDetailCard } from "./_components/match-detail-card";
+import { PlayerListRealtime } from "./_components/player-list-realtime";
 import { PlayersList } from "./_components/players-list";
 import TeamsList from "./_components/teams-list";
 
@@ -21,6 +23,12 @@ export default function MatchDetailPage({
   const { id, code } = use(params);
 
   const router = useRouter();
+
+  const { listenMatchEvents } = useWebSocket();
+
+  useEffect(() => {
+    listenMatchEvents(id);
+  }, [id, listenMatchEvents]);
 
   return (
     <main className="flex flex-col gap-4">
@@ -43,7 +51,9 @@ export default function MatchDetailPage({
               Jogadores participantes
             </CardTitle>
           </CardHeader>
-          <PlayersList id={id} />
+          <PlayerListRealtime matchId={id}>
+            <PlayersList id={id} />
+          </PlayerListRealtime>
           <div className="relative flex items-center py-4">
             <div className="border-muted-foreground/30 flex-1 divide-dashed border-t border-dashed"></div>
             <div className="text-muted-foreground bg-card px-4 text-xs">

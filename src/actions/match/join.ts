@@ -51,11 +51,22 @@ export const joinMatch = actionClient
       )
       .limit(1);
 
+    const player = {
+      id: userId,
+      score: membershipInfo.score,
+      name: session.user.name || "",
+      image: session.user.image || "",
+    };
+
     if (isAlreadyJoined.length > 0) {
       const userInMatch = isAlreadyJoined[0];
 
       await db.delete(playersTable).where(eq(playersTable.id, userInMatch.id));
-      return;
+      return {
+        player,
+        matchId,
+        action: "left",
+      };
     }
 
     // Verify if there are available slots in the match
@@ -85,6 +96,14 @@ export const joinMatch = actionClient
       userId,
       score: membershipInfo.score,
     });
+
+    const websocketData = {
+      player,
+      matchId,
+      action: "joined",
+    };
+
+    return websocketData;
   });
 
 export const getUserMatchPlayer = actionClient

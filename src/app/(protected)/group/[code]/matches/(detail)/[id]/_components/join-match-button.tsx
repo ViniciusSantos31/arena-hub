@@ -2,7 +2,9 @@
 
 import { getUserMatchPlayer, joinMatch } from "@/actions/match/join";
 import { Button } from "@/components/ui/button";
+import { useWebSocket } from "@/hooks/use-websocket";
 import { queryClient } from "@/lib/react-query";
+import { WebSocketMessageType } from "@/lib/websocket/types";
 import { useQuery } from "@tanstack/react-query";
 import { PlayIcon, UserRoundMinusIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
@@ -25,6 +27,8 @@ export const JoinMatchButton = ({
     queryFn: async () =>
       getUserMatchPlayer({ matchId: match.id }).then((res) => res.data),
   });
+
+  const { sendEvent } = useWebSocket();
 
   const joinMatchAction = useAction(joinMatch, {
     onSuccess: () => {
@@ -49,11 +53,43 @@ export const JoinMatchButton = ({
     },
   });
 
-  const handleJoinMatch = () => {
-    joinMatchAction.execute({
-      matchId: match.id,
-      organizationCode,
-    });
+  const handleJoinMatch = async () => {
+    await joinMatchAction
+      .executeAsync({
+        matchId: match.id,
+        organizationCode,
+      })
+      .then((res) => {
+        const { data } = res;
+
+        const action = data?.action;
+
+        if (action === "joined") {
+          sendEvent({
+            event: WebSocketMessageType.MATCH_PARTICIPANT_JOINED,
+            payload: {
+              player: {
+                id: data?.player?.id || "",
+                name: data?.player?.name || "",
+                image: data?.player?.image || null,
+                score: data?.player?.score || 0,
+              },
+              matchId: match.id,
+            },
+          });
+          return;
+        }
+
+        if (action === "left") {
+          sendEvent({
+            event: WebSocketMessageType.MATCH_PARTICIPANT_LEFT,
+            payload: {
+              playerId: data?.player.id || "",
+              matchId: match.id,
+            },
+          });
+        }
+      });
   };
 
   if (player) {

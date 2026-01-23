@@ -1,7 +1,9 @@
 import { updateMatch } from "@/actions/match/update";
 import { ResponsiveDialog } from "@/components/responsive-dialog";
 import { Button } from "@/components/ui/button";
+import { useWebSocket } from "@/hooks/use-websocket";
 import { queryClient } from "@/lib/react-query";
+import { WebSocketMessageType } from "@/lib/websocket/types";
 import { CheckCircle2Icon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
@@ -14,6 +16,8 @@ export const CompleteMatchButton = () => {
 
   const { data: match } = useMatch();
 
+  const { sendEvent } = useWebSocket();
+
   const memberStore = useMemberStore();
   const updateMatchAction = useAction(updateMatch, {
     onSuccess: () => {
@@ -22,6 +26,13 @@ export const CompleteMatchButton = () => {
       });
       toast.success("Partida concluída com sucesso.", {
         id: "complete-match",
+      });
+      sendEvent({
+        event: WebSocketMessageType.MATCH_STATUS_UPDATED,
+        payload: {
+          matchId: match?.id || "",
+          status: "completed",
+        },
       });
     },
     onError: () => {
