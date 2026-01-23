@@ -8,7 +8,7 @@ export default function AuthLayout({
   return (
     <div className="bg-muted relative flex min-h-full w-full items-center justify-center p-6 md:p-10">
       <div className="flex w-full max-w-sm md:max-w-3xl">{children}</div>
-      <div className="absolute right-4 bottom-4">
+      <div className="absolute top-4 right-4">
         <ModeToggle />
       </div>
     </div>

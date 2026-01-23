@@ -57,8 +57,8 @@ export const CancelMatchButton = () => {
   return (
     <>
       <ResponsiveDialog
-        title="Cancelar partida"
-        description="Tem certeza que deseja cancelar esta partida? Esta ação não pode ser desfeita."
+        title="Tem certeza que deseja cancelar esta partida?"
+        description="Ao cancelar a partida, ela não poderá ser reativada e todos os dados relacionados serão perdidos."
         open={modalIsOpen}
         onOpenChange={setModalIsOpen}
         content={
@@ -70,7 +70,9 @@ export const CancelMatchButton = () => {
             >
               Sim, cancelar partida
             </Button>
-            <Button onClick={() => setModalIsOpen(false)}>Não, voltar</Button>
+            <Button onClick={() => setModalIsOpen(false)}>
+              Continuar partida
+            </Button>
           </div>
         }
       />

@@ -1,7 +1,21 @@
+import {
+  PageContainer,
+  PageContent,
+  PageHeader,
+  PageHeaderContent,
+} from "../_components/page-structure";
+
 export default function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="flex h-full w-full flex-col">{children}</div>;
+  return (
+    <PageContainer>
+      <PageHeader>
+        <PageHeaderContent title="Início" />
+      </PageHeader>
+      <PageContent>{children}</PageContent>
+    </PageContainer>
+  );
 }

@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { getAvatarFallback } from "@/utils/avatar";
 import { Role } from "@/utils/role";
-import { MemberRoleBadge } from "./member-role-badge";
+import { MemberActions } from "./member-actions";
 
 interface MemberCardProps {
   member: {
@@ -33,10 +33,7 @@ export const MemberCard = ({ member }: MemberCardProps) => {
               <p className="text-muted-foreground truncate text-sm">
                 {member.email}
               </p>
-              <MemberRoleBadge
-                memberRole={member.role as Role}
-                memberId={member.id ?? ""}
-              />
+              <MemberActions member={member} className="mt-0.5" />
             </div>
           </div>
           <div className="mt-4 flex items-center gap-6 @md:mt-0">

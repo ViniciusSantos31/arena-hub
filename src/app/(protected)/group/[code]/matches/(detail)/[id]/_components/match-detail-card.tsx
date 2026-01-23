@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardAction,
@@ -11,30 +10,13 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { formatDate } from "@/utils/date";
 import { getSportIconById, Sport } from "@/utils/sports";
+import { MatchStatusBadge } from "../../../_components/match-status-badge";
 import { JoinMatchButton } from "../_components/join-match-button";
 import { useMatch } from "../_hooks/useMatch";
 import { Status } from "../page";
 
 export const MatchDetailCard = ({ code }: { code: string }) => {
   const { data: match, isLoading } = useMatch();
-
-  const matchStatusConfig: Record<Status, { label: string; color: string }> = {
-    open_registration: { label: "Inscrições Abertas", color: "bg-primary" },
-    closed_registration: {
-      label: "Inscrições Fechadas",
-      color: "bg-secondary text-secondary-foreground",
-    },
-    completed: { label: "Concluída", color: "bg-blue-500 text-white" },
-    scheduled: { label: "Agendada", color: "bg-purple-500 text-white" },
-    team_sorted: {
-      label: "Times Sorteados",
-      color: "bg-indigo-500 text-white",
-    },
-    cancelled: {
-      label: "Cancelada",
-      color: "bg-destructive text-background",
-    },
-  };
 
   const filledPlayers = match?.players.length ?? 0;
   const maxPlayers = match?.maxPlayers ?? 1;
@@ -64,9 +46,7 @@ export const MatchDetailCard = ({ code }: { code: string }) => {
           </div>
         </div>
         <CardAction>
-          <Badge className={matchStatusConfig[match.status].color}>
-            {matchStatusConfig[match.status].label}
-          </Badge>
+          <MatchStatusBadge status={match.status as Status} />
         </CardAction>
       </CardHeader>
       <CardContent>

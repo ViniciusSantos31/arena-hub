@@ -9,12 +9,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useGuard } from "@/hooks/use-guard";
+import { queryClient } from "@/lib/react-query";
 import { getRoleLabel, Role } from "@/utils/role";
 import { ChevronDownIcon } from "lucide-react";
 import { useOptimisticAction } from "next-safe-action/hooks";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { useMemberStore } from "../../_store/group";
+import { Member } from "../page";
 
 export const MemberRoleBadge = ({
   memberRole,
@@ -33,7 +35,15 @@ export const MemberRoleBadge = ({
   const updateMemberRoleAction = useOptimisticAction(updateMemberRole, {
     currentState: memberRole,
     updateFn: (_, input) => input.role,
-    onSuccess() {
+    onSuccess({ input }) {
+      queryClient.setQueryData(
+        ["active-members", code],
+        (oldData: Member[]) => {
+          return oldData.map((m) =>
+            m.id === input.memberId ? { ...m, role: input.role } : m,
+          );
+        },
+      );
       toast.success("Função do membro atualizada com sucesso");
     },
   });
@@ -67,10 +77,10 @@ export const MemberRoleBadge = ({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger tabIndex={0}>
         <Badge
           variant={"outline"}
-          className="mt-0.5 rounded-xl p-1 px-2 text-xs hover:cursor-pointer"
+          className="rounded-xl p-1 px-2 text-xs hover:cursor-pointer"
         >
           {getRoleLabel(updateMemberRoleAction.optimisticState)}
           <ChevronDownIcon />

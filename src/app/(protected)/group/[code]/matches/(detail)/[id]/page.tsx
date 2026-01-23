@@ -24,7 +24,7 @@ export default function MatchDetailPage({
 
   return (
     <main className="flex flex-col gap-4">
-      <Button variant="link" className="w-fit p-0" onClick={router.back}>
+      <Button variant="secondary" className="w-fit" onClick={router.back}>
         <ChevronLeftIcon />
         Voltar para as Partidas
       </Button>

@@ -26,12 +26,12 @@ export const AvatarStack = ({ users }: AvatarStackProps) => {
       {avatarsToShow.map(
         (user) =>
           user && (
-            <Avatar key={user.id}>
+            <Avatar key={user.id} className="ring-card ring-4">
               {user.image && (
                 <AvatarImage
                   src={user.image}
                   alt={user.name || "Avatar"}
-                  className="ring-card inline-block h-8 w-8 rounded-full object-cover ring-4"
+                  className="inline-block h-8 w-8 rounded-full object-cover"
                 />
               )}
               <AvatarFallback>{getAvatarFallback(user.name)}</AvatarFallback>
@@ -42,7 +42,7 @@ export const AvatarStack = ({ users }: AvatarStackProps) => {
       {extraAvatarsCount > 0 && (
         <div
           data-slot="avatar-image"
-          className="ring-card bg-muted flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium ring-4"
+          className="ring-card bg-muted z-10 flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium ring-4"
         >
           +{extraAvatarsCount}
         </div>

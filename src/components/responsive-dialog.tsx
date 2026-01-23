@@ -21,7 +21,7 @@ import {
   DrawerTrigger,
 } from "./ui/drawer";
 
-type ReponsiveModalProps = {
+type ResponsiveDialogProps = {
   className?: string;
   children?: React.ReactNode;
   content: React.ReactNode;
@@ -29,8 +29,15 @@ type ReponsiveModalProps = {
   description?: string;
   open?: boolean;
   icon?: LucideIcon;
+  asChild?: boolean;
+  contentClassName?: string;
   onOpenChange?: (open: boolean) => void;
 };
+
+export type ResponsiveDialogBaseProps = Omit<
+  ResponsiveDialogProps,
+  "content" | "title" | "description" | "icon"
+>;
 
 export const ResponsiveDialog = ({
   title,
@@ -41,7 +48,9 @@ export const ResponsiveDialog = ({
   onOpenChange,
   open,
   className,
-}: ReponsiveModalProps) => {
+  contentClassName,
+  asChild = true,
+}: ResponsiveDialogProps) => {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -55,7 +64,9 @@ export const ResponsiveDialog = ({
   if (isMobile) {
     return (
       <Drawer open={open ?? isOpen} onOpenChange={handleOpenChange}>
-        {children && <DrawerTrigger asChild>{children}</DrawerTrigger>}
+        {children && (
+          <DrawerTrigger asChild={asChild}>{children}</DrawerTrigger>
+        )}
         <DrawerContent className={cn("w-full", className)}>
           <DrawerHeader>
             <DrawerTitle className="flex items-center gap-2">
@@ -66,7 +77,12 @@ export const ResponsiveDialog = ({
               {description}
             </DrawerDescription>
           </DrawerHeader>
-          <div className="w-full space-y-6 overflow-y-auto px-4 pb-4">
+          <div
+            className={cn(
+              "w-full space-y-6 overflow-y-auto px-4 pb-4",
+              contentClassName,
+            )}
+          >
             {content}
           </div>
         </DrawerContent>
@@ -76,7 +92,7 @@ export const ResponsiveDialog = ({
 
   return (
     <Dialog open={open ?? isOpen} onOpenChange={handleOpenChange}>
-      {children && <DialogTrigger asChild>{children}</DialogTrigger>}
+      {children && <DialogTrigger asChild={asChild}>{children}</DialogTrigger>}
       <DialogContent
         className={cn(
           "flex max-h-[90vh] flex-col overflow-clip px-0 pb-0 sm:max-w-md",
@@ -90,7 +106,12 @@ export const ResponsiveDialog = ({
           </DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <div className="flex h-full flex-col overflow-y-auto px-4 pb-4">
+        <div
+          className={cn(
+            "flex h-full flex-col overflow-y-auto px-4 pb-4",
+            contentClassName,
+          )}
+        >
           {content}
         </div>
       </DialogContent>

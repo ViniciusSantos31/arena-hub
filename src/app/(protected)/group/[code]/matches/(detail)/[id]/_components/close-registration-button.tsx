@@ -46,7 +46,7 @@ export const CloseRegistrationButton = () => {
   }
 
   return (
-    <Button variant="secondary" onClick={handleCloseRegistration}>
+    <Button variant="outline" onClick={handleCloseRegistration}>
       <TicketXIcon />
       <span className="@md:hidden">Encerrar</span>
       <span className="hidden @md:block">Encerrar inscrição</span>

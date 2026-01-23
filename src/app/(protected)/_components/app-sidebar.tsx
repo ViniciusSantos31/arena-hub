@@ -10,6 +10,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { NavGroups } from "./nav-groups";
+import { NavHome } from "./nav-home";
 import { NavLogout } from "./nav-logout";
 import { NavOptions } from "./nav-options";
 
@@ -22,6 +23,7 @@ export async function AppSidebar({
         <NavUser />
       </SidebarHeader>
       <SidebarContent>
+        <NavHome />
         <NavGroups />
         <NavOptions />
       </SidebarContent>

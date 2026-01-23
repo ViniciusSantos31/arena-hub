@@ -1,5 +1,6 @@
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -13,6 +14,7 @@ import { formatDate } from "@/utils/date";
 import { getSportIconById, getSportLabelById, Sport } from "@/utils/sports";
 import Link from "next/link";
 import { AvatarStack } from "./avatar-stack";
+import { MatchStatusBadge } from "./match-status-badge";
 
 type MatchCardProps = {
   match: typeof matchesTable.$inferSelect & {
@@ -37,11 +39,11 @@ export const MatchCard = ({ match }: MatchCardProps) => {
     <Link href={`matches/${match.id}`} className="group w-full rounded-xl">
       <Card className="h-full">
         <CardHeader>
-          <div className="flex flex-1 items-center gap-2">
+          <div className="flex flex-1 items-start gap-2">
             <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg">
               <SportIcon className="text-muted-foreground h-5 w-5" />
             </div>
-            <div className="flex flex-col justify-center gap-1">
+            <div className="flex flex-1 flex-col justify-center gap-1">
               <CardTitle>{match.title}</CardTitle>
               <CardDescription>
                 {getSportLabelById(match.sport)} •{" "}
@@ -53,6 +55,9 @@ export const MatchCard = ({ match }: MatchCardProps) => {
               </CardDescription>
             </div>
           </div>
+          <CardAction>
+            <MatchStatusBadge status={match.status} />
+          </CardAction>
         </CardHeader>
         <CardContent className="flex h-full flex-col">
           <div className="mb-2 flex items-center justify-between">

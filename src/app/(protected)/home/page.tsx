@@ -1,23 +1,42 @@
-import { PlusIcon, SearchIcon } from "lucide-react";
+import { PlusIcon, SearchIcon, ZapIcon } from "lucide-react";
 import { GroupButton } from "./_components/group-button";
+import { NotificationCard } from "./_components/notification-card";
 
 export default function ProtectedPage() {
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-3">
+    <div className="from-background to-muted/20 flex w-full flex-col bg-gradient-to-br">
+      {/* Header */}
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-extrabold tracking-tight">
-          Bem-vindo ao Arena Hub
-        </h1>
-        <span className="text-muted-foreground block text-sm">
-          Descubra novas conexões, crie grupos incríveis e faça parte da
-          comunidade. Sua jornada começa aqui!
-        </span>
+        <h1 className="mb-2 text-4xl font-bold tracking-tight">Arena Hub</h1>
+        <p className="text-muted-foreground text-lg">
+          Sua central de gaming e comunidade
+        </p>
       </div>
 
-      <div className="grid w-full max-w-lg grid-cols-2 gap-4">
-        <GroupButton label="Criar grupo" icon={PlusIcon} href="group/create" />
-        <GroupButton label="Encontrar grupos" icon={SearchIcon} href="feed" />
-        {/* <GroupButton label="Meus grupos" icon={UsersIcon} href="group/mine" /> */}
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        {/* Quick Actions */}
+        <div className="space-y-4 lg:col-span-1">
+          <div className="flex items-center gap-2">
+            <ZapIcon className="h-5 w-5" />
+            <h2 className="text-xl font-semibold">Ações rápidas</h2>
+          </div>
+          <div className="space-y-3">
+            <GroupButton
+              label="Criar Grupo"
+              icon={PlusIcon}
+              href="group/create"
+            />
+            <GroupButton
+              label="Encontrar Grupos"
+              icon={SearchIcon}
+              href="feed"
+            />
+          </div>
+        </div>
+
+        {/* Notifications */}
+        <NotificationCard />
       </div>
     </div>
   );
