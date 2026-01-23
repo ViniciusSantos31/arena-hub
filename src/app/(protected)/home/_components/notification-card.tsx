@@ -19,10 +19,10 @@ export const NotificationCard = () => {
     },
   ];
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 lg:col-span-2">
       <div className="flex items-center gap-2">
         <BellIcon className="h-5 w-5" />
-        <h2 className="text-xl font-semibold">Notificações</h2>
+        <h2 className="text-xl font-semibold">Atualizações</h2>
       </div>
 
       <div className="space-y-3">

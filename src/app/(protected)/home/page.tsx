@@ -4,7 +4,7 @@ import { NotificationCard } from "./_components/notification-card";
 
 export default function ProtectedPage() {
   return (
-    <div className="from-background to-muted/20 flex w-full flex-col bg-gradient-to-br">
+    <div className="bg-background flex w-full flex-col">
       {/* Header */}
       <div className="mb-8 text-center">
         <h1 className="mb-2 text-4xl font-bold tracking-tight">Arena Hub</h1>
@@ -14,14 +14,14 @@ export default function ProtectedPage() {
       </div>
 
       {/* Main Grid */}
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <div className="grid w-full grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Quick Actions */}
         <div className="space-y-4 lg:col-span-1">
           <div className="flex items-center gap-2">
             <ZapIcon className="h-5 w-5" />
             <h2 className="text-xl font-semibold">Ações rápidas</h2>
           </div>
-          <div className="space-y-3">
+          <div className="w-full space-y-3">
             <GroupButton
               label="Criar Grupo"
               icon={PlusIcon}

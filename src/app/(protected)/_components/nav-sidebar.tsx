@@ -40,7 +40,7 @@ export function NavSidebar({
     }[];
   }[];
 }) {
-  const { open } = useSidebar();
+  const { open, setOpenMobile } = useSidebar();
   const segments = useSelectedLayoutSegments();
 
   const currentPath = `/${segments.join("/")}`;
@@ -101,7 +101,7 @@ export function NavSidebar({
                 tooltip={item.title}
                 isActive={currentPath.startsWith(item.url)}
               >
-                <Link href={item.url}>
+                <Link href={item.url} onClick={() => setOpenMobile(false)}>
                   {item.icon && <item.icon />}
                   {item.logo && (
                     <Image
