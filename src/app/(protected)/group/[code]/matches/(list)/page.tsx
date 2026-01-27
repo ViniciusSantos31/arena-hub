@@ -20,17 +20,6 @@ export default function MatchesPage() {
     );
   }
 
-  if (!isLoading && data?.data?.length === 0) {
-    return (
-      <div className="mx-auto my-auto flex h-full flex-col items-center justify-center gap-2">
-        <h2 className="text-2xl font-semibold">Nenhuma partida encontrada.</h2>
-        <span className="text-muted-foreground">
-          Crie uma nova partida para começar a jogar!
-        </span>
-      </div>
-    );
-  }
-
   if (isLoading && !data) {
     return (
       <div className="space-y-4">
