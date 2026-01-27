@@ -30,7 +30,7 @@ export default function MatchesPage() {
     );
   }
 
-  if (!data) {
+  if (data?.data?.length === 0) {
     return notFound();
   }
 
