@@ -12,7 +12,7 @@ import { CreateMatchDialog } from "./create-match-modal";
 
 export const MatchEmptyList = () => {
   return (
-    <Empty>
+    <Empty className="h-full">
       <EmptyHeader>
         <EmptyMedia variant="icon">
           <PiSoccerBall />

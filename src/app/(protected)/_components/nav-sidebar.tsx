@@ -2,6 +2,7 @@
 
 import { ChevronRight, type LucideIcon } from "lucide-react";
 
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import {
   Collapsible,
   CollapsibleContent,
@@ -61,19 +62,20 @@ export function NavSidebar({
             >
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
-                  <SidebarMenuButton
-                    tooltip={item.title}
-                    className={item.logo ? "p-0" : ""}
-                  >
+                  <SidebarMenuButton size={"lg"} tooltip={item.title}>
                     {item.icon && <item.icon />}
                     {item.logo && (
-                      <Image
-                        src={item.logo}
-                        alt={item.title}
-                        width={24}
-                        height={24}
-                        className={cn("h-6 w-6 rounded-sm object-cover")}
-                      />
+                      <AspectRatio ratio={1}>
+                        <Image
+                          src={item.logo}
+                          alt={item.title}
+                          width={24}
+                          height={24}
+                          className={cn(
+                            "absolute h-full w-full rounded-sm object-cover",
+                          )}
+                        />
+                      </AspectRatio>
                     )}
                     <span>{item.title}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -95,11 +97,19 @@ export function NavSidebar({
               </SidebarMenuItem>
             </Collapsible>
           ) : (
-            <SidebarMenuItem key={item.title}>
+            <SidebarMenuItem
+              key={item.title}
+              className={cn(!open && item.logo && "not-last:mb-2")}
+            >
               <SidebarMenuButton
                 asChild
                 tooltip={item.title}
                 isActive={currentPath.startsWith(item.url)}
+                className={cn(
+                  item.logo &&
+                    !open &&
+                    "overflow-visible p-0! group-data-[collapsible=icon]:p-0!",
+                )}
               >
                 <Link href={item.url} onClick={() => setOpenMobile(false)}>
                   {item.icon && <item.icon />}
@@ -107,11 +117,14 @@ export function NavSidebar({
                     <Image
                       src={item.logo}
                       alt={item.title}
-                      width={24}
-                      height={24}
+                      width={768}
+                      height={768}
                       className={cn(
-                        "h-6 min-w-6 rounded-sm object-cover",
-                        !open && "h-4 min-w-4 rounded-full",
+                        "size-6 rounded-sm object-cover",
+                        !open && "size-8 rounded-full",
+                        currentPath.startsWith(item.url) &&
+                          !open &&
+                          "ring-primary ring-offset-sidebar ring-2 ring-offset-2",
                       )}
                     />
                   )}

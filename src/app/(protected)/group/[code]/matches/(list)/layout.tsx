@@ -15,7 +15,7 @@ export default function MatchesLayout({
   const { code } = use(params);
   return (
     <MatchesFilterProvider code={code}>
-      <div className="space-y-4">
+      <div className="h-full space-y-4">
         <div className="flex items-center justify-between gap-4">
           {/* Search input - full width on mobile */}
           {/* <div className="relative flex-1">

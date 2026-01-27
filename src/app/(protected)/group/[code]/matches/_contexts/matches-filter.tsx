@@ -4,13 +4,7 @@ import { listMatches } from "@/actions/match/list";
 import { queryClient } from "@/lib/react-query";
 import { Status } from "@/utils/status";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useReducer,
-  useState,
-} from "react";
+import { createContext, ReactNode, useContext, useReducer } from "react";
 import { DateRange } from "react-day-picker";
 
 interface MatchesFilterState {
@@ -54,7 +48,6 @@ function matchesFilterReducer(
 
 interface MatchesFilterContextType {
   data: Awaited<ReturnType<typeof listMatches>> | undefined;
-  hasFilterActive: boolean;
   isLoading: boolean;
   isError: boolean;
   state: MatchesFilterState;
@@ -78,7 +71,6 @@ export function MatchesFilterProvider({
   code,
 }: MatchesFilterProviderProps) {
   const [state, dispatch] = useReducer(matchesFilterReducer, initialState);
-  const [hasFilterActive, setHasFilterActive] = useState(false);
 
   const setStatus = (status: Status) => {
     const isSelected = state.status.includes(status);
@@ -140,10 +132,6 @@ export function MatchesFilterProvider({
         },
         data,
       );
-      const isDateRangeActive =
-        state.dateRange.from !== undefined || state.dateRange.to !== undefined;
-      const isStatusActive = state.status.length !== initialState.status.length;
-      setHasFilterActive(isDateRangeActive || isStatusActive);
     },
   });
 
@@ -158,7 +146,6 @@ export function MatchesFilterProvider({
 
   const value: MatchesFilterContextType = {
     data,
-    hasFilterActive,
     isLoading,
     isError,
     state,

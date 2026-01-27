@@ -21,7 +21,6 @@ export const MatchFilterDropdown = () => {
     setDateRange,
     applyFilters,
     resetFilters,
-    hasFilterActive,
   } = useMatchesFilter();
 
   const handleDateRangeChange = (range: DateRange) => {
@@ -117,14 +116,7 @@ export const MatchFilterDropdown = () => {
         </div>
       }
     >
-      <div className="relative">
-        <div className="absolute top-1 right-1 flex h-4 w-4 translate-x-1/2 -translate-y-1/2 items-center justify-center">
-          {hasFilterActive && (
-            <span className="bg-destructive border-background size-4 rounded-full border-2" />
-          )}
-        </div>
-        <Button variant="outline">Filtros</Button>
-      </div>
+      <Button variant="outline">Filtros</Button>
     </ResponsiveDialog>
   );
 };
