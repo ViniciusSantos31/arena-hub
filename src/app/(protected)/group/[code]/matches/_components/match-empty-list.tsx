@@ -10,7 +10,7 @@ import {
 import { PiSoccerBall } from "react-icons/pi";
 import { CreateMatchDialog } from "./create-match-modal";
 
-export const EmptyList = () => {
+export const MatchEmptyList = () => {
   return (
     <Empty>
       <EmptyHeader>

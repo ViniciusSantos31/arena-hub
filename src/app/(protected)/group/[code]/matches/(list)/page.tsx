@@ -1,7 +1,7 @@
 "use client";
 
-import { notFound } from "next/navigation";
 import { MatchCard, MatchCardLoading } from "../_components/match-card";
+import { MatchEmptyList } from "../_components/match-empty-list";
 import { useMatchesFilter } from "../_contexts/matches-filter";
 
 export default function MatchesPage() {
@@ -31,7 +31,7 @@ export default function MatchesPage() {
   }
 
   if (data?.data?.length === 0) {
-    return notFound();
+    return <MatchEmptyList />;
   }
 
   return (
