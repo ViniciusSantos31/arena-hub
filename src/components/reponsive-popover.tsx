@@ -23,6 +23,7 @@ type ReponsiveModalProps = {
   open?: boolean;
   icon?: LucideIcon;
   onOpenChange?: (open: boolean) => void;
+  disabled?: boolean;
 };
 
 export const ResponsivePopover = ({
@@ -32,7 +33,8 @@ export const ResponsivePopover = ({
   children,
   content,
   onOpenChange,
-  open = false,
+  open,
+  disabled = false,
   className,
 }: ReponsiveModalProps) => {
   const isMobile = useIsMobile();
@@ -41,7 +43,15 @@ export const ResponsivePopover = ({
   if (isMobile) {
     return (
       <Drawer open={open ?? isOpen} onOpenChange={onOpenChange ?? setIsOpen}>
-        {children && <DrawerTrigger asChild>{children}</DrawerTrigger>}
+        {children && (
+          <DrawerTrigger
+            asChild
+            className="flex min-w-0 flex-col"
+            disabled={disabled}
+          >
+            {children}
+          </DrawerTrigger>
+        )}
         <DrawerContent className={className}>
           <DrawerHeader>
             <DrawerTitle className="flex items-center gap-2">
@@ -60,7 +70,13 @@ export const ResponsivePopover = ({
 
   return (
     <Popover open={open ?? isOpen} onOpenChange={onOpenChange ?? setIsOpen}>
-      <PopoverTrigger asChild>{children}</PopoverTrigger>
+      <PopoverTrigger
+        asChild
+        className="flex min-w-0 flex-col"
+        disabled={disabled}
+      >
+        {children}
+      </PopoverTrigger>
       <PopoverContent
         className={cn(
           "flex max-h-[90vh] flex-col overflow-clip px-0 pb-0 sm:max-w-md",

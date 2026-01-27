@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { queryClient } from "@/lib/react-query";
 import { WebSocketMessageType } from "@/lib/websocket/types";
+import { Status } from "@/utils/status";
 import { useQuery } from "@tanstack/react-query";
 import { PlayIcon, UserRoundMinusIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
-import { Status } from "../page";
 
 export const JoinMatchButton = ({
   match,

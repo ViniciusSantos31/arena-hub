@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Status } from "../(detail)/[id]/page";
+import { Status } from "@/utils/status";
 
 export const MatchStatusBadge = ({ status }: { status: Status }) => {
   const matchStatusConfig: Record<Status, { label: string; color: string }> = {

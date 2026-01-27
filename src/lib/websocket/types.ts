@@ -1,4 +1,4 @@
-import { Status } from "@/app/(protected)/group/[code]/matches/(detail)/[id]/page";
+import { Status } from "@/utils/status";
 
 export interface JoinMatchData {
   player: {

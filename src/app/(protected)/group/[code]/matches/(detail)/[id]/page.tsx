@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { matchStatusEnum } from "@/db/schema/match";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { ChevronLeftIcon, Users2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -12,8 +11,6 @@ import { MatchDetailCard } from "./_components/match-detail-card";
 import { PlayerListRealtime } from "./_components/player-list-realtime";
 import { PlayersList } from "./_components/players-list";
 import TeamsList from "./_components/teams-list";
-
-export type Status = (typeof matchStatusEnum.enumValues)[number];
 
 export default function MatchDetailPage({
   params,

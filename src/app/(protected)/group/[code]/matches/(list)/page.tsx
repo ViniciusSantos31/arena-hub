@@ -1,25 +1,10 @@
 "use client";
 
-import { listMatches } from "@/actions/match/list";
-import { useQuery } from "@tanstack/react-query";
-import { use } from "react";
 import { MatchCard, MatchCardLoading } from "../_components/match-card";
+import { useMatchesFilter } from "../_contexts/matches-filter";
 
-export default function MatchesPage({
-  params,
-}: {
-  params: Promise<{ code: string }>;
-}) {
-  const { code } = use(params);
-
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["matches", code],
-    enabled: !!code,
-    queryFn: () =>
-      listMatches({
-        code,
-      }),
-  });
+export default function MatchesPage() {
+  const { data, isLoading, isError } = useMatchesFilter();
 
   if (isError) {
     return (
