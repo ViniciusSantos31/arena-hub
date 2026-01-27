@@ -1,5 +1,6 @@
 "use client";
 
+import { notFound } from "next/navigation";
 import { MatchCard, MatchCardLoading } from "../_components/match-card";
 import { useMatchesFilter } from "../_contexts/matches-filter";
 
@@ -38,6 +39,10 @@ export default function MatchesPage() {
         <MatchCardLoading />
       </div>
     );
+  }
+
+  if (!data) {
+    return notFound();
   }
 
   return (

@@ -1,6 +1,6 @@
 import { listMembers } from "@/actions/member/list";
-import { Card, CardContent } from "@/components/ui/card";
 import { Role } from "@/utils/role";
+import { notFound } from "next/navigation";
 import { ActiveMemberList } from "./_components/active-member-list";
 
 export type Member = {
@@ -26,17 +26,7 @@ export default async function MembersPage({
   });
 
   if (!response.data) {
-    return (
-      <div className="container mx-auto py-6">
-        <Card>
-          <CardContent className="py-8">
-            <div className="text-muted-foreground text-center">
-              Nenhum membro encontrado
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return notFound();
   }
 
   return <ActiveMemberList members={response.data} />;

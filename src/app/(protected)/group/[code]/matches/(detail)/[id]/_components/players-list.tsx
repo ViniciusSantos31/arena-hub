@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CardContent } from "@/components/ui/card";
 import { getAvatarFallback } from "@/utils/avatar";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { PlayerEmptyList } from "./player-empty-list";
 
 export const PlayersList = ({ id }: { id: string }) => {
   const { data: players, isLoading } = useQuery({
@@ -24,6 +25,10 @@ export const PlayersList = ({ id }: { id: string }) => {
         ))}
       </CardContent>
     );
+  }
+
+  if (!players || players.length === 0) {
+    return <PlayerEmptyList />;
   }
 
   return (

@@ -51,13 +51,13 @@ export default function MatchDetailPage({
           <PlayerListRealtime matchId={id}>
             <PlayersList id={id} />
           </PlayerListRealtime>
-          <div className="relative flex items-center py-4">
+          {/* <div className="relative flex items-center py-4">
             <div className="border-muted-foreground/30 flex-1 divide-dashed border-t border-dashed"></div>
             <div className="text-muted-foreground bg-card px-4 text-xs">
               Lista de Espera
             </div>
             <div className="border-muted-foreground/30 flex-1 border-t border-dashed"></div>
-          </div>
+          </div> */}
         </Card>
       </div>
       <TeamsList matchId={id} />

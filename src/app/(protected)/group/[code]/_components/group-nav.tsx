@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import {
   Gamepad2Icon,
-  HistoryIcon,
   LucideIcon,
   PieChartIcon,
   Users2Icon,
@@ -64,11 +63,11 @@ export const GroupNav = ({ code }: { code: string }) => {
           title="Partidas"
           icon={Gamepad2Icon}
         />
-        <NavLink
+        {/* <NavLink
           href={buildHref("/history")}
           title="Histórico"
           icon={HistoryIcon}
-        />
+        /> */}
       </ul>
     </nav>
   );

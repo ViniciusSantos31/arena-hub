@@ -3,6 +3,7 @@
 import { listAllGroups } from "@/actions/group/list-all-groups";
 import { LoadingPage } from "@/components/loading-page";
 import { useQuery } from "@tanstack/react-query";
+import { notFound } from "next/navigation";
 import { GroupFeedCard } from "./_components/group-feed-card";
 import { SearchInput } from "./_components/search-input";
 
@@ -14,6 +15,10 @@ export default function FeedPage() {
 
   if (!data || isLoading) {
     return <LoadingPage />;
+  }
+
+  if (!data.data?.length) {
+    return notFound();
   }
 
   return (
