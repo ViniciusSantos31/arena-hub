@@ -12,7 +12,8 @@ export default async function ProtectedLayout({
   children: React.ReactNode;
 }) {
   const cookieStore = await cookies();
-  const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
+  const sidebarState = cookieStore.get("sidebar_state")?.value;
+  const defaultOpen = sidebarState ? sidebarState === "true" : true;
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
