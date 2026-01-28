@@ -69,13 +69,15 @@ export default async function GroupDashboardPage({
                 </div>
               </div>
             </div>
-            <div className="mt-6 flex items-center gap-2 rounded-lg bg-emerald-50 p-3 dark:bg-emerald-950">
-              <TrendingUpIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-              <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
-                Aumento de {details.data?.matchesPercentageRate}% em relação ao
-                período anterior
-              </span>
-            </div>
+            {!!details.data?.matchesPercentageRate && (
+              <div className="mt-6 flex items-center gap-2 rounded-lg bg-emerald-50 p-3 dark:bg-emerald-950">
+                <TrendingUpIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+                  Aumento de {details.data?.matchesPercentageRate}% em relação
+                  ao período anterior
+                </span>
+              </div>
+            )}
           </CardContent>
           <CardFooter className="flex border-t @[26rem]/card:hidden">
             <Button
@@ -105,7 +107,10 @@ export default async function GroupDashboardPage({
             </CardTitle>
             <CardAction className="hidden @[28rem]/card:flex">
               <Button variant="outline" size="default" asChild>
-                <Link href="#" aria-label="Ver todos os membros">
+                <Link
+                  href={`/group/${code}/members`}
+                  aria-label="Ver todos os membros"
+                >
                   Ver Membros
                   <ArrowRightIcon className="h-4 w-4" />
                 </Link>

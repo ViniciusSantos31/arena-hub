@@ -1,6 +1,12 @@
 import { randomUUID } from "crypto";
 import { relations } from "drizzle-orm";
-import { integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
 import { matchesTable } from "./match";
 import { member } from "./member";
 import { usersTable } from "./user";
@@ -19,6 +25,8 @@ export const playersTable = pgTable("player", {
   memberId: text("member_id").references(() => member.id, {
     onDelete: "cascade",
   }),
+  confirmed: boolean("confirmed").notNull().default(false),
+  waitingQueue: boolean("waiting_queue").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()

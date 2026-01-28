@@ -11,6 +11,7 @@ import { MatchDetailCard } from "./_components/match-detail-card";
 import { PlayerListRealtime } from "./_components/player-list-realtime";
 import { PlayersList } from "./_components/players-list";
 import TeamsList from "./_components/teams-list";
+import { WaitingQueueList } from "./_components/waiting-queue-list";
 
 export default function MatchDetailPage({
   params,
@@ -50,14 +51,8 @@ export default function MatchDetailPage({
           </CardHeader>
           <PlayerListRealtime matchId={id}>
             <PlayersList id={id} />
+            <WaitingQueueList id={id} />
           </PlayerListRealtime>
-          {/* <div className="relative flex items-center py-4">
-            <div className="border-muted-foreground/30 flex-1 divide-dashed border-t border-dashed"></div>
-            <div className="text-muted-foreground bg-card px-4 text-xs">
-              Lista de Espera
-            </div>
-            <div className="border-muted-foreground/30 flex-1 border-t border-dashed"></div>
-          </div> */}
         </Card>
       </div>
       <TeamsList matchId={id} />

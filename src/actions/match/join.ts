@@ -87,7 +87,13 @@ export const joinMatch = actionClient
 
     // TODO: Put the user in the waiting list if no slots are available
     if (!hasAvailableSlots) {
-      throw new Error("No available slots in the match");
+      await db.insert(playersTable).values({
+        matchId,
+        userId,
+        memberId: membershipInfo.id,
+        waitingQueue: true,
+      });
+      return;
     }
 
     // Add the user to the match
@@ -95,6 +101,7 @@ export const joinMatch = actionClient
       matchId,
       userId,
       memberId: membershipInfo.id,
+      waitingQueue: membershipInfo.role === "guest",
     });
 
     const websocketData = {

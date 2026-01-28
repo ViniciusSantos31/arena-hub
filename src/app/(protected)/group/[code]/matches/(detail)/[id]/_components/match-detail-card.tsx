@@ -15,6 +15,7 @@ import { MatchStatusBadge } from "../../../_components/match-status-badge";
 import { MatchStatusBadgeRealtime } from "../../../_components/match-status-badge-realtime";
 import { JoinMatchButton } from "../_components/join-match-button";
 import { useMatch } from "../_hooks/useMatch";
+import { ConfirmPresenceButton } from "./confirm-presence-button";
 
 export const MatchDetailCard = ({ code }: { code: string }) => {
   const { data: match, isLoading } = useMatch();
@@ -67,6 +68,7 @@ export const MatchDetailCard = ({ code }: { code: string }) => {
       </CardContent>
       <CardFooter className="w-full space-x-2 border-t">
         <JoinMatchButton match={match} organizationCode={code} />
+        <ConfirmPresenceButton matchId={match.id} matchStatus={match.status} />
       </CardFooter>
     </Card>
   );
