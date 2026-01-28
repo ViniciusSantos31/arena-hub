@@ -23,6 +23,11 @@ export const listMatchPlayers = actionClient
             image: true,
           },
         },
+        member: {
+          columns: {
+            score: true,
+          },
+        },
       },
     });
 
@@ -31,5 +36,6 @@ export const listMatchPlayers = actionClient
       name: player.user?.name,
       image: player.user?.image,
       userId: player.user?.id,
+      score: player.member?.score,
     }));
   });

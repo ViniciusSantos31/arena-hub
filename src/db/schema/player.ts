@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { relations } from "drizzle-orm";
 import { integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import { matchesTable } from "./match";
+import { member } from "./member";
 import { usersTable } from "./user";
 
 export const playersTable = pgTable("player", {
@@ -15,7 +16,9 @@ export const playersTable = pgTable("player", {
     onDelete: "cascade",
   }),
   teamId: integer("team_id"),
-  score: integer("score").notNull().default(0),
+  memberId: text("member_id").references(() => member.id, {
+    onDelete: "cascade",
+  }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()
@@ -31,5 +34,9 @@ export const playersRelations = relations(playersTable, ({ one }) => ({
   user: one(usersTable, {
     fields: [playersTable.userId],
     references: [usersTable.id],
+  }),
+  member: one(member, {
+    fields: [playersTable.memberId],
+    references: [member.id],
   }),
 }));

@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm";
 import { integer, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import { organization } from "./auth";
+import { playersTable } from "./player";
 import { usersTable } from "./user";
 
 export const roleEnum = pgEnum("member_role", [
@@ -23,7 +24,7 @@ export const member = pgTable("member", {
   createdAt: timestamp("created_at").notNull(),
 });
 
-export const memberRelation = relations(member, ({ one }) => ({
+export const memberRelation = relations(member, ({ one, many }) => ({
   user: one(usersTable, {
     fields: [member.userId],
     references: [usersTable.id],
@@ -32,4 +33,5 @@ export const memberRelation = relations(member, ({ one }) => ({
     fields: [member.organizationId],
     references: [organization.id],
   }),
+  players: many(playersTable),
 }));

@@ -1,5 +1,6 @@
 "use client";
 
+import { getUserMembership } from "@/actions/group/membership";
 import { updateMemberScore } from "@/actions/member/update-score";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -10,10 +11,10 @@ import { authClient } from "@/lib/auth-client";
 import { queryClient } from "@/lib/react-query";
 import { getAvatarFallback } from "@/utils/avatar";
 import { Role } from "@/utils/role";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { UserX2Icon } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { Member } from "../page";
 import { MemberRoleBadge } from "./member-role-badge";
@@ -56,7 +57,29 @@ export const MemberDetails = ({ member }: { member: Member }) => {
     action: ["membership:update"],
   });
 
+  const membership = useQuery({
+    queryKey: ["membership", code],
+    queryFn: async () =>
+      await getUserMembership({
+        organizationCode: code,
+      }).then((res) => res.data),
+  });
+
   const isCurrentUser = session?.data?.user?.id === member.userId;
+
+  const canKickMember = useCallback(
+    (role: Role | null = "guest") => {
+      switch (role) {
+        case "admin":
+          return member.role !== "owner" && member.role !== "admin";
+        case "owner":
+          return true;
+        default:
+          return false;
+      }
+    },
+    [member.role],
+  );
 
   const handleChangeScore = async (newScore: number) => {
     setScore(newScore);
@@ -74,6 +97,10 @@ export const MemberDetails = ({ member }: { member: Member }) => {
       await mutateAsync({ memberId: member.id as string, score });
     }
   };
+
+  if (!membership.data) {
+    return null;
+  }
 
   return (
     <div className="@container/card flex h-fit flex-col">
@@ -116,20 +143,22 @@ export const MemberDetails = ({ member }: { member: Member }) => {
           </div>
         )}
       </div>
-      {canUpdateMember && member.role !== "owner" && !isCurrentUser && (
-        <>
-          <div className="bg-muted my-4 h-px w-full" />
-          <section className="flex w-full px-4">
-            <div className="ml-auto space-x-2">
-              <Button variant={"destructive"}>
-                <UserX2Icon />
-                <span className="hidden @md/card:block">Expulsar Membro</span>
-                <span className="@md/card:hidden">Expulsar</span>
-              </Button>
-            </div>
-          </section>
-        </>
-      )}
+      {canUpdateMember &&
+        canKickMember(membership.data.role) &&
+        !isCurrentUser && (
+          <>
+            <div className="bg-muted my-4 h-px w-full" />
+            <section className="flex w-full px-4">
+              <div className="ml-auto space-x-2">
+                <Button variant={"destructive"}>
+                  <UserX2Icon />
+                  <span className="hidden @md/card:block">Expulsar Membro</span>
+                  <span className="@md/card:hidden">Expulsar</span>
+                </Button>
+              </div>
+            </section>
+          </>
+        )}
     </div>
   );
 };

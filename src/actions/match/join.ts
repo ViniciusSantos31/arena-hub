@@ -94,7 +94,7 @@ export const joinMatch = actionClient
     await db.insert(playersTable).values({
       matchId,
       userId,
-      score: membershipInfo.score,
+      memberId: membershipInfo.id,
     });
 
     const websocketData = {
