@@ -50,6 +50,11 @@ export const listTeamPlayers = actionClient
                 image: true,
               },
             },
+            member: {
+              columns: {
+                score: true,
+              },
+            },
           },
         },
       },
@@ -86,7 +91,7 @@ export const listTeamPlayers = actionClient
         }
         acc[player.teamId].push({
           id: player.id,
-          score: player.score,
+          score: player.member?.score ?? 0,
           name: player.user?.name,
           image: player.user?.image,
         });
@@ -105,7 +110,7 @@ export const listTeamPlayers = actionClient
       .filter((player) => player.teamId === null)
       .map((player) => ({
         id: player.id,
-        score: player.score,
+        score: player.member?.score ?? 0,
         name: player.user?.name,
         image: player.user?.image ?? null,
       }));

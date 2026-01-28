@@ -101,7 +101,6 @@ export const requestToJoinGroup = actionClient
       throw new Error("Usuário não autenticado");
     }
 
-    const { user } = session;
     const { code } = parsedInput;
 
     const org = await getOrganizationByCode({

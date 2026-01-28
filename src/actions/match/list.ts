@@ -163,15 +163,17 @@ export const matchDetails = actionClient
       where: (matchesTable, { eq }) => eq(matchesTable.id, matchId),
       with: {
         players: {
-          columns: {
-            score: true,
-          },
           with: {
             user: {
               columns: {
                 id: true,
                 image: true,
                 name: true,
+              },
+            },
+            member: {
+              columns: {
+                score: true,
               },
             },
           },
@@ -185,6 +187,7 @@ export const matchDetails = actionClient
 
     return {
       ...response,
+
       date: fromUTCDate(response.date),
     };
   });

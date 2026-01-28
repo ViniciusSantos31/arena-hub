@@ -76,7 +76,9 @@ export const sortTeams = actionClient
     }
 
     const playersPerTeam = Math.floor(players.length / nTeams);
-    const playersSortedByScore = [...players].sort((a, b) => b.score - a.score);
+    const playersSortedByScore = [...players].sort(
+      (a, b) => (b.member?.score ?? 0) - (a.member?.score ?? 0),
+    );
 
     const teams: Team[] = Array.from({ length: nTeams }, (_, index) => ({
       team: index + 1,
@@ -92,7 +94,10 @@ export const sortTeams = actionClient
       );
 
       if (availableTeams.length === 0) {
-        reserves.push(player);
+        reserves.push({
+          ...player,
+          score: player.member?.score ?? 0,
+        });
         continue;
       }
 
@@ -102,12 +107,12 @@ export const sortTeams = actionClient
 
       pickedTeam.players.push({
         id: player.id,
-        score: player.score,
-        name: player.name,
-        image: player.image,
+        score: player.member?.score ?? 0,
+        name: player.user?.name,
+        image: player.user?.image,
       });
 
-      pickedTeam.score += player.score;
+      pickedTeam.score += player.member?.score ?? 0;
     }
 
     await Promise.all([
