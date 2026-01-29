@@ -3,6 +3,7 @@ export type Player = {
   name?: string;
   image?: string | null;
   score: number;
+  confirmed?: boolean;
 };
 
 export type Team = {

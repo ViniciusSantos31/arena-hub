@@ -67,10 +67,7 @@ export const listTeamPlayers = actionClient
       };
     }
 
-    if (
-      match.status === "open_registration" ||
-      match.status === "closed_registration"
-    ) {
+    if (match.status === "open_registration") {
       return {
         teams: [],
         reserves: [],
@@ -83,6 +80,7 @@ export const listTeamPlayers = actionClient
         score: number;
         name?: string;
         image?: string | null;
+        confirmed: boolean;
       }>;
     }>((acc, player) => {
       if (player.teamId !== null) {
@@ -94,6 +92,7 @@ export const listTeamPlayers = actionClient
           score: player.member?.score ?? 0,
           name: player.user?.name,
           image: player.user?.image,
+          confirmed: player.confirmed,
         });
       }
       return acc;
@@ -113,6 +112,7 @@ export const listTeamPlayers = actionClient
         score: player.member?.score ?? 0,
         name: player.user?.name,
         image: player.user?.image ?? null,
+        confirmed: player.confirmed,
       }));
 
     return {

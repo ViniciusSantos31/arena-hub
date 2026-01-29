@@ -2,19 +2,11 @@ import { listTeamPlayers } from "@/actions/team/list";
 import { Team } from "@/actions/team/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAvatarFallback } from "@/utils/avatar";
 import { useQuery } from "@tanstack/react-query";
-import { Grid2x2CheckIcon, Settings2Icon } from "lucide-react";
+import { Grid2x2CheckIcon } from "lucide-react";
 import { Fragment } from "react";
-import { useMatch } from "../_hooks/useMatch";
 import { TeamEmptyList } from "./team-empty-list";
 import { TeamsListRealtime } from "./teams-list-realtime";
 
@@ -63,8 +55,6 @@ const TeamCard = ({ team }: { team: Team }) => {
 };
 
 export default function TeamsList({ matchId }: TeamsListProps) {
-  const { data: match } = useMatch();
-
   const { data, isLoading, isError } = useQuery({
     queryKey: ["teams", matchId],
     enabled: !!matchId,
@@ -118,13 +108,6 @@ export default function TeamsList({ matchId }: TeamsListProps) {
             </div>
             Times
           </CardTitle>
-          <CardAction>
-            {match?.status === "team_sorted" && (
-              <Button variant={"outline"} size={"icon"}>
-                <Settings2Icon />
-              </Button>
-            )}
-          </CardAction>
         </CardHeader>
 
         {data.teams.map((team) => (

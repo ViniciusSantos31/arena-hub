@@ -1,41 +1,64 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { getAvatarFallback } from "@/utils/avatar";
+import { CheckIcon, LoaderIcon } from "lucide-react";
 
-interface PlayerCardProps {
+interface PlayerItemProps {
   player: {
     id?: string;
     name?: string;
     image?: string | null;
     score?: number;
+    confirmed?: boolean;
   };
+  ref?: React.Ref<HTMLDivElement>;
 }
 
-export const PlayerCard = ({ player }: PlayerCardProps) => {
+export const PlayerItem = ({ ref, player }: PlayerItemProps) => {
   return (
-    <Card className="bg-muted/30 hover:bg-muted/50 transition-all duration-200 dark:border-0">
-      <CardContent>
-        <div className="flex flex-col justify-between @md:flex-row @md:items-center">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-12 w-12">
-              <AvatarImage src={player.image ?? undefined} alt={player.name} />
-              <AvatarFallback className="bg-primary/10 text-primary font-medium">
-                {getAvatarFallback(player.name ?? "")}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h3 className="text-foreground font-medium">{player.name}</h3>
-            </div>
+    <div
+      key={player.id}
+      className="flex items-center justify-between"
+      ref={ref}
+    >
+      <div className="flex items-center gap-3">
+        <Avatar
+          className={cn(
+            "relative size-10 overflow-visible",
+            player.confirmed
+              ? "ring-primary ring-offset-card ring-2 ring-offset-2"
+              : "ring-muted-foreground/10 ring-offset-card ring-2 ring-offset-2",
+          )}
+        >
+          <div
+            className={cn(
+              "ring-card absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full ring-2",
+              player.confirmed ? "bg-primary" : "bg-muted",
+            )}
+          >
+            {player.confirmed ? (
+              <CheckIcon className="size-3" />
+            ) : (
+              <LoaderIcon className="size-3" />
+            )}
           </div>
-          <div className="mt-4 flex items-center gap-6 @md:mt-0">
-            <div>
-              <p className="text-sm font-medium">{player.score ?? 0}</p>
-              <p className="text-muted-foreground text-xs">Nota</p>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+          <AvatarFallback className="rounded-full">
+            {getAvatarFallback(player.name)}
+          </AvatarFallback>
+          <AvatarImage
+            className="rounded-full"
+            src={player.image || undefined}
+          />
+        </Avatar>
+        <span>{player.name}</span>
+      </div>
+      {player.score !== undefined && (
+        <span className="text-muted-foreground text-sm font-medium">
+          {player.score} pts
+        </span>
+      )}
+    </div>
   );
 };
 

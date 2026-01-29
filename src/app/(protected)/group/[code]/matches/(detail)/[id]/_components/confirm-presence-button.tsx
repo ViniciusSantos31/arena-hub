@@ -53,7 +53,7 @@ export const ConfirmPresenceButton = ({
     },
   });
 
-  if (!player || player.confirmed || matchStatus === "closed_registration") {
+  if (!player || player.confirmed || matchStatus !== "open_registration") {
     return null;
   }
 
