@@ -19,6 +19,7 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -42,6 +43,7 @@ export function NavSidebar({
   }[];
 }) {
   const { open, setOpenMobile } = useSidebar();
+  const isMobile = useIsMobile();
   const segments = useSelectedLayoutSegments();
 
   const currentPath = `/${segments.join("/")}`;
@@ -108,6 +110,7 @@ export function NavSidebar({
                 className={cn(
                   item.logo &&
                     !open &&
+                    !isMobile &&
                     "overflow-visible p-0! group-data-[collapsible=icon]:p-0!",
                 )}
               >
@@ -121,9 +124,10 @@ export function NavSidebar({
                       height={768}
                       className={cn(
                         "size-6 rounded-sm object-cover",
-                        !open && "size-8 rounded-full",
+                        !open && !isMobile && "size-8 rounded-full",
                         currentPath.startsWith(item.url) &&
                           !open &&
+                          !isMobile &&
                           "ring-primary ring-offset-sidebar ring-2 ring-offset-2",
                       )}
                     />
