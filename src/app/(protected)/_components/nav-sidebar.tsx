@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { useSelectedLayoutSegments } from "next/navigation";
+import { ComponentProps } from "react";
 
 export function NavSidebar({
   title,
@@ -33,6 +34,7 @@ export function NavSidebar({
   items: {
     title: string;
     url: string;
+    target?: ComponentProps<typeof Link>["target"];
     icon?: LucideIcon;
     logo?: string;
     isActive?: boolean;
@@ -114,7 +116,11 @@ export function NavSidebar({
                     "overflow-visible p-0! group-data-[collapsible=icon]:p-0!",
                 )}
               >
-                <Link href={item.url} onClick={() => setOpenMobile(false)}>
+                <Link
+                  href={item.url}
+                  target={item.target}
+                  onClick={() => setOpenMobile(false)}
+                >
                   {item.icon && <item.icon />}
                   {item.logo && (
                     <Image

@@ -13,6 +13,7 @@ import { NavGroups } from "./nav-groups";
 import { NavHome } from "./nav-home";
 import { NavLogout } from "./nav-logout";
 import { NavOptions } from "./nav-options";
+import { NavSettings } from "./nav-settings";
 
 export async function AppSidebar({
   ...props
@@ -29,6 +30,7 @@ export async function AppSidebar({
       </SidebarContent>
       <SidebarRail />
       <SidebarFooter className="p-0">
+        <NavSettings />
         <Separator />
         <NavLogout />
       </SidebarFooter>
