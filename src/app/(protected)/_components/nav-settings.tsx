@@ -1,6 +1,6 @@
 "use client";
 
-import { BugIcon } from "lucide-react";
+import { BugIcon, GraduationCapIcon } from "lucide-react";
 import { NavSidebar } from "./nav-sidebar";
 
 const options = {
@@ -20,6 +20,11 @@ const options = {
     //   url: "/settings/about",
     //   icon: InfoIcon,
     // },
+    {
+      title: "Entenda o App",
+      url: "/learn-more",
+      icon: GraduationCapIcon,
+    },
     {
       title: "Reporte um problema",
       url: "https://forms.gle/3fdBhX9aRTDskp4eA",

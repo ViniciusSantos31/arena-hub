@@ -1,42 +1,39 @@
-import { PlusIcon, SearchIcon, ZapIcon } from "lucide-react";
+import { GraduationCapIcon, PlusIcon, SearchIcon, ZapIcon } from "lucide-react";
 import { GroupButton } from "./_components/group-button";
-import { NotificationCard } from "./_components/notification-card";
 
 export default function ProtectedPage() {
   return (
-    <div className="bg-background flex w-full flex-col">
-      {/* Header */}
-      <div className="mb-8 text-center">
-        <h1 className="mb-2 text-4xl font-bold tracking-tight">Arena Hub</h1>
-        <p className="text-muted-foreground text-lg">
-          Sua central de gaming e comunidade
+    <div className="bg-background flex h-full w-full flex-col items-center justify-center px-4">
+      {/* Hero Section */}
+      <div className="mb-12 text-center">
+        <h1 className="from-primary to-secondary mb-4 bg-gradient-to-r bg-clip-text text-5xl font-bold tracking-tight text-transparent">
+          Arena Hub
+        </h1>
+        <p className="text-muted-foreground max-w-2xl text-lg text-balance">
+          Conecte-se com outros gamers, crie grupos e organize suas sessões de
+          jogo em um só lugar.
         </p>
       </div>
 
-      {/* Main Grid */}
-      <div className="grid w-full grid-cols-1 gap-8 lg:grid-cols-3">
-        {/* Quick Actions */}
-        <div className="space-y-4 lg:col-span-1">
-          <div className="flex items-center gap-2">
-            <ZapIcon className="h-5 w-5" />
-            <h2 className="text-xl font-semibold">Ações rápidas</h2>
-          </div>
-          <div className="w-full space-y-3">
-            <GroupButton
-              label="Criar Grupo"
-              icon={PlusIcon}
-              href="group/create"
-            />
-            <GroupButton
-              label="Encontrar Grupos"
-              icon={SearchIcon}
-              href="feed"
-            />
-          </div>
+      {/* Quick Actions */}
+      <div className="w-full max-w-md space-y-4">
+        <div className="mb-6 flex items-center justify-center gap-2">
+          <ZapIcon className="text-primary h-6 w-6" />
+          <h2 className="font-semibold">Ações Rápidas</h2>
         </div>
-
-        {/* Notifications */}
-        <NotificationCard />
+        <div className="space-y-4">
+          <GroupButton
+            label="Criar grupo"
+            icon={PlusIcon}
+            href="group/create"
+          />
+          <GroupButton label="Encontrar grupos" icon={SearchIcon} href="feed" />
+          <GroupButton
+            label="Entenda o App"
+            icon={GraduationCapIcon}
+            href="learn-more"
+          />
+        </div>
       </div>
     </div>
   );
