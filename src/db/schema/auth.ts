@@ -8,6 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { matchesTable } from "./match";
 import { member } from "./member";
+import { requestsTable } from "./request";
 import { usersTable } from "./user";
 
 export const sessionsTable = pgTable("session", {
@@ -73,6 +74,7 @@ export const organization = pgTable("organization", {
 export const organizationsRelations = relations(organization, ({ many }) => ({
   matches: many(matchesTable),
   members: many(member),
+  requests: many(requestsTable),
 }));
 
 export const invitationsTable = pgTable("invitation", {

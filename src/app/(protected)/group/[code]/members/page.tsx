@@ -2,6 +2,7 @@ import { listMembers } from "@/actions/member/list";
 import { Role } from "@/utils/role";
 import { notFound } from "next/navigation";
 import { ActiveMemberList } from "./_components/active-member-list";
+import { ViewRequestsButton } from "./_components/view-requests-button";
 
 export type Member = {
   id?: string;
@@ -29,5 +30,10 @@ export default async function MembersPage({
     return notFound();
   }
 
-  return <ActiveMemberList members={response.data} />;
+  return (
+    <div className="flex flex-col justify-end gap-4">
+      <ViewRequestsButton />
+      <ActiveMemberList members={response.data} />
+    </div>
+  );
 }

@@ -30,9 +30,9 @@ export default function MatchDetailPage({
 
   return (
     <main className="flex flex-col gap-4">
-      <Button variant="secondary" className="w-fit" onClick={router.back}>
+      <Button variant="outline" className="w-fit" onClick={router.back}>
         <ChevronLeftIcon />
-        Voltar para as Partidas
+        Voltar para as partidas
       </Button>
 
       <AdvancedSettingsSection />
