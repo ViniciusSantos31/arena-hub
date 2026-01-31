@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -13,6 +14,10 @@ export function SignInWithGoogle({
   ...props
 }: SignInWithGoogleProps) {
   const [loading, setLoading] = useState(false);
+
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo") || "/home";
+
   const handleGoogleSignIn = async () => {
     if (loading) return;
 
@@ -20,7 +25,7 @@ export function SignInWithGoogle({
       setLoading(true);
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/home",
+        callbackURL: redirectTo,
       });
     } catch {
       toast.error(

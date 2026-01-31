@@ -1,37 +1,41 @@
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "./lib/auth";
 
 const PUBLIC_ROUTES = ["/"];
 const AUTH_ROUTES = ["/auth/sign-in", "/auth/sign-up"];
 
 export async function middleware(request: NextRequest) {
   const session = await auth.api.getSession({
-    headers: await headers(),
+    headers: request.headers,
   });
 
-  const isPublicRoute = PUBLIC_ROUTES.some((route) =>
-    request.nextUrl.pathname.startsWith(route),
+  const isPublicRoute = PUBLIC_ROUTES.some(
+    (route) => request.nextUrl.pathname === route,
   );
   const isAuthRoute = AUTH_ROUTES.some((route) =>
     request.nextUrl.pathname.startsWith(route),
   );
   const isApiRoute = request.nextUrl.pathname.startsWith("/api");
 
+  const sessionIsValid =
+    session &&
+    session &&
+    session.user &&
+    session.session.expiresAt > new Date();
+
   if (isApiRoute) return NextResponse.next();
 
-  if (!session?.user && !isPublicRoute) {
-    return NextResponse.redirect(new URL("/auth/sign-in", request.url));
+  if (!sessionIsValid && !isPublicRoute && !isAuthRoute) {
+    return NextResponse.redirect(
+      new URL(
+        "/auth/sign-in?redirectTo=" +
+          encodeURIComponent(request.nextUrl.pathname),
+        request.url,
+      ),
+    );
   }
 
-  if (session && session.session.expiresAt < new Date()) {
-    await auth.api.signOut({
-      headers: await headers(),
-    });
-    return NextResponse.redirect(new URL("/auth/sign-in", request.url));
-  }
-
-  if (session && isAuthRoute) {
+  if (sessionIsValid && isAuthRoute) {
     return NextResponse.redirect(new URL("/home", request.url));
   }
 
