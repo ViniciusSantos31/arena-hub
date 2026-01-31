@@ -6,16 +6,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { TutorialSectionWithSteps } from "@/db/schema/tutorial";
 import { ArrowRight, PlayCircle } from "lucide-react";
 import Link from "next/link";
 import { ProgressStats } from "./progress-stats";
 import { SectionCard } from "./section-card";
-import { TutorialSection } from "./types";
 
 interface TutorialOverviewProps {
-  sections: TutorialSection[];
+  sections: TutorialSectionWithSteps[];
   completedSections: Set<string>;
-  onSelectSection: (sectionId: string) => void;
+  onSelectSection: () => void;
   getCategoryColor: (category: string) => string;
   getCategoryLabel: (category: string) => string;
 }
@@ -50,12 +50,7 @@ export function TutorialOverview({
                 Ir para Dashboard
               </Link>
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => onSelectSection("getting-started")}
-            >
-              Começar Tutorial
-            </Button>
+            <Button variant="outline">Começar Tutorial</Button>
           </div>
         </CardContent>
       </Card>
@@ -74,8 +69,11 @@ export function TutorialOverview({
             section={section}
             isCompleted={completedSections.has(section.id)}
             onSelect={onSelectSection}
-            getCategoryColor={getCategoryColor}
-            getCategoryLabel={getCategoryLabel}
+            completedSteps={
+              section.steps.filter((step) => completedSections.has(step.id))
+                .length
+            }
+            totalSteps={section.steps.length}
           />
         ))}
       </div>

@@ -1,9 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { TutorialSectionWithSteps } from "@/db/schema/tutorial";
 import { BookOpen, CheckCircle, Zap } from "lucide-react";
-import { TutorialSection } from "./types";
 
 interface ProgressStatsProps {
-  sections: TutorialSection[];
+  sections: TutorialSectionWithSteps[];
   completedSections: Set<string>;
 }
 
