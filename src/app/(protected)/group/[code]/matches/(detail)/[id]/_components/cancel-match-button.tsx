@@ -9,6 +9,7 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useMemberStore } from "../../../../_store/group";
+import { matchDetailQueryKeys } from "../_hooks";
 import { useMatch } from "../_hooks/useMatch";
 
 export const CancelMatchButton = () => {
@@ -21,7 +22,7 @@ export const CancelMatchButton = () => {
   const cancelMatchAction = useAction(updateMatch, {
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["match", matchId],
+        queryKey: matchDetailQueryKeys.match(matchId || ""),
       });
       toast.success("Partida cancelada com sucesso.", { id: "cancel-match" });
     },

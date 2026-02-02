@@ -187,7 +187,6 @@ export const matchDetails = actionClient
 
     return {
       ...response,
-
       date: fromUTCDate(response.date),
     };
   });

@@ -9,6 +9,7 @@ import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useMemberStore } from "../../../../_store/group";
+import { matchDetailQueryKeys } from "../_hooks";
 import { useMatch } from "../_hooks/useMatch";
 
 export const CompleteMatchButton = () => {
@@ -22,7 +23,7 @@ export const CompleteMatchButton = () => {
   const updateMatchAction = useAction(updateMatch, {
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["match", match?.id],
+        queryKey: matchDetailQueryKeys.match(match?.id || ""),
       });
       toast.success("Partida concluída com sucesso.", {
         id: "complete-match",

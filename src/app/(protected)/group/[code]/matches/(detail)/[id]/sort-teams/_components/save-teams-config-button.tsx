@@ -9,6 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { SaveIcon, ShuffleIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { matchDetailQueryKeys } from "../../_hooks";
 
 export const SaveTeamsConfigButton = ({
   matchId,
@@ -50,7 +51,9 @@ export const SaveTeamsConfigButton = ({
           status: "team_sorted",
         },
       });
-      queryClient.invalidateQueries({ queryKey: ["teams", matchId] });
+      queryClient.invalidateQueries({
+        queryKey: matchDetailQueryKeys.teams(matchId),
+      });
       router.back();
     },
   });

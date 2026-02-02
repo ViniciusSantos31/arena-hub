@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PlayIcon, UserRoundMinusIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
+import { matchDetailQueryKeys } from "../_hooks";
 
 export const JoinMatchButton = ({
   match,
@@ -35,10 +36,8 @@ export const JoinMatchButton = ({
       queryClient.invalidateQueries({
         predicate(query) {
           return (
-            query.queryKey[0] === "players" ||
-            query.queryKey[0] === "player" ||
-            query.queryKey[0] === "match" ||
-            query.queryKey[0] === "matches"
+            query.queryKey[0] === matchDetailQueryKeys.all[0] ||
+            query.queryKey[0] === "player"
           );
         },
       });

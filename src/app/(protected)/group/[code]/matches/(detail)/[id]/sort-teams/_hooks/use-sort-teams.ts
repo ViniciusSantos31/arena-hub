@@ -1,6 +1,7 @@
 import { sortTeams } from "@/actions/team/sort";
 import { queryClient } from "@/lib/react-query";
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
+import { matchDetailQueryKeys } from "../../_hooks";
 import type { SortTeamsParams, SortTeamsResult } from "../types";
 import { sortTeamsQueryKeys } from "./query-keys";
 
@@ -25,7 +26,10 @@ export function useSortTeams(
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["teams", variables.matchId],
+        queryKey: matchDetailQueryKeys.teams(variables.matchId),
+        predicate(query) {
+          return query.queryKey[0] === matchDetailQueryKeys.all[0];
+        },
       });
     },
     ...options,

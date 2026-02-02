@@ -6,6 +6,7 @@ import { queryClient } from "@/lib/react-query";
 import { Status } from "@/utils/status";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { CheckCircleIcon } from "lucide-react";
+import { matchDetailQueryKeys } from "../_hooks";
 
 export const ConfirmPresenceButton = ({
   matchId,
@@ -44,9 +45,8 @@ export const ConfirmPresenceButton = ({
       queryClient.invalidateQueries({
         predicate(query) {
           return (
-            query.queryKey[0] === "players" ||
-            query.queryKey[0] === "player" ||
-            query.queryKey[0] === "match"
+            query.queryKey[0] === matchDetailQueryKeys.all[0] ||
+            query.queryKey[0] === "player"
           );
         },
       });

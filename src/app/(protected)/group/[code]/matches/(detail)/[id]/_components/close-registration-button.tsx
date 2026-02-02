@@ -8,6 +8,7 @@ import { TicketXIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 import { useMemberStore } from "../../../../_store/group";
+import { matchDetailQueryKeys } from "../_hooks";
 import { useMatch } from "../_hooks/useMatch";
 
 export const CloseRegistrationButton = () => {
@@ -19,7 +20,7 @@ export const CloseRegistrationButton = () => {
   const updateMatchAction = useAction(updateMatch, {
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["match", match?.id],
+        queryKey: matchDetailQueryKeys.match(match?.id || ""),
       });
       toast.success("Registro de inscrição fechado com sucesso.", {
         id: "close-registration",
