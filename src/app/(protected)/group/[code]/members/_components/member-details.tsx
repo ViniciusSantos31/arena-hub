@@ -16,7 +16,7 @@ import { UserX2Icon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
-import { Member } from "../page";
+import { Member } from "../@tabs/active/page";
 import { MemberRoleBadge } from "./member-role-badge";
 
 export const MemberDetails = ({ member }: { member: Member }) => {

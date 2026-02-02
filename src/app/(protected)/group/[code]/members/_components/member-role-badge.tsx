@@ -16,7 +16,7 @@ import { useOptimisticAction } from "next-safe-action/hooks";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { useMemberStore } from "../../_store/group";
-import { Member } from "../page";
+import { Member } from "../@tabs/active/page";
 
 export const MemberRoleBadge = ({
   memberRole,

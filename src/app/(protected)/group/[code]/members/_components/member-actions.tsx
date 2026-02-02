@@ -5,7 +5,7 @@ import { useGuard } from "@/hooks/use-guard";
 import { cn } from "@/lib/utils";
 import { Role } from "@/utils/role";
 import { Edit2Icon } from "lucide-react";
-import { Member } from "../page";
+import { Member } from "../@tabs/active/page";
 import { MemberDetailsDialog } from "./member-details-dialog";
 import { MemberRoleBadge } from "./member-role-badge";
 

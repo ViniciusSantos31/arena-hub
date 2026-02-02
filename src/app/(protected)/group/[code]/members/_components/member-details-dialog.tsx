@@ -2,7 +2,7 @@ import {
   ResponsiveDialog,
   ResponsiveDialogBaseProps,
 } from "@/components/responsive-dialog";
-import { Member } from "../page";
+import { Member } from "../@tabs/active/page";
 import { MemberDetails } from "./member-details";
 
 type MemberDetailsDialogProps = ResponsiveDialogBaseProps & {

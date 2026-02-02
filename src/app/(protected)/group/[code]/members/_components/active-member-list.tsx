@@ -3,7 +3,7 @@
 import { listMembers } from "@/actions/member/list";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import { Member } from "../page";
+import { Member } from "../@tabs/active/page";
 import { MemberCard } from "./member-card";
 
 export const ActiveMemberList = ({
