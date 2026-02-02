@@ -5,8 +5,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { authClient } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 import { getAvatarFallback } from "@/utils/avatar";
 import Link from "next/link";
 
@@ -38,6 +41,8 @@ const NavUserLoading = () => {
 
 export function NavUser() {
   const { data: session } = authClient.useSession();
+  const { open } = useSidebar();
+  const isMobile = useIsMobile();
 
   if (!session?.user) {
     return <NavUserLoading />;
@@ -51,7 +56,10 @@ export function NavUser() {
         <SidebarMenuButton
           size="lg"
           asChild
-          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+          className={cn(
+            "data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground",
+            !open && !isMobile && "group-data-[collapsible=icon]:p-0!",
+          )}
         >
           <Link href="/profile">
             <Avatar className="h-8 w-8 rounded-lg">
