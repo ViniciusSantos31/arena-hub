@@ -41,5 +41,5 @@ export const alreadyRequest = actionClient
         ),
     });
 
-    return !!request;
+    return Boolean(request);
   });

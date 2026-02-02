@@ -1,3 +1,5 @@
+import { Status } from "@/utils/status";
+
 export interface MatchDetail {
   id: string;
   title: string;
@@ -7,7 +9,7 @@ export interface MatchDetail {
   location: string;
   minPlayers: number;
   maxPlayers: number;
-  status: string;
+  status: Status;
   organizationId: string;
   createdAt: Date;
   updatedAt: Date;

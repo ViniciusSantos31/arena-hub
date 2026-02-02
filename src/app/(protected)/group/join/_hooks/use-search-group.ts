@@ -18,7 +18,7 @@ export function useSearchGroupByCode(
       const result = await getOrganizationByCode({
         code: code.toUpperCase(),
       });
-      return result;
+      return result as GroupSearchResult;
     },
     ...options,
   });

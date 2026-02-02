@@ -14,13 +14,15 @@ import { Status } from "@/utils/status";
 import { MatchStatusBadge } from "../../../_components/match-status-badge";
 import { MatchStatusBadgeRealtime } from "../../../_components/match-status-badge-realtime";
 import { JoinMatchButton } from "../_components/join-match-button";
+import { useMatchPlayers } from "../_hooks";
 import { useMatch } from "../_hooks/useMatch";
 import { ConfirmPresenceButton } from "./confirm-presence-button";
 
 export const MatchDetailCard = ({ code }: { code: string }) => {
   const { data: match, isLoading } = useMatch();
+  const { data: matchPlayers } = useMatchPlayers(match?.id ?? "");
 
-  const filledPlayers = match?.players.length ?? 0;
+  const filledPlayers = matchPlayers?.players.length ?? 0;
   const maxPlayers = match?.maxPlayers ?? 1;
   const progressValue = (filledPlayers * 100) / maxPlayers;
 

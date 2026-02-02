@@ -1,10 +1,10 @@
 export interface FeedGroup {
   id: string;
   name: string;
-  description: string;
+  description: string | null;
   code: string;
   isPrivate: boolean;
   logo: string | null;
-  createdAt: string;
+  createdAt: Date;
   isMember?: string;
 }

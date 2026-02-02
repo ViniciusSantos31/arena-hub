@@ -33,7 +33,7 @@ export function useCheckAlreadyRequested(
     enabled: isPrivate && !!organizationCode,
     queryFn: async () => {
       const result = await alreadyRequest({ organizationCode });
-      return result.data;
+      return Boolean(result.data);
     },
     ...options,
   });

@@ -1,13 +1,17 @@
 export interface GroupSearchResult {
-  data?: {
+  data: {
+    code: string;
     id: string;
     name: string;
-    description: string;
-    code: string;
-    isPrivate: boolean;
+    createdAt: Date;
+    slug: string | null;
     logo: string | null;
+    private: boolean;
+    maxPlayers: number;
+    metadata: string | null;
+    isAlreadyMember: boolean;
     participants: number;
-  } | null;
+  };
   serverError?: string;
 }
 

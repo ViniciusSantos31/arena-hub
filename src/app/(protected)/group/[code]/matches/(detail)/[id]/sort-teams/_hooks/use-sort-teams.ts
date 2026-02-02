@@ -21,7 +21,7 @@ export function useSortTeams(
       nTeams,
     }: SortTeamsParams) => {
       const result = await sortTeams({ matchId, organizationCode, nTeams });
-      return result.data;
+      return result.data as SortTeamsResult;
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({
