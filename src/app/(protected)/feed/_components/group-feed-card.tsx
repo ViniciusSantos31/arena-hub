@@ -1,5 +1,4 @@
 import { joinGroup } from "@/actions/group/join";
-import { alreadyRequest } from "@/actions/request/already-request";
 import { createJoinRequest } from "@/actions/request/create";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -15,11 +14,11 @@ import {
 import { cn } from "@/lib/utils";
 import { getAvatarFallback } from "@/utils/avatar";
 import { formatDate } from "@/utils/date";
-import { useQuery } from "@tanstack/react-query";
 import { EyeIcon, Lock } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useCheckAlreadyRequested } from "../_hooks";
 
 type GroupFeedCardProps =
   | {
@@ -56,12 +55,10 @@ const JoinGroupButton = ({
 }) => {
   const router = useRouter();
 
-  const { data: alreadyRequested, refetch } = useQuery({
-    queryKey: ["check-already-request", code],
-    queryFn: async () =>
-      alreadyRequest({ organizationCode: code ?? "" }).then((res) => res.data),
-    enabled: isPrivate && !!code,
-  });
+  const { data: alreadyRequested, refetch } = useCheckAlreadyRequested(
+    code ?? "",
+    isPrivate ?? false,
+  );
 
   const joinGroupAction = useAction(joinGroup, {
     onSuccess: () => {

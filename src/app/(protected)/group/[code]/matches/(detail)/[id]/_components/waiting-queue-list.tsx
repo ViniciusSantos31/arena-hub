@@ -1,16 +1,9 @@
-import { listMatchPlayers } from "@/actions/match/player";
 import { CardContent } from "@/components/ui/card";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useWaitingQueue } from "../_hooks";
 import { PlayerItem } from "./player-item";
 
 export const WaitingQueueList = ({ id }: { id: string }) => {
-  const { data: players, isLoading } = useQuery({
-    queryKey: ["players", id],
-    enabled: !!id,
-    queryFn: async () =>
-      listMatchPlayers({ matchId: id }).then((res) => res.data),
-    placeholderData: keepPreviousData,
-  });
+  const { data: players, isLoading } = useWaitingQueue(id);
 
   if (isLoading) {
     return (
@@ -25,7 +18,7 @@ export const WaitingQueueList = ({ id }: { id: string }) => {
     );
   }
 
-  if (!players || players.waitingQueue.length === 0) {
+  if (!players || players.length === 0) {
     return null;
   }
 
@@ -39,7 +32,7 @@ export const WaitingQueueList = ({ id }: { id: string }) => {
         <div className="border-muted-foreground/30 flex-1 border-t border-dashed"></div>
       </div>
       <CardContent className="space-y-4">
-        {players?.waitingQueue.map((player) => (
+        {players?.map((player) => (
           <PlayerItem key={player.id} player={player} />
         ))}
       </CardContent>

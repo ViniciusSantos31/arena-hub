@@ -1,23 +1,19 @@
 "use client";
 
-import { listAllGroups } from "@/actions/group/list-all-groups";
 import { LoadingPage } from "@/components/loading-page";
-import { useQuery } from "@tanstack/react-query";
 import { notFound } from "next/navigation";
 import { GroupFeedCard } from "./_components/group-feed-card";
 import { SearchInput } from "./_components/search-input";
+import { useFeedGroups } from "./_hooks";
 
 export default function FeedPage() {
-  const { data, isLoading } = useQuery({
-    queryKey: ["feed", "groups"],
-    queryFn: async () => listAllGroups(),
-  });
+  const { data, isLoading } = useFeedGroups();
 
   if (!data || isLoading) {
     return <LoadingPage />;
   }
 
-  if (!data.data?.length) {
+  if (!data.length) {
     return notFound();
   }
 
@@ -27,7 +23,7 @@ export default function FeedPage() {
         <SearchInput />
       </div>
       <section className="mt-3 grid w-full grid-cols-1 gap-4 @xl:grid-cols-2 @4xl:grid-cols-3">
-        {data.data?.map((group) => (
+        {data.map((group) => (
           <GroupFeedCard
             key={group.id}
             group={{

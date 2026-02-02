@@ -1,6 +1,5 @@
 "use client";
 
-import { getOrganizationByCode } from "@/actions/group/get-org-by-code";
 import { joinGroupByCode } from "@/actions/group/join";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -11,13 +10,14 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Separator } from "@/components/ui/separator";
-import { useMutation } from "@tanstack/react-query";
 import { InfoIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useSearchGroupByCode } from "./_hooks";
+import type { GroupPreviewData } from "./types";
 
 const GroupNotFound = () => {
   return (
@@ -60,12 +60,7 @@ const GroupPreview = ({
   group,
 }: {
   isAlreadyMember: boolean;
-  group: {
-    name: string;
-    logo: string | null;
-    code: string;
-    participants: number;
-  };
+  group: GroupPreviewData;
 }) => {
   const router = useRouter();
   const { name, logo, code, participants } = group;
@@ -128,13 +123,7 @@ const GroupPreview = ({
 };
 
 export default function JoinGroupPage() {
-  const { mutate, data, isPending } = useMutation({
-    mutationKey: ["join", "group"],
-    mutationFn: async (code: string) =>
-      await getOrganizationByCode({
-        code: code.toUpperCase(),
-      }),
-  });
+  const { mutate, data, isPending } = useSearchGroupByCode();
 
   return (
     <main className="flex h-full w-full flex-col items-center justify-center">

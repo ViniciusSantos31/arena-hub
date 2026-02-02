@@ -32,7 +32,7 @@ const buildReturnPlayer = (player: {
     name: player.user?.name,
     image: player.user?.image,
     userId: player.userId,
-    score: player.member?.score,
+    score: player.member?.score || 0,
     confirmed: player.confirmed,
     waitingQueue: player.waitingQueue,
   };

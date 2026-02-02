@@ -1,10 +1,9 @@
 "use client";
 
-import { listAllRequests } from "@/actions/request/list";
-import { useQuery } from "@tanstack/react-query";
 import { use } from "react";
 import { EmptyRequestList } from "./_components/request-empty-list";
 import { RequestMemberCard } from "./_components/request-member-card";
+import { useMemberRequests } from "./_hooks";
 import GroupRequestLoading from "./loading";
 
 export default function RequestPage({
@@ -13,11 +12,7 @@ export default function RequestPage({
   params: Promise<{ code: string }>;
 }) {
   const { code } = use(params);
-  const { data: requests, isLoading } = useQuery({
-    queryKey: ["list-requests", code],
-    queryFn: async () =>
-      await listAllRequests({ organizationCode: code }).then((res) => res.data),
-  });
+  const { data: requests, isLoading } = useMemberRequests(code);
 
   if (requests && requests.length === 0) {
     return <EmptyRequestList />;

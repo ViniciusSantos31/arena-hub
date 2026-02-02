@@ -50,6 +50,8 @@ export function NavSidebar({
 
   const currentPath = `/${segments.join("/")}`;
 
+  if (items.length === 0) return null;
+
   return (
     <SidebarGroup>
       {title && items.length > 0 && (

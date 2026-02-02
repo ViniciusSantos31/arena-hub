@@ -1,17 +1,10 @@
-import { listMatchPlayers } from "@/actions/match/player";
 import { CardContent } from "@/components/ui/card";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useMatchPlayers } from "../_hooks";
 import { PlayerEmptyList } from "./player-empty-list";
 import { PlayerItem } from "./player-item";
 
 export const PlayersList = ({ id }: { id: string }) => {
-  const { data: players, isLoading } = useQuery({
-    queryKey: ["players", id],
-    enabled: !!id,
-    queryFn: async () =>
-      listMatchPlayers({ matchId: id }).then((res) => res.data),
-    placeholderData: keepPreviousData,
-  });
+  const { data: players, isLoading } = useMatchPlayers(id);
 
   if (isLoading) {
     return (

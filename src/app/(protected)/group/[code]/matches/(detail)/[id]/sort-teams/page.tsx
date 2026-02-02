@@ -1,6 +1,5 @@
 "use client";
 
-import { sortTeams } from "@/actions/team/sort";
 import { Player, Team } from "@/actions/team/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,13 +10,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { queryClient } from "@/lib/react-query";
-import { useMutation } from "@tanstack/react-query";
 import { ShuffleIcon } from "lucide-react";
 import { use, useState } from "react";
 import { DroppableTeamsList } from "./_components/droppable-teams-list";
 import { EmptyTeamList } from "./_components/empty-team-list";
 import { SaveTeamsConfigButton } from "./_components/save-teams-config-button";
+import { useSortTeams } from "./_hooks";
 
 export default function SortTeamsPage({
   params,
@@ -30,14 +28,8 @@ export default function SortTeamsPage({
   const [teams, setTeams] = useState<Team[]>([]);
   const [reserves, setReserves] = useState<Player[]>([]);
 
-  const { mutate } = useMutation({
-    mutationKey: ["sort-teams"],
-    mutationFn: (nTeams: number) =>
-      sortTeams({ matchId, organizationCode: code, nTeams }).then(
-        (res) => res.data,
-      ),
+  const { mutate } = useSortTeams({
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["teams", matchId] });
       setTeams(data?.teams ?? []);
       setReserves(data?.reserves ?? []);
     },
@@ -73,7 +65,9 @@ export default function SortTeamsPage({
                 variant={"outline"}
                 type="button"
                 className="ml-auto"
-                onClick={() => mutate(nTeams)}
+                onClick={() =>
+                  mutate({ matchId, organizationCode: code, nTeams })
+                }
               >
                 <ShuffleIcon />
                 Sortear
