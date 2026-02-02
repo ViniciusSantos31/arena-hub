@@ -2,8 +2,13 @@
 
 import { getGroupDetails } from "@/actions/group/detail";
 import { getUserMembership } from "@/actions/group/membership";
+import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { redirect, RedirectType } from "next/navigation";
+import {
+  redirect,
+  RedirectType,
+  useSelectedLayoutSegments,
+} from "next/navigation";
 import { use } from "react";
 import {
   PageContainer,
@@ -24,6 +29,8 @@ export default function GroupDetailsLayout({
 }) {
   const { code } = use(params);
   const memberStore = useMemberStore();
+  const segments = useSelectedLayoutSegments();
+  const isMembersSegment = segments.includes("members");
 
   const { data: group, isLoading: isLoadingGroup } = useQuery({
     queryKey: ["group-details", code],
@@ -62,7 +69,12 @@ export default function GroupDetailsLayout({
       <PageHeader>
         <PageHeaderContent title={name} />
       </PageHeader>
-      <PageContent className="relative h-full *:first:mb-4">
+      <PageContent
+        className={cn(
+          "relative h-full *:first:mb-4",
+          isMembersSegment && "overflow-y-hidden px-0 pt-0",
+        )}
+      >
         {children}
         <GroupNav code={code} />
       </PageContent>

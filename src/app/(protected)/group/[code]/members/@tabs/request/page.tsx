@@ -1,8 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { ChevronLeftIcon } from "lucide-react";
-import Link from "next/link";
 import { use, useState } from "react";
 import { EmptyRequestList } from "./_components/request-empty-list";
 import { RequestMemberCard } from "./_components/request-member-card";
@@ -42,13 +39,7 @@ export default function RequestPage({
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <Button variant="outline" asChild className="w-fit">
-        <Link href={`/group/${code}/members`}>
-          <ChevronLeftIcon />
-          Ver membros do grupo
-        </Link>
-      </Button>
+    <div className="flex flex-col gap-4 pt-4">
       <div className="space-y-4">
         {requests.map((request) => (
           <RequestMemberCard
