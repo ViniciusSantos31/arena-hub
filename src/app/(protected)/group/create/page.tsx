@@ -7,6 +7,7 @@ import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { InputField } from "@/components/ui/input/field";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { UploadInput } from "@/components/upload-input";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -143,7 +144,7 @@ export default function CreateGroupPage() {
                   )}
                 />
               </div>
-              {/* <div className="mt-5 flex items-center space-x-2">
+              <div className="mt-5 flex items-center space-x-2">
                 <Controller
                   name="isPrivate"
                   control={methods.control}
@@ -156,7 +157,7 @@ export default function CreateGroupPage() {
                   )}
                 />
                 <Label htmlFor="isPrivate">Grupo privado</Label>
-              </div> */}
+              </div>
             </div>
 
             <div className="space-y-2">

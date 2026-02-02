@@ -2,6 +2,7 @@ import * as auth from "./auth";
 import * as match from "./match";
 import * as member from "./member";
 import * as player from "./player";
+import * as requests from "./request";
 import * as tutorial from "./tutorial";
 import * as users from "./user";
 
@@ -12,4 +13,5 @@ export const schema = {
   ...player,
   ...match,
   ...tutorial,
+  ...requests,
 };

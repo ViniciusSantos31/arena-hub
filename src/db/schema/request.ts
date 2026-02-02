@@ -14,12 +14,16 @@ export const requestsTable = pgTable("requests", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => randomUUID()),
-  userId: text("user_id").references(() => usersTable.id, {
-    onDelete: "cascade",
-  }),
-  organizationId: text("organization_id").references(() => organization.id, {
-    onDelete: "cascade",
-  }),
+  userId: text("user_id")
+    .references(() => usersTable.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
+  organizationId: text("organization_id")
+    .references(() => organization.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
   message: text("message"),
   reviewedBy: text("reviewed_by").references(() => usersTable.id, {
     onDelete: "set null",

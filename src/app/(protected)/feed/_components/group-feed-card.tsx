@@ -1,4 +1,6 @@
 import { joinGroup } from "@/actions/group/join";
+import { alreadyRequest } from "@/actions/request/already-request";
+import { createJoinRequest } from "@/actions/request/create";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import { getAvatarFallback } from "@/utils/avatar";
 import { formatDate } from "@/utils/date";
+import { useQuery } from "@tanstack/react-query";
 import { EyeIcon, Lock } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useRouter } from "next/navigation";
@@ -52,6 +55,14 @@ const JoinGroupButton = ({
   isPrivate?: boolean;
 }) => {
   const router = useRouter();
+
+  const { data: alreadyRequested, refetch } = useQuery({
+    queryKey: ["check-already-request", code],
+    queryFn: async () =>
+      alreadyRequest({ organizationCode: code ?? "" }).then((res) => res.data),
+    enabled: isPrivate && !!code,
+  });
+
   const joinGroupAction = useAction(joinGroup, {
     onSuccess: () => {
       toast.success("Você entrou no grupo com sucesso!", {
@@ -66,6 +77,29 @@ const JoinGroupButton = ({
     },
   });
 
+  const createJoinRequestAction = useAction(createJoinRequest, {
+    onSuccess() {
+      toast.success("Solicitação enviada com sucesso!", {
+        id: "join-group-request-toast",
+      });
+      refetch();
+    },
+  });
+
+  const handleCreateJoinRequest = () => {
+    if (!code) return;
+
+    toast.promise(
+      createJoinRequestAction.executeAsync({ organizationCode: code }),
+      {
+        loading: "Enviando solicitação de acesso...",
+        error: "Erro ao enviar solicitação. Tente novamente.",
+        success: "Solicitação enviada com sucesso!",
+        id: "join-group-request-toast",
+      },
+    );
+  };
+
   const handleJoinGroup = async () => {
     if (!code) return;
 
@@ -79,9 +113,14 @@ const JoinGroupButton = ({
 
   if (isPrivate) {
     return (
-      <Button variant={"outline"} className="w-full @xl:ml-auto @xl:w-fit">
+      <Button
+        variant={"outline"}
+        className="w-full @xl:ml-auto @xl:w-fit"
+        onClick={handleCreateJoinRequest}
+        disabled={createJoinRequestAction.isExecuting || alreadyRequested}
+      >
         <Lock />
-        Solicitar acesso
+        {alreadyRequested ? "Solicitação enviada" : "Solicitar acesso"}
       </Button>
     );
   }

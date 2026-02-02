@@ -1,6 +1,7 @@
 "use client";
 
 import { getUserMembership } from "@/actions/group/membership";
+import { kickMember as kickMemberAction } from "@/actions/member/kick";
 import { updateMemberScore } from "@/actions/member/update-score";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,28 @@ export const MemberDetails = ({ member }: { member: Member }) => {
   const { code } = useParams<{ code: string }>();
   const session = authClient.useSession();
 
-  const { mutateAsync } = useMutation({
+  const { mutateAsync: kickMember, isPending: kickMemberIsPending } =
+    useMutation({
+      mutationFn: async (memberId: string) => {
+        await kickMemberAction({
+          memberId,
+          organizationCode: code,
+        });
+      },
+      onSuccess: () => {
+        toast.success("Membro expulso com sucesso");
+        queryClient.invalidateQueries({
+          queryKey: ["active-members", code],
+        });
+      },
+    });
+
+  const handleKickMember = (memberId?: string) => {
+    if (!memberId) return;
+    kickMember(memberId);
+  };
+
+  const { mutateAsync: updateScoreMember } = useMutation({
     mutationFn: async ({
       memberId,
       score,
@@ -94,7 +116,7 @@ export const MemberDetails = ({ member }: { member: Member }) => {
         });
         return;
       }
-      await mutateAsync({ memberId: member.id as string, score });
+      await updateScoreMember({ memberId: member.id as string, score });
     }
   };
 
@@ -150,7 +172,11 @@ export const MemberDetails = ({ member }: { member: Member }) => {
             <div className="bg-muted my-4 h-px w-full" />
             <section className="flex w-full px-4">
               <div className="ml-auto space-x-2">
-                <Button variant={"destructive"}>
+                <Button
+                  variant={"destructive"}
+                  disabled={!member.id || kickMemberIsPending}
+                  onClick={() => handleKickMember(member.id)}
+                >
                   <UserX2Icon />
                   <span className="hidden @md/card:block">Expulsar Membro</span>
                   <span className="@md/card:hidden">Expulsar</span>

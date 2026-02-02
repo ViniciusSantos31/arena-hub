@@ -1,8 +1,11 @@
 "use client";
 
-import { use, useState } from "react";
+import { listAllRequests } from "@/actions/request/list";
+import { useQuery } from "@tanstack/react-query";
+import { use } from "react";
 import { EmptyRequestList } from "./_components/request-empty-list";
 import { RequestMemberCard } from "./_components/request-member-card";
+import GroupRequestLoading from "./loading";
 
 export default function RequestPage({
   params,
@@ -10,48 +13,33 @@ export default function RequestPage({
   params: Promise<{ code: string }>;
 }) {
   const { code } = use(params);
-  const [requests, setRequests] = useState([
-    // Mock data - replace with actual API call
-    {
-      id: "1",
-      name: "João Silva",
-      email: "joao@email.com",
-      avatar: "/avatars/joao.jpg",
-    },
-    {
-      id: "2",
-      name: "Maria Santos",
-      email: "maria@email.com",
-      avatar: "/avatars/maria.jpg",
-    },
-  ]);
+  const { data: requests, isLoading } = useQuery({
+    queryKey: ["list-requests", code],
+    queryFn: async () =>
+      await listAllRequests({ organizationCode: code }).then((res) => res.data),
+  });
 
-  const handleAccept = (id: string) => {
-    setRequests(requests.filter((req) => req.id !== id));
-  };
-
-  const handleReject = (id: string) => {
-    setRequests(requests.filter((req) => req.id !== id));
-  };
-
-  if (requests.length === 0) {
+  if (requests && requests.length === 0) {
     return <EmptyRequestList />;
   }
 
+  if (isLoading) {
+    return <GroupRequestLoading />;
+  }
+
   return (
-    <div className="flex flex-col gap-4 pt-4">
+    <div className="flex h-full flex-col gap-4 pt-4">
       <div className="space-y-4">
-        {requests.map((request) => (
+        {requests?.map((request) => (
           <RequestMemberCard
             key={request.id}
+            request={request}
             member={{
               id: request.id,
-              email: request.email,
-              image: request.avatar,
-              name: request.name,
+              email: request.user?.email,
+              image: request.user?.image,
+              name: request.user?.name,
             }}
-            onAccept={() => handleAccept(request.id)}
-            onReject={() => handleReject(request.id)}
           />
         ))}
       </div>

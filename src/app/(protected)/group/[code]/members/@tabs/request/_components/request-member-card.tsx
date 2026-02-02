@@ -1,11 +1,17 @@
 "use client";
 
+import { acceptJoinRequest } from "@/actions/request/accept";
+import { rejectJoinRequest } from "@/actions/request/reject";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useGuard } from "@/hooks/use-guard";
+import { queryClient } from "@/lib/react-query";
 import { getAvatarFallback } from "@/utils/avatar";
 import { Check, X } from "lucide-react";
+import { useOptimisticAction } from "next-safe-action/hooks";
+import { toast } from "sonner";
 
 interface RequestMemberCardProps {
   member: {
@@ -15,17 +21,115 @@ interface RequestMemberCardProps {
     image?: string | null;
     requestDate?: string;
   };
-  onAccept?: (memberId: string) => void;
-  onReject?: (memberId: string) => void;
+  request: {
+    status: string;
+    id: string;
+  };
   loading?: boolean;
 }
 
 export const RequestMemberCard = ({
   member,
-  onAccept,
-  onReject,
-  loading = false,
+  request,
 }: RequestMemberCardProps) => {
+  const { execute, optimisticState, isExecuting } = useOptimisticAction(
+    acceptJoinRequest,
+    {
+      currentState: request,
+      updateFn: (currentState) => ({
+        ...currentState,
+        status: "approved",
+      }),
+      onSuccess: () => {
+        toast.success("Solicitação aceita com sucesso!", {
+          id: "accept-join-request-toast",
+        });
+        queryClient.invalidateQueries({
+          predicate(query) {
+            return (
+              query.queryKey[0] === "active-members" ||
+              query.queryKey[0] === "list-requests"
+            );
+          },
+        });
+      },
+      onError: () => {
+        toast.error("Erro ao aceitar solicitação.", {
+          id: "accept-join-request-error-toast",
+        });
+      },
+    },
+  );
+
+  const {
+    execute: rejectJoinRequestAction,
+    optimisticState: rejectOptimisticState,
+    isExecuting: isRejectExecuting,
+  } = useOptimisticAction(rejectJoinRequest, {
+    currentState: request,
+    updateFn: (currentState) => ({
+      ...currentState,
+      status: "rejected",
+    }),
+    onSuccess: () => {
+      toast.success("Solicitação recusada com sucesso!", {
+        id: "reject-join-request-toast",
+      });
+      queryClient.invalidateQueries({
+        predicate(query) {
+          return (
+            query.queryKey[0] === "active-members" ||
+            query.queryKey[0] === "list-requests"
+          );
+        },
+      });
+    },
+    onError: () => {
+      toast.error("Erro ao recusar solicitação.", {
+        id: "reject-join-request-error-toast",
+      });
+    },
+  });
+
+  const canHandleRequest = useGuard({
+    action: ["membership:approve"],
+  });
+
+  const handleAccept = () => {
+    if (!optimisticState.id) return;
+    execute({ requestId: optimisticState.id });
+  };
+
+  const handleReject = () => {
+    if (!rejectOptimisticState.id) return;
+    rejectJoinRequestAction({ requestId: rejectOptimisticState.id });
+  };
+
+  const StatusRequestBadge = ({ status }: { status: string }) => {
+    switch (status) {
+      case "pending":
+        return (
+          <Badge variant="secondary" className="text-xs">
+            Pendente
+          </Badge>
+        );
+      case "approved":
+        return <Badge className="text-xs">Aprovado</Badge>;
+      case "rejected":
+        return (
+          <Badge variant="destructive" className="text-xs">
+            Recusado
+          </Badge>
+        );
+      default:
+        return (
+          <Badge variant="secondary" className="text-xs">
+            {status}
+          </Badge>
+        );
+    }
+  };
+
   return (
     <Card className="bg-muted/30 hover:bg-muted/50 transition-all duration-200 dark:border-0">
       <CardContent>
@@ -42,30 +146,30 @@ export const RequestMemberCard = ({
               <p className="text-muted-foreground truncate text-sm">
                 {member.email}
               </p>
-              <Badge variant="secondary" className="text-xs">
-                Solicitação pendente
-              </Badge>
+              <StatusRequestBadge status={optimisticState.status} />
             </div>
           </div>
-          <div className="mt-4 ml-auto flex items-center gap-2 @md:mt-0">
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={() => onReject?.(member.id!)}
-              disabled={loading || !member.id}
-            >
-              <X className="h-4 w-4" />
-              Recusar
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => onAccept?.(member.id!)}
-              disabled={loading || !member.id}
-            >
-              <Check className="h-4 w-4" />
-              Aceitar
-            </Button>
-          </div>
+          {optimisticState.status === "pending" && canHandleRequest && (
+            <div className="mt-4 ml-auto flex items-center gap-2 @md:mt-0">
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={handleReject}
+                disabled={isRejectExecuting || !request.id}
+              >
+                <X className="h-4 w-4" />
+                Recusar
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleAccept}
+                disabled={isExecuting || !request.id}
+              >
+                <Check className="h-4 w-4" />
+                Aceitar
+              </Button>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
