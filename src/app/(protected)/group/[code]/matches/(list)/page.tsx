@@ -35,7 +35,7 @@ export default function MatchesPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex h-full flex-col gap-4">
       {data?.data?.map((match) => (
         <MatchCard key={match.id} match={match} />
       ))}

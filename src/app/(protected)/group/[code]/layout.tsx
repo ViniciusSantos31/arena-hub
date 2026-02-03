@@ -72,7 +72,7 @@ export default function GroupDetailsLayout({
       <PageContent
         className={cn(
           "relative h-full *:first:mb-4",
-          isMembersSegment && "overflow-y-hidden px-0 pt-0",
+          isMembersSegment && "overflow px-0 pt-0",
         )}
       >
         {children}

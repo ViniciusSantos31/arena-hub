@@ -70,6 +70,9 @@ export function NavUser() {
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">{user.name}</span>
+              <span className="text-muted-foreground truncate">
+                {user.email}
+              </span>
             </div>
           </Link>
         </SidebarMenuButton>

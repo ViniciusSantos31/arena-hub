@@ -4,6 +4,7 @@ import { useWebSocket } from "@/hooks/use-websocket";
 import { queryClient } from "@/lib/react-query";
 import { WebSocketMessageType } from "@/lib/websocket/types";
 import { useCallback, useEffect } from "react";
+import { matchDetailQueryKeys } from "../_hooks";
 
 export const TeamsListRealtime = ({
   children,
@@ -17,6 +18,12 @@ export const TeamsListRealtime = ({
   const refetchTeamsList = useCallback(() => {
     queryClient.refetchQueries({
       queryKey: ["teams", matchId],
+      predicate(query) {
+        return (
+          query.queryKey[0] === matchDetailQueryKeys.all[0] ||
+          query.queryKey === matchDetailQueryKeys.teams(matchId)
+        );
+      },
     });
   }, [matchId]);
 

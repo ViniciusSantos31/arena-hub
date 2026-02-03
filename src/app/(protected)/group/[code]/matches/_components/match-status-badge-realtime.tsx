@@ -16,7 +16,9 @@ export const MatchStatusBadgeRealtime = ({
 
   const setMatchStatus = useCallback(() => {
     queryClient.refetchQueries({
-      queryKey: ["match", matchId],
+      predicate(query) {
+        return query.queryKey.includes(matchId);
+      },
     });
   }, [matchId]);
 

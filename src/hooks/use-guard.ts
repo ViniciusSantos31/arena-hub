@@ -46,6 +46,7 @@ const ROLE_PERMISSIONS: Record<Role, ALL_PERMISSIONS[]> = {
     "team:create",
     "team:update",
     "membership:update",
+    "membership:approve",
   ],
   member: ["match:read", "match:join"],
   guest: ["match:read", "match:join_queue"],
