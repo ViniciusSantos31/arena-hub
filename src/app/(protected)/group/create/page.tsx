@@ -27,6 +27,7 @@ export default function CreateGroupPage() {
       description: "",
       isPrivate: false,
       maxPlayers: 10,
+      rules: "",
     },
   });
 
@@ -71,11 +72,11 @@ export default function CreateGroupPage() {
   }
 
   return (
-    <main className="flex h-full w-full flex-col items-center justify-start gap-4 lg:flex-row">
+    <main className="relative flex h-full w-full flex-col items-start justify-start gap-4 overflow-y-hidden lg:flex-row">
       <Form {...methods}>
         <form
           onSubmit={methods.handleSubmit(onSubmit)}
-          className="flex w-full max-w-2xl flex-1 flex-col space-y-2 rounded-lg p-2 md:p-4 lg:p-8"
+          className="scrollbar-none flex max-h-full w-full max-w-2xl flex-1 flex-col space-y-2 overflow-y-scroll rounded-lg p-2 md:p-4 lg:p-8"
         >
           <UploadInput
             label="Imagem do grupo"
@@ -168,7 +169,22 @@ export default function CreateGroupPage() {
                 render={({ field }) => (
                   <Textarea
                     {...field}
+                    maxLength={500}
                     placeholder="Descreva seu grupo..."
+                    className="min-h-[120px] resize-none"
+                  />
+                )}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="rules">Regras (opcional)</Label>
+              <Controller
+                name="rules"
+                control={methods.control}
+                render={({ field }) => (
+                  <Textarea
+                    {...field}
+                    placeholder="Descreva as regras do seu grupo..."
                     className="min-h-[120px] resize-none"
                   />
                 )}
@@ -195,7 +211,7 @@ export default function CreateGroupPage() {
       <GroupFeedCardPreview
         methods={methods}
         image={image}
-        className="hidden lg:flex"
+        className="sticky top-0 hidden lg:flex"
       />
     </main>
   );

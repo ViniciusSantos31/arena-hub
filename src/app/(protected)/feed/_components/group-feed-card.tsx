@@ -198,7 +198,7 @@ export const GroupFeedCard = ({
           <AvatarFallback>{getAvatarFallback(group.name)}</AvatarFallback>
         </Avatar>
         <CardTitle className="min-h-4 leading-3">{group.name}</CardTitle>
-        <CardDescription className="line-clamp-2">
+        <CardDescription className="line-clamp-2 whitespace-pre-wrap">
           {group.description}
         </CardDescription>
       </CardHeader>

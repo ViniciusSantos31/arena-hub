@@ -22,6 +22,7 @@ export const createGroup = actionClient
       image: z.string(),
       isPrivate: z.boolean().optional(),
       maxPlayers: z.number().optional(),
+      rules: z.string().optional(),
     }),
   )
   .action(async ({ parsedInput }) => {
@@ -33,7 +34,8 @@ export const createGroup = actionClient
       throw new Error("Usuário não autenticado");
     }
 
-    const { name, description, image, isPrivate, maxPlayers } = parsedInput;
+    const { name, description, image, isPrivate, maxPlayers, rules } =
+      parsedInput;
 
     const org = await auth.api.createOrganization({
       body: {
@@ -42,6 +44,7 @@ export const createGroup = actionClient
         logo: image,
         private: isPrivate ?? false,
         maxPlayers: maxPlayers ?? 10,
+        rules,
         code: Math.random().toString(36).substring(2, 8).toUpperCase(),
         slug:
           name.toLowerCase().replace(/\s+/g, "-") + session.user.id.slice(0, 5),

@@ -18,6 +18,7 @@ import {
 } from "../../_components/page-structure";
 import { GroupNav } from "./_components/group-nav";
 import { LoadingGroupPage } from "./_components/loading-page";
+import { RulesButton } from "./_components/rules-button";
 import { useMemberStore } from "./_store/group";
 
 export default function GroupDetailsLayout({
@@ -68,6 +69,7 @@ export default function GroupDetailsLayout({
     <PageContainer>
       <PageHeader>
         <PageHeaderContent title={name} />
+        <RulesButton rules={group?.rules} />
       </PageHeader>
       <PageContent
         className={cn(

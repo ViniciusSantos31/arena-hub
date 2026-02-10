@@ -20,7 +20,7 @@ export const GroupFeedCardPreview = ({
   return (
     <div
       className={cn(
-        "sticky top-0 flex max-h-full w-full flex-1 gap-0 sm:space-x-3 lg:h-full lg:flex-col lg:space-y-3",
+        "flex max-h-full w-full flex-1 gap-0 sm:space-x-3 lg:h-full lg:flex-col lg:space-y-3",
         className,
       )}
     >

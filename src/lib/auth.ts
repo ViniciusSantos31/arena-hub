@@ -45,6 +45,10 @@ export const auth = betterAuth({
                 "Maximum number of players allowed in the organization",
               defaultValue: 10,
             },
+            rules: {
+              type: "string",
+              description: "The organization's rules",
+            },
           },
         },
         member: {

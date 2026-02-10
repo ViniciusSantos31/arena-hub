@@ -63,6 +63,7 @@ export const organization = pgTable("organization", {
   logo: text("logo"),
   private: boolean("private").notNull().default(false),
   maxPlayers: integer("max_players").notNull().default(10),
+  rules: text("rules"),
   code: text("code")
     .notNull()
     .unique()

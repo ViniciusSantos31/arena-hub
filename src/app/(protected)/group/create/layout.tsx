@@ -15,7 +15,7 @@ export default function CreateGroupLayout({
       <PageHeader>
         <PageHeaderContent title="Criar grupo" />
       </PageHeader>
-      <PageContent>{children}</PageContent>
+      <PageContent className="relative">{children}</PageContent>
     </PageContainer>
   );
 }
