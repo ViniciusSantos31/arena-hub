@@ -27,14 +27,15 @@ export const listAllGroups = actionClient.action(async () => {
 
   const response = await db.query.organization.findMany({
     with: {
-      members: {
-        where: (members, { eq }) => eq(members.userId, session.user.id),
-      },
+      members: true,
     },
   });
 
   return response
-    .filter((data) => data.members.length === 0)
+    .filter((data) =>
+      data.members.every((member) => member.userId !== session.user.id),
+    )
+    .filter((group) => group.members.length < group.maxPlayers)
     .map((group) => ({
       id: group.id,
       name: group.name,
