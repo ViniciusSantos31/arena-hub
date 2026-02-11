@@ -6,7 +6,7 @@ export default function GroupMembersLayout({
   tabs: React.ReactNode;
 }) {
   return (
-    <div className="flex h-full flex-col gap-4">
+    <div className="flex flex-col gap-4">
       {children}
       {tabs}
     </div>

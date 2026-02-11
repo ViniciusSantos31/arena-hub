@@ -27,10 +27,10 @@ export default function GroupMembersParallelLayout({
 
   return (
     <Tabs
-      className="h-full gap-0 *:data-[slot=tabs-content]:px-4"
+      className="flex h-full gap-0 *:data-[slot=tabs-content]:px-4"
       defaultValue={segment}
     >
-      <TabsList className="bg-background min-h-12 w-full justify-start rounded-none border-b p-0 px-4">
+      <TabsList className="bg-background sticky top-0 z-10 min-h-12 w-full justify-start rounded-none border-b p-0">
         <CustomTabsTrigger value="active" asChild>
           <Link href={"active"}>Ativos</Link>
         </CustomTabsTrigger>
@@ -40,7 +40,9 @@ export default function GroupMembersParallelLayout({
           </CustomTabsTrigger>
         )}
       </TabsList>
-      <TabsContent value={segment}>{children}</TabsContent>
+      <TabsContent value={segment} className="overflow-y-auto">
+        {children}
+      </TabsContent>
     </Tabs>
   );
 }

@@ -9,7 +9,7 @@ import { MailboxIcon } from "lucide-react";
 
 export const EmptyRequestList = () => {
   return (
-    <Empty className="h-full">
+    <Empty className="h-full py-32">
       <EmptyHeader>
         <EmptyMedia variant="icon">
           <MailboxIcon />
