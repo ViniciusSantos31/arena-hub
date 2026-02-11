@@ -12,7 +12,7 @@ interface MemberCardProps {
     image?: string | null;
     role?: Role;
     score?: number;
-    gamesPlayed?: number;
+    matches?: number;
   };
 }
 
@@ -42,7 +42,7 @@ export const MemberCard = ({ member }: MemberCardProps) => {
               <p className="text-muted-foreground text-xs">Nota</p>
             </div>
             <div>
-              <p className="text-sm font-medium">{member.gamesPlayed ?? 0}</p>
+              <p className="text-sm font-medium">{member.matches ?? 0}</p>
               <p className="text-muted-foreground text-xs">Partidas</p>
             </div>
           </div>

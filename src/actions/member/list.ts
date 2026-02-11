@@ -52,6 +52,16 @@ export const listMembers = cache(
               image: true,
             },
           },
+          players: {
+            with: {
+              match: {
+                columns: {
+                  id: true,
+                  status: true,
+                },
+              },
+            },
+          },
         },
         columns: {
           id: true,
@@ -70,6 +80,10 @@ export const listMembers = cache(
         score: member.score,
         role: member.role as Role,
         userId: member.userId,
+        matches: member.players.reduce(
+          (acc, player) => acc + (player.match?.status === "completed" ? 1 : 0),
+          0,
+        ),
       }));
     }),
 );
