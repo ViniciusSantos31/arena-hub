@@ -4,17 +4,7 @@ import { db } from "@/db";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
 import { headers } from "next/headers";
-
-const transformGroupMetadata = (metadata: string | null) => {
-  if (!metadata) return null;
-
-  try {
-    const parsed: { description?: string } = JSON.parse(metadata);
-    return parsed.description || null;
-  } catch {
-    return null;
-  }
-};
+import { transformGroupMetadata } from "./utils";
 
 export const listAllGroups = actionClient.action(async () => {
   const session = await auth.api.getSession({

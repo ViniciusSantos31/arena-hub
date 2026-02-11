@@ -16,16 +16,12 @@ interface TutorialOverviewProps {
   sections: TutorialSectionWithSteps[];
   completedSections: Set<string>;
   onSelectSection: () => void;
-  getCategoryColor: (category: string) => string;
-  getCategoryLabel: (category: string) => string;
 }
 
 export function TutorialOverview({
   sections,
   completedSections,
   onSelectSection,
-  getCategoryColor,
-  getCategoryLabel,
 }: TutorialOverviewProps) {
   return (
     <div className="space-y-4">

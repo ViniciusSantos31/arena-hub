@@ -9,9 +9,10 @@ import { Label } from "./ui/label";
 
 export type UploadInputProps = {
   label?: string;
+  defaultValue?: string;
 } & ComponentProps<"input">;
 
-export const UploadInput = (props: UploadInputProps) => {
+export const UploadInput = ({ defaultValue, ...props }: UploadInputProps) => {
   const [_image, _setImage] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -48,9 +49,9 @@ export const UploadInput = (props: UploadInputProps) => {
         {...props}
         onChange={handleChange}
       />
-      {_image ? (
+      {_image || defaultValue ? (
         <Image
-          src={URL.createObjectURL(_image)}
+          src={_image ? URL.createObjectURL(_image) : defaultValue!}
           alt="upload image"
           width={128}
           height={128}

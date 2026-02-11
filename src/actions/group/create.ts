@@ -1,14 +1,18 @@
 "use server";
 
+import { db } from "@/db";
+import { organization } from "@/db/schema/auth";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
+import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import z from "zod";
 
-export const createGroup = actionClient
+export const upsertGroup = actionClient
   .inputSchema(
     z.object({
+      id: z.string().optional(),
       name: z
         .string()
         .trim()
@@ -34,8 +38,31 @@ export const createGroup = actionClient
       throw new Error("Usuário não autenticado");
     }
 
-    const { name, description, image, isPrivate, maxPlayers, rules } =
+    const { id, name, description, image, isPrivate, maxPlayers, rules } =
       parsedInput;
+
+    if (id) {
+      const orgUpdate = await db
+        .update(organization)
+        .set({
+          name,
+          logo: image,
+          private: isPrivate ?? false,
+          maxPlayers: maxPlayers ?? 10,
+          rules,
+          metadata: JSON.stringify({ description }),
+        })
+        .where(eq(organization.id, id))
+        .returning();
+
+      if (!orgUpdate) {
+        throw new Error("Falha ao atualizar organização");
+      }
+
+      revalidatePath("/group", "layout");
+
+      return orgUpdate[0];
+    }
 
     const org = await auth.api.createOrganization({
       body: {

@@ -22,7 +22,8 @@ type ALL_PERMISSIONS =
   | "match:join_queue"
   | "membership:update"
   | "membership:delete"
-  | "membership:approve";
+  | "membership:approve"
+  | "group:settings";
 
 const ROLE_PERMISSIONS: Record<Role, ALL_PERMISSIONS[]> = {
   owner: [
@@ -36,6 +37,7 @@ const ROLE_PERMISSIONS: Record<Role, ALL_PERMISSIONS[]> = {
     "membership:update",
     "membership:delete",
     "membership:approve",
+    "group:settings",
   ],
   admin: [
     "match:create",
@@ -47,6 +49,7 @@ const ROLE_PERMISSIONS: Record<Role, ALL_PERMISSIONS[]> = {
     "team:update",
     "membership:update",
     "membership:approve",
+    "group:settings",
   ],
   member: ["match:read", "match:join"],
   guest: ["match:read", "match:join_queue"],

@@ -7,6 +7,7 @@ import { actionClient } from "@/lib/next-safe-action";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import z from "zod";
+import { transformGroupMetadata } from "./utils";
 
 export const getGroupDetails = actionClient
   .inputSchema(z.object({ code: z.string() }))
@@ -29,5 +30,9 @@ export const getGroupDetails = actionClient
       throw new Error("Grupo não encontrado");
     }
 
-    return group;
+    return {
+      ...group,
+      description: transformGroupMetadata(group.metadata),
+      logo: group.logo || "",
+    };
   });

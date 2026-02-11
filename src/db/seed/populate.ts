@@ -1,12 +1,8 @@
 import "dotenv/config";
 
-import { drizzle } from "drizzle-orm/neon-http";
-
 import { seedTutorialData } from "./tutorial";
 
 async function main() {
-  const db = drizzle(process.env.DATABASE_URL!);
-
   // Seed tutorial data first
   await seedTutorialData();
 

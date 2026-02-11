@@ -1,6 +1,6 @@
 "use client";
 
-import { createGroup } from "@/actions/group/create";
+import { upsertGroup } from "@/actions/group/create";
 import { uploadImage } from "@/actions/image/upload";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -35,7 +35,7 @@ export default function CreateGroupPage() {
 
   const [image, setImage] = useState<File | null>(null);
 
-  const createGroupAction = useAction(createGroup, {
+  const createGroupAction = useAction(upsertGroup, {
     onSuccess({ data }) {
       router.push(`/group/${data?.code}`);
     },
