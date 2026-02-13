@@ -19,6 +19,33 @@ export const metadata: Metadata = {
   title: "Arena Hub",
   description:
     "A plataforma definitiva para gerenciamento de grupos e partidas.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Arena Hub",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  icons: [
+    {
+      rel: "apple-touch-icon",
+      sizes: "180x180",
+      url: "/icons/apple-icon.png",
+    },
+    {
+      rel: "icon",
+      type: "image/png",
+      sizes: "192x192",
+      url: "/icons/icon-192x192.png",
+    },
+    {
+      rel: "icon",
+      type: "image/png",
+      sizes: "512x512",
+      url: "/icons/icon-512x512.png",
+    },
+  ],
 };
 
 export const viewport: Viewport = {
@@ -37,6 +64,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
+      <meta name="apple-mobile-web-app-title" content="Arena Hub" />
       <body
         className={`${nunitoSans.variable} ${nunito.variable} bg-sidebar antialiased`}
       >
