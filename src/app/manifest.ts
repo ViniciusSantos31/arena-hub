@@ -38,7 +38,7 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#ffffff",
     scope: "/",
     background_color: "#1a1a1a",
-    display: "fullscreen",
+    display: "standalone",
     screenshots: [
       {
         src: "/screenshots/screenshot2.png",
