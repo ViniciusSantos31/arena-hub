@@ -16,6 +16,7 @@ export const PageContainer = ({
         className,
       )}
     >
+      {/* <InstallPWABanner /> */}
       {children}
     </div>
   );

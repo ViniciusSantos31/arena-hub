@@ -4,10 +4,23 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Arena Hub",
     short_name: "ArenaHub",
+    start_url: "/home",
     icons: [
       {
         src: "/icons/icon-192x192.png",
         sizes: "192x192",
+        type: "image/png",
+        purpose: "maskable",
+      },
+      {
+        src: "/icons/icon-192x192.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icons/icon-512x512.png",
+        sizes: "512x512",
         type: "image/png",
         purpose: "maskable",
       },
@@ -29,7 +42,6 @@ export default function manifest(): MetadataRoute.Manifest {
         type: "image/png",
       },
     ],
-    display_override: ["standalone", "fullscreen"],
     protocol_handlers: [
       {
         protocol: "web+arenahub",
