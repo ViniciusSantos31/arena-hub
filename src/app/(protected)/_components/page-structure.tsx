@@ -1,3 +1,4 @@
+import { InstallPWABanner } from "@/components/install-prompt";
 import { ModeToggle } from "@/components/mode-toggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
@@ -16,7 +17,7 @@ export const PageContainer = ({
         className,
       )}
     >
-      {/* <InstallPWABanner /> */}
+      <InstallPWABanner />
       {children}
     </div>
   );

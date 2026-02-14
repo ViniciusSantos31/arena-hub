@@ -10,7 +10,7 @@ interface BeforeInstallPromptEvent extends Event {
 
 export function InstallPWABanner() {
   const [prompt, setPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
@@ -35,7 +35,6 @@ export function InstallPWABanner() {
   }, []);
 
   const handleInstall = async () => {
-    console.log("Tentando instalar PWA...", prompt);
     if (!prompt) return;
     await prompt.prompt();
     const { outcome } = await prompt.userChoice;
@@ -50,7 +49,7 @@ export function InstallPWABanner() {
     localStorage.setItem("pwa-banner-dismissed", "true");
   };
 
-  // if (!isVisible || isInstalled) return null;
+  if (!isVisible || isInstalled) return null;
 
   return (
     <div className="bg-primary animate-in text-primary-foreground relative flex w-full items-center justify-between gap-4 px-4 py-3 shadow-md">
