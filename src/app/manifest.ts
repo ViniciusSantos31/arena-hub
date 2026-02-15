@@ -35,18 +35,28 @@ export default function manifest(): MetadataRoute.Manifest {
         purpose: "any",
       },
     ],
-    theme_color: "#ffffff",
+    theme_color: "#1b1b1b",
+    background_color: "#1b1b1b",
     scope: "/",
-    background_color: "#1a1a1a",
     display: "standalone",
     screenshots: [
+      {
+        src: "/screenshots/screenshot1.png",
+        sizes: "1080x1920",
+        type: "image/png",
+      },
       {
         src: "/screenshots/screenshot2.png",
         sizes: "1080x1920",
         type: "image/png",
       },
       {
-        src: "/screenshots/screenshot1.png",
+        src: "/screenshots/screenshot3.png",
+        sizes: "1080x1920",
+        type: "image/png",
+      },
+      {
+        src: "/screenshots/screenshot4.png",
         sizes: "1080x1920",
         type: "image/png",
       },

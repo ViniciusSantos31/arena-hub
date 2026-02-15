@@ -85,10 +85,8 @@ export const BasicInfoForm = ({
   const handleUploadImage = (file: File | null) => {
     setImage(file);
     if (file) {
-      console.log("Imagem selecionada:", file);
       setImageHasChange(true);
     } else {
-      console.log("Imagem removida");
       setImageHasChange(false);
     }
   };
