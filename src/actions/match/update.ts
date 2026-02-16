@@ -102,7 +102,7 @@ export const updateMatch = actionClient
       groupName: organization.name,
       matchDate,
       newStatus,
-      groupId: parsedInput.organizationId,
+      groupCode: organization.code,
       matchId: parsedInput.match.id,
       participantIds,
     }).catch(console.error);

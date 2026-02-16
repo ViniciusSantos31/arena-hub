@@ -86,7 +86,7 @@ export const saveTeamsConfig = actionClient
     await notifyTeamDraw({
       groupName: organization.name,
       matchDate,
-      groupId: match.organizationId,
+      groupCode: organization.code,
       matchId,
       participantIds,
     }).catch(console.error);

@@ -79,7 +79,7 @@ export const createJoinRequest = actionClient
     await notifyNewJoinRequest({
       groupName: organization.name,
       requesterName: session.user.name ?? "Alguém",
-      groupId: organization.id,
+      groupCode: organization.code,
       moderatorIds,
     }).catch(console.error);
   });

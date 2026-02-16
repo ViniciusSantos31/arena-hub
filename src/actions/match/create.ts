@@ -91,7 +91,7 @@ export const createMatch = actionClient
     await notifyNewMatch({
       groupName: organization.name,
       matchDate,
-      groupId: organizationId,
+      groupCode: organization.code,
       matchId: match.id,
       memberIds,
     }).catch(console.error);

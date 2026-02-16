@@ -38,7 +38,7 @@ async function sendToUsers(userIds: string[], payload: NotificationPayload) {
           endpoint: sub.endpoint,
           keys: { p256dh: sub.p256dh, auth: sub.auth },
         },
-        JSON.stringify(payload),
+        JSON.stringify({ ...payload, vibrate: [100, 50, 100] }), // Exemplo de padrão de vibração
       ),
     ),
   );
@@ -72,12 +72,12 @@ async function sendToUsers(userIds: string[], payload: NotificationPayload) {
 export async function notifyNewJoinRequest({
   groupName,
   requesterName,
-  groupId,
+  groupCode,
   moderatorIds,
 }: {
   groupName: string;
   requesterName: string;
-  groupId: string;
+  groupCode: string;
   moderatorIds: string[]; // IDs dos moderadores + owner do grupo
 }) {
   await sendToUsers(moderatorIds, {
@@ -85,8 +85,8 @@ export async function notifyNewJoinRequest({
     body: `${requesterName} quer entrar no grupo "${groupName}"`,
     icon: "/icons/icon-192x192.png",
     badge: "/icons/icon-192x192.png",
-    url: `/groups/${groupId}/members/requests`,
-    tag: `join-request-${groupId}`,
+    url: `/groups/${groupCode}/members/requests`,
+    tag: `join-request-${groupCode}`,
   });
 }
 
@@ -95,13 +95,13 @@ export async function notifyNewJoinRequest({
 export async function notifyNewMatch({
   groupName,
   matchDate,
-  groupId,
+  groupCode,
   matchId,
   memberIds,
 }: {
   groupName: string;
   matchDate: string; // ex: "Sábado, 15/02 às 19h"
-  groupId: string;
+  groupCode: string;
   matchId: string;
   memberIds: string[];
 }) {
@@ -110,7 +110,7 @@ export async function notifyNewMatch({
     body: `${groupName} tem uma nova partida: ${matchDate}`,
     icon: "/icons/icon-192x192.png",
     badge: "/icons/icon-192x192.png",
-    url: `/groups/${groupId}/matches/${matchId}`,
+    url: `/groups/${groupCode}/matches/${matchId}`,
     tag: `new-match-${matchId}`,
   });
 }
@@ -133,14 +133,14 @@ export async function notifyMatchStatusUpdate({
   groupName,
   matchDate,
   newStatus,
-  groupId,
+  groupCode,
   matchId,
   participantIds,
 }: {
   groupName: string;
   matchDate: string;
   newStatus: NotifiableStatus;
-  groupId: string;
+  groupCode: string;
   matchId: string;
   participantIds: string[];
 }) {
@@ -160,7 +160,7 @@ export async function notifyMatchStatusUpdate({
     body: `A partida de ${matchDate} no ${groupName} ${text}`,
     icon: "/icons/icon-192x192.png",
     badge: "/icons/icon-192x192.png",
-    url: `/groups/${groupId}/matches/${matchId}`,
+    url: `/groups/${groupCode}/matches/${matchId}`,
     tag: `match-status-${matchId}`,
   });
 }
@@ -170,13 +170,13 @@ export async function notifyMatchStatusUpdate({
 export async function notifyTeamDraw({
   groupName,
   matchDate,
-  groupId,
+  groupCode,
   matchId,
   participantIds,
 }: {
   groupName: string;
   matchDate: string;
-  groupId: string;
+  groupCode: string;
   matchId: string;
   participantIds: string[];
 }) {
@@ -185,7 +185,7 @@ export async function notifyTeamDraw({
     body: `Os times da partida de ${matchDate} no ${groupName} foram sorteados`,
     icon: "/icons/icon-192x192.png",
     badge: "/icons/icon-192x192.png",
-    url: `/groups/${groupId}/matches/${matchId}`,
+    url: `/groups/${groupCode}/matches/${matchId}`,
     tag: `team-draw-${matchId}`,
   });
 }
