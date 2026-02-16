@@ -1,3 +1,5 @@
+"use server";
+
 import { db } from "@/db";
 import { pushSubscriptionsTable } from "@/db/schema/subscription";
 import { auth } from "@/lib/auth";
