@@ -21,8 +21,8 @@ export default async function ProtectedLayout({
       <Toaster richColors position="top-center" />
       <AppSidebar />
       <ReactQueryDevtools />
-      <PushNotificationRegister />
       <SidebarInset className="flex">{children}</SidebarInset>
+      <PushNotificationRegister />
     </SidebarProvider>
   );
 }
