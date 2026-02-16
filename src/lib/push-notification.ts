@@ -31,6 +31,8 @@ async function sendToUsers(userIds: string[], payload: NotificationPayload) {
     .from(pushSubscriptionsTable)
     .where(inArray(pushSubscriptionsTable.userId, userIds));
 
+  console.log(`[Push] Enviando para ${subscriptions.length} subscription(s)`);
+
   const results = await Promise.allSettled(
     subscriptions.map((sub) =>
       webpush.sendNotification(
@@ -42,6 +44,20 @@ async function sendToUsers(userIds: string[], payload: NotificationPayload) {
       ),
     ),
   );
+
+  // Log temporário para diagnosticar
+  results.forEach((result, i) => {
+    if (result.status === "rejected") {
+      console.error(
+        `[Push] Falhou para ${subscriptions[i].endpoint}:`,
+        result.reason,
+      );
+    } else {
+      console.log(
+        `[Push] Enviado com sucesso para ${subscriptions[i].endpoint}`,
+      );
+    }
+  });
 
   // Remove subscriptions inválidas (usuário removeu permissão no dispositivo)
   const expiredEndpoints = subscriptions
