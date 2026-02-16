@@ -10,6 +10,7 @@ import { headers } from "next/headers";
 import z from "zod/v4";
 import { getOrgIdByCode } from "../group/get-org-by-code";
 
+import { notifyNewMatch } from "@/lib/push-notification";
 import { getDateWithTime } from "@/utils/date";
 import utc from "dayjs/plugin/utc";
 
@@ -53,7 +54,7 @@ export const createMatch = actionClient
 
     // Here you would typically interact with your database to create the match.
     // For demonstration purposes, we'll just return a mock match object.
-    await db
+    const match = await db
       .insert(matchesTable)
       .values({
         ...data,
@@ -61,5 +62,37 @@ export const createMatch = actionClient
         time: dayjs(dateTimeUTC).utc().format("HH:mm"),
         organizationId,
       })
-      .onConflictDoNothing();
+      .onConflictDoNothing()
+      .returning()
+      .then((res) => res[0]);
+
+    // Notificar os usuários do grupo sobre a nova partida.
+    if (!match) return;
+
+    // Busca todos os membros do grupo para notificar
+    const members = await db.query.member.findMany({
+      where: (m, { eq }) => eq(m.organizationId, organizationId),
+    });
+
+    // Busca o nome do grupo
+    const organization = await db.query.organization.findFirst({
+      where: (org, { eq }) => eq(org.id, organizationId),
+    });
+
+    if (!organization) return;
+
+    const memberIds = members
+      .map((m) => m.userId)
+      .filter((id): id is string => !!id);
+
+    const matchDate = dayjs(match.date).format("DD/MM [às] HH[h]mm");
+
+    // Notifica todos os membros sobre a nova partida
+    await notifyNewMatch({
+      groupName: organization.name,
+      matchDate,
+      groupId: organizationId,
+      matchId: match.id,
+      memberIds,
+    }).catch(console.error);
   });

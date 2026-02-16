@@ -5,6 +5,11 @@ import { matchesTable, matchStatusEnum } from "@/db/schema/match";
 import { can } from "@/hooks/use-guard";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
+import {
+  isNotifiableStatus,
+  notifyMatchStatusUpdate,
+} from "@/lib/push-notification";
+import dayjs from "dayjs";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import z from "zod/v4";
@@ -51,10 +56,54 @@ export const updateMatch = actionClient
       throw new Error("User does not have permission to update the match");
     }
 
+    // Busca o estado atual da partida antes de atualizar
+    const currentMatch = await db.query.matchesTable.findFirst({
+      where: (m, { eq }) => eq(m.id, parsedInput.match.id),
+    });
+
     await db
       .update(matchesTable)
       .set({
         ...parsedInput.match,
       })
       .where(eq(matchesTable.id, parsedInput.match.id));
+
+    // Só notifica se o status mudou e é um status notificável
+    const newStatus = parsedInput.match.status;
+    if (
+      !newStatus ||
+      !isNotifiableStatus(newStatus) ||
+      currentMatch?.status === newStatus
+    ) {
+      return;
+    }
+
+    // Busca participantes e dados do grupo para a notificação
+    const [players, organization] = await Promise.all([
+      db.query.playersTable.findMany({
+        where: (p, { eq }) => eq(p.matchId, parsedInput.match.id),
+      }),
+      db.query.organization.findFirst({
+        where: (org, { eq }) => eq(org.id, parsedInput.organizationId),
+      }),
+    ]);
+
+    if (!organization || !currentMatch) return;
+
+    const participantIds = players
+      .map((p) => p.userId)
+      .filter((id): id is string => !!id);
+
+    if (participantIds.length === 0) return;
+
+    const matchDate = dayjs(currentMatch.date).format("DD/MM [às] HH[h]mm");
+
+    await notifyMatchStatusUpdate({
+      groupName: organization.name,
+      matchDate,
+      newStatus,
+      groupId: parsedInput.organizationId,
+      matchId: parsedInput.match.id,
+      participantIds,
+    }).catch(console.error);
   });

@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { requestsTable } from "@/db/schema/request";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
+import { notifyNewJoinRequest } from "@/lib/push-notification";
 import { headers } from "next/headers";
 import z from "zod/v4";
 
@@ -41,13 +42,13 @@ export const createJoinRequest = actionClient
     });
 
     const { maxPlayers } = organization;
-    const orgMembersCount = await db.query.member
+    const orgMembers = await db.query.member
       .findMany({
         where: (m, { eq }) => eq(m.organizationId, organization.id),
       })
-      .then((members) => members.length);
+      .then((members) => members);
 
-    if (orgMembersCount >= maxPlayers) {
+    if (orgMembers.length >= maxPlayers) {
       throw new Error("A organização atingiu o número máximo de membros");
     }
 
@@ -64,4 +65,21 @@ export const createJoinRequest = actionClient
           status: "pending",
         },
       });
+
+    // Busca somente moderadores e owner para notificar
+    const moderatorIds = orgMembers
+      .filter((m) => m.role === "owner" || m.role === "admin")
+      .map((m) => m.userId)
+      .filter((id): id is string => !!id)
+      // Não notifica o próprio usuário que fez a solicitação
+      .filter((id) => id !== session.user.id);
+
+    if (moderatorIds.length === 0) return;
+
+    await notifyNewJoinRequest({
+      groupName: organization.name,
+      requesterName: session.user.name ?? "Alguém",
+      groupId: organization.id,
+      moderatorIds,
+    }).catch(console.error);
   });

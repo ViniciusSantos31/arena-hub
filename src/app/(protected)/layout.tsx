@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { cookies } from "next/headers";
 import React from "react";
 
+import { PushNotificationRegister } from "@/components/push-notification-register";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 export default async function ProtectedLayout({
@@ -20,6 +21,7 @@ export default async function ProtectedLayout({
       <Toaster richColors position="top-center" />
       <AppSidebar />
       <ReactQueryDevtools />
+      <PushNotificationRegister />
       <SidebarInset className="flex">{children}</SidebarInset>
     </SidebarProvider>
   );
