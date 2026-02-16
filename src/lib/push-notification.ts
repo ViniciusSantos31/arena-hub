@@ -85,7 +85,7 @@ export async function notifyNewJoinRequest({
     body: `${requesterName} quer entrar no grupo "${groupName}"`,
     icon: "/icons/icon-192x192.png",
     badge: "/icons/icon-192x192.png",
-    url: `/groups/${groupCode}/members/requests`,
+    url: `/group/${groupCode}/members/request`,
     tag: `join-request-${groupCode}`,
   });
 }
@@ -110,7 +110,7 @@ export async function notifyNewMatch({
     body: `${groupName} tem uma nova partida: ${matchDate}`,
     icon: "/icons/icon-192x192.png",
     badge: "/icons/icon-192x192.png",
-    url: `/groups/${groupCode}/matches/${matchId}`,
+    url: `/group/${groupCode}/matches/${matchId}`,
     tag: `new-match-${matchId}`,
   });
 }
@@ -160,7 +160,7 @@ export async function notifyMatchStatusUpdate({
     body: `A partida de ${matchDate} no ${groupName} ${text}`,
     icon: "/icons/icon-192x192.png",
     badge: "/icons/icon-192x192.png",
-    url: `/groups/${groupCode}/matches/${matchId}`,
+    url: `/group/${groupCode}/matches/${matchId}`,
     tag: `match-status-${matchId}`,
   });
 }
@@ -185,7 +185,7 @@ export async function notifyTeamDraw({
     body: `Os times da partida de ${matchDate} no ${groupName} foram sorteados`,
     icon: "/icons/icon-192x192.png",
     badge: "/icons/icon-192x192.png",
-    url: `/groups/${groupCode}/matches/${matchId}`,
+    url: `/group/${groupCode}/matches/${matchId}`,
     tag: `team-draw-${matchId}`,
   });
 }
