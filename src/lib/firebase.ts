@@ -11,6 +11,13 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
+console.log("[Firebase] Config:", {
+  apiKey: firebaseConfig.apiKey?.substring(0, 10) + "...",
+  projectId: firebaseConfig.projectId,
+  messagingSenderId: firebaseConfig.messagingSenderId,
+  hasAppId: !!firebaseConfig.appId,
+});
+
 // Inicializa apenas uma vez
 const app =
   getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
@@ -20,7 +27,17 @@ export async function getFirebaseMessaging() {
   try {
     const supported = await isSupported();
     if (!supported) return null;
-    return getMessaging(app);
+
+    // Usa nosso service worker customizado em vez do padrão
+    const messaging = getMessaging(app);
+
+    // Registra nosso SW se ainda não estiver registrado
+    if ("serviceWorker" in navigator) {
+      const registration = await navigator.serviceWorker.ready;
+      console.log("[Firebase] Service Worker registrado:", registration.scope);
+    }
+
+    return messaging;
   } catch (error) {
     console.error("[Firebase] Messaging não suportado:", error);
     return null;

@@ -80,6 +80,12 @@ export function usePushNotifications() {
       }
 
       console.log("[Push] Inicializando Firebase Messaging...");
+
+      // CRÍTICO: Aguarda o service worker estar completamente pronto
+      console.log("[Push] Aguardando service worker...");
+      await navigator.serviceWorker.ready;
+      console.log("[Push] Service worker pronto");
+
       const messaging = await getFirebaseMessaging();
 
       if (!messaging) {
@@ -87,9 +93,15 @@ export function usePushNotifications() {
         return;
       }
 
+      console.log(
+        "[Push] VAPID Key:",
+        process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY?.substring(0, 20) + "...",
+      );
       console.log("[Push] Obtendo token FCM...");
+
       const token = await getToken(messaging, {
         vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+        serviceWorkerRegistration: await navigator.serviceWorker.ready,
       });
 
       if (!token) {
