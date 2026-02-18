@@ -3,6 +3,8 @@
 // hooks/use-push-notifications.ts
 import { savePushSubscription } from "@/actions/subscription/add";
 import { removePushSubscription } from "@/actions/subscription/remove";
+import { getFirebaseMessaging } from "@/lib/firebase";
+import { deleteToken, getToken } from "firebase/messaging";
 import { useCallback, useEffect, useState } from "react";
 
 // iOS 16.4+ instalado como PWA suporta push notifications
@@ -21,61 +23,41 @@ function iOSSupportsPush() {
   return isStandalone;
 }
 
-// Gera um token FCM único para este dispositivo
-async function getOrCreateFCMToken(): Promise<string | null> {
-  try {
-    const registration = await navigator.serviceWorker.ready;
-
-    // Obtém a subscription do Push API
-    let subscription = await registration.pushManager.getSubscription();
-
-    if (!subscription) {
-      // Cria uma nova subscription usando a VAPID key do Firebase
-      subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(
-          process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY!,
-        ),
-      });
-    }
-
-    // O "token" FCM nesse caso é o endpoint completo
-    // Firebase usa isso como identificador único
-    return subscription.endpoint;
-  } catch (error) {
-    console.error("[Push] Erro ao obter token FCM:", error);
-    return null;
-  }
-}
-
-function urlBase64ToUint8Array(base64String: string) {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const rawData = window.atob(base64);
-  return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
-}
-
 export function usePushNotifications() {
   const [permission, setPermission] =
     useState<NotificationPermission>("default");
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
+  const [currentToken, setCurrentToken] = useState<string | null>(null);
 
   useEffect(() => {
     if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
-
     if (!iOSSupportsPush()) return;
 
     setIsSupported(true);
     setPermission(Notification.permission);
 
-    // Verifica se já tem subscription
-    navigator.serviceWorker.ready.then((registration) => {
-      registration.pushManager.getSubscription().then((sub) => {
-        setIsSubscribed(!!sub);
-      });
-    });
+    // Verifica se já tem token salvo
+    const checkExistingToken = async () => {
+      try {
+        const messaging = await getFirebaseMessaging();
+        if (!messaging) return;
+
+        const token = await getToken(messaging, {
+          vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+        }).catch(() => null);
+
+        if (token) {
+          setCurrentToken(token);
+          setIsSubscribed(true);
+        }
+      } catch {
+        console.log("[Push] Nenhum token existente");
+      }
+    };
+
+    checkExistingToken();
   }, []);
 
   const subscribe = useCallback(async () => {
@@ -97,20 +79,31 @@ export function usePushNotifications() {
         return;
       }
 
+      console.log("[Push] Inicializando Firebase Messaging...");
+      const messaging = await getFirebaseMessaging();
+
+      if (!messaging) {
+        console.error("[Push] Firebase Messaging não disponível");
+        return;
+      }
+
       console.log("[Push] Obtendo token FCM...");
-      const token = await getOrCreateFCMToken();
+      const token = await getToken(messaging, {
+        vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+      });
 
       if (!token) {
         console.error("[Push] Falha ao obter token");
         return;
       }
 
-      console.log("[Push] Token obtido:", token.substring(0, 50) + "...");
+      console.log("[Push] Token FCM obtido:", token.substring(0, 30) + "...");
       console.log("[Push] Salvando no banco...");
 
       await savePushSubscription(token);
 
       console.log("[Push] Token salvo com sucesso!");
+      setCurrentToken(token);
       setIsSubscribed(true);
     } catch (error) {
       console.error("[Push] Erro completo:", error);
@@ -121,21 +114,23 @@ export function usePushNotifications() {
   }, [isSupported]);
 
   const unsubscribe = useCallback(async () => {
+    if (!currentToken) return;
     setIsLoading(true);
-    try {
-      const registration = await navigator.serviceWorker.ready;
-      const sub = await registration.pushManager.getSubscription();
-      if (!sub) return;
 
-      await removePushSubscription(sub.endpoint);
-      await sub.unsubscribe();
+    try {
+      const messaging = await getFirebaseMessaging();
+      if (messaging) {
+        await deleteToken(messaging);
+      }
+      await removePushSubscription(currentToken);
+      setCurrentToken(null);
       setIsSubscribed(false);
     } catch (error) {
       console.error("[Push] Erro ao desativar:", error);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [currentToken]);
 
   return {
     permission,
