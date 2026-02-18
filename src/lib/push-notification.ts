@@ -90,31 +90,49 @@ async function sendToUsers(userIds: string[], payload: NotificationPayload) {
     console.log(`[Push] Sucesso: ${response.successCount}/${tokens.length}`);
 
     if (response.failureCount > 0) {
-      const failedTokens: string[] = [];
+      const invalidTokens: string[] = [];
+
       response.responses.forEach((resp, idx) => {
         if (!resp.success) {
-          console.error(`[Push] Falha no token ${idx}:`, resp.error);
-          failedTokens.push(tokens[idx]);
+          const error = resp.error;
+          console.error(`[Push] Falha no token ${idx}:`, error);
+
+          // Só remove tokens que realmente expiraram ou não existem mais
+          // Não remove por erros temporários (rate limit, network, etc)
+          if (
+            error?.code === "messaging/registration-token-not-registered" ||
+            error?.code === "messaging/invalid-registration-token"
+          ) {
+            invalidTokens.push(tokens[idx]);
+            console.log(
+              `[Push] Token ${idx} marcado para remoção (${error.code})`,
+            );
+          } else {
+            console.log(
+              `[Push] Token ${idx} mantido (erro temporário: ${error?.code})`,
+            );
+          }
         }
       });
 
-      // Remove tokens inválidos
-      const invalidSubscriptions = subscriptions.filter((sub) => {
-        const token = sub.token.split("/").pop();
-        return token && failedTokens.includes(token);
-      });
+      if (invalidTokens.length > 0) {
+        const invalidSubscriptions = subscriptions.filter((sub) => {
+          const token = sub.token.split("/").pop();
+          return token && invalidTokens.includes(token);
+        });
 
-      if (invalidSubscriptions.length > 0) {
-        await Promise.all(
-          invalidSubscriptions.map((sub) =>
-            db
-              .delete(pushSubscriptions)
-              .where(eq(pushSubscriptions.token, sub.token)),
-          ),
-        );
-        console.log(
-          `[Push] Removidos ${invalidSubscriptions.length} token(s) inválido(s)`,
-        );
+        if (invalidSubscriptions.length > 0) {
+          await Promise.all(
+            invalidSubscriptions.map((sub) =>
+              db
+                .delete(pushSubscriptions)
+                .where(eq(pushSubscriptions.token, sub.token)),
+            ),
+          );
+          console.log(
+            `[Push] Removidos ${invalidSubscriptions.length} token(s) inválido(s)`,
+          );
+        }
       }
     }
   } catch (error) {
