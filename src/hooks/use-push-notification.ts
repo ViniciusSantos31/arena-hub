@@ -77,11 +77,18 @@ export function usePushNotifications() {
       const authKey = sub.getKey("auth");
       if (!key || !authKey) return;
 
-      await savePushSubscription({
+      const subscriptionData = {
         endpoint: sub.endpoint,
         p256dh: Buffer.from(key).toString("base64"),
         auth: Buffer.from(authKey).toString("base64"),
+      };
+
+      console.log("[Push Client] Salvando subscription:", {
+        endpoint: subscriptionData.endpoint.substring(0, 50) + "...",
+        hasKeys: !!subscriptionData.p256dh && !!subscriptionData.auth,
       });
+
+      await savePushSubscription(subscriptionData);
 
       setIsSubscribed(true);
     } catch (error) {
