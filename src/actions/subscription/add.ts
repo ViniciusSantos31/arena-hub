@@ -2,33 +2,37 @@
 
 // actions/push-subscriptions.ts
 import { db } from "@/db";
-import { pushSubscriptionsTable } from "@/db/schema/subscription";
+import { pushSubscriptions } from "@/db/schema/subscription";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
-// Salva ou atualiza a subscription do usuário
-export async function savePushSubscription(subscription: {
-  endpoint: string;
-  p256dh: string;
-  auth: string;
-}) {
+// Salva ou atualiza o FCM token do usuário
+export async function savePushSubscription(token: string) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user?.id) throw new Error("Não autorizado");
 
+  if (!token || token.trim() === "") {
+    console.error("[Push] Tentativa de salvar token vazio");
+    throw new Error("Token inválido");
+  }
+
+  console.log("[Push] Salvando token FCM:", {
+    userId: session.user.id,
+    tokenPrefix: token.substring(0, 20) + "...",
+  });
+
   await db
-    .insert(pushSubscriptionsTable)
+    .insert(pushSubscriptions)
     .values({
       userId: session.user.id,
-      endpoint: subscription.endpoint,
-      p256dh: subscription.p256dh,
-      auth: subscription.auth,
+      token: token,
     })
     .onConflictDoUpdate({
-      target: pushSubscriptionsTable.endpoint,
+      target: pushSubscriptions.token,
       set: {
-        p256dh: subscription.p256dh,
-        auth: subscription.auth,
         updatedAt: new Date(),
       },
     });
+
+  console.log("[Push] Token salvo com sucesso");
 }

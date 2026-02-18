@@ -1,9 +1,9 @@
 // lib/push-notifications.ts
 import { db } from "@/db";
-import { pushSubscriptionsTable } from "@/db/schema/subscription";
-import { messaging } from "./firebase-admin";
-// import { pushSubscriptions } from '@/db/schema/push-subscriptions'
 import { eq, inArray } from "drizzle-orm";
+import { messaging } from "./firebase-admin";
+
+import { pushSubscriptions } from "@/db/schema/subscription";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -35,26 +35,31 @@ async function sendToUsers(userIds: string[], payload: NotificationPayload) {
 
   const subscriptions = await db
     .select()
-    .from(pushSubscriptionsTable)
-    .where(inArray(pushSubscriptionsTable.userId, userIds));
+    .from(pushSubscriptions)
+    .where(inArray(pushSubscriptions.userId, userIds));
 
   console.log(`[Push] Enviando para ${subscriptions.length} subscription(s)`);
 
-  // FCM precisa do token que está no final do endpoint
+  // Tokens FCM são os endpoints salvos no banco
   const tokens = subscriptions
     .map((sub) => {
       // Extrai o token do endpoint
-      // Formato: https://fcm.googleapis.com/fcm/send/TOKEN
-      // Ou: https://web.push.apple.com/TOKEN (iOS via FCM também usa esse padrão quando configurado)
-      const parts = sub.endpoint.split("/");
+      // Chrome/Android: https://fcm.googleapis.com/fcm/send/TOKEN
+      // Safari/iOS: https://web.push.apple.com/TOKEN
+      const parts = sub.token.split("/");
       return parts[parts.length - 1];
     })
-    .filter((token) => token && token.length > 0);
+    .filter((token) => token && token.length > 10);
 
   if (tokens.length === 0) {
     console.log("[Push] Nenhum token válido encontrado");
     return;
   }
+
+  console.log(
+    "[Push] Tokens extraídos:",
+    tokens.map((t) => t.substring(0, 20) + "..."),
+  );
 
   try {
     const message = {
@@ -93,24 +98,22 @@ async function sendToUsers(userIds: string[], payload: NotificationPayload) {
         }
       });
 
-      // Remove tokens inválidos (expired ou not registered)
-      const invalidEndpoints = subscriptions
-        .filter((sub) => {
-          const token = sub.endpoint.split("/").pop();
-          return token && failedTokens.includes(token);
-        })
-        .map((sub) => sub.endpoint);
+      // Remove tokens inválidos
+      const invalidSubscriptions = subscriptions.filter((sub) => {
+        const token = sub.token.split("/").pop();
+        return token && failedTokens.includes(token);
+      });
 
-      if (invalidEndpoints.length > 0) {
+      if (invalidSubscriptions.length > 0) {
         await Promise.all(
-          invalidEndpoints.map((endpoint) =>
+          invalidSubscriptions.map((sub) =>
             db
-              .delete(pushSubscriptionsTable)
-              .where(eq(pushSubscriptionsTable.endpoint, endpoint)),
+              .delete(pushSubscriptions)
+              .where(eq(pushSubscriptions.token, sub.token)),
           ),
         );
         console.log(
-          `[Push] Removidos ${invalidEndpoints.length} token(s) inválido(s)`,
+          `[Push] Removidos ${invalidSubscriptions.length} token(s) inválido(s)`,
         );
       }
     }

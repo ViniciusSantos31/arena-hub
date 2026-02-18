@@ -5,28 +5,54 @@ import { savePushSubscription } from "@/actions/subscription/add";
 import { removePushSubscription } from "@/actions/subscription/remove";
 import { useCallback, useEffect, useState } from "react";
 
-function urlBase64ToUint8Array(base64String: string) {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const rawData = window.atob(base64);
-  return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
-}
-
 // iOS 16.4+ instalado como PWA suporta push notifications
 function iOSSupportsPush() {
   const isIOS =
     /iphone|ipad|ipod/i.test(navigator.userAgent) ||
     (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
-  if (!isIOS) return true; // Não é iOS, suporte normal
+  if (!isIOS) return true;
 
-  // iOS só suporta push se estiver instalado como PWA (standalone)
   const isStandalone =
     window.matchMedia("(display-mode: standalone)").matches ||
     ("standalone" in window.navigator &&
       (window.navigator as Navigator & { standalone: boolean }).standalone);
 
   return isStandalone;
+}
+
+// Gera um token FCM único para este dispositivo
+async function getOrCreateFCMToken(): Promise<string | null> {
+  try {
+    const registration = await navigator.serviceWorker.ready;
+
+    // Obtém a subscription do Push API
+    let subscription = await registration.pushManager.getSubscription();
+
+    if (!subscription) {
+      // Cria uma nova subscription usando a VAPID key do Firebase
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(
+          process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY!,
+        ),
+      });
+    }
+
+    // O "token" FCM nesse caso é o endpoint completo
+    // Firebase usa isso como identificador único
+    return subscription.endpoint;
+  } catch (error) {
+    console.error("[Push] Erro ao obter token FCM:", error);
+    return null;
+  }
+}
+
+function urlBase64ToUint8Array(base64String: string) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const rawData = window.atob(base64);
+  return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
 }
 
 export function usePushNotifications() {
@@ -39,12 +65,12 @@ export function usePushNotifications() {
   useEffect(() => {
     if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
 
-    // No iOS, só funciona se estiver instalado como PWA
     if (!iOSSupportsPush()) return;
 
     setIsSupported(true);
     setPermission(Notification.permission);
 
+    // Verifica se já tem subscription
     navigator.serviceWorker.ready.then((registration) => {
       registration.pushManager.getSubscription().then((sub) => {
         setIsSubscribed(!!sub);
@@ -53,8 +79,11 @@ export function usePushNotifications() {
   }, []);
 
   const subscribe = useCallback(async () => {
-    console.log("[Push] subscribe() chamado, isSupported:", isSupported);
-    if (!isSupported) return;
+    console.log("[Push] subscribe() chamado");
+    if (!isSupported) {
+      console.log("[Push] Não suportado neste dispositivo");
+      return;
+    }
     setIsLoading(true);
 
     try {
@@ -62,59 +91,26 @@ export function usePushNotifications() {
       const result = await Notification.requestPermission();
       console.log("[Push] Permissão recebida:", result);
       setPermission(result);
-      if (result !== "granted") return;
 
-      console.log("[Push] Aguardando service worker...");
-      const registration = await navigator.serviceWorker.ready;
-      console.log("[Push] Service worker ready");
-
-      let sub = await registration.pushManager.getSubscription();
-      console.log("[Push] Subscription existente?", !!sub);
-
-      if (!sub) {
-        console.log("[Push] Criando nova subscription...");
-        sub = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(
-            process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY!,
-          ),
-        });
-        console.log("[Push] Subscription criada");
-      }
-
-      console.log(
-        "[Push] Subscription endpoint:",
-        sub.endpoint.substring(0, 50),
-      );
-
-      const key = sub.getKey("p256dh");
-      const authKey = sub.getKey("auth");
-      console.log("[Push] Keys obtidas:", {
-        hasP256dh: !!key,
-        hasAuth: !!authKey,
-      });
-
-      if (!key || !authKey) {
-        console.error("[Push] Keys inválidas!");
+      if (result !== "granted") {
+        console.log("[Push] Permissão negada");
         return;
       }
 
-      const subscriptionData = {
-        endpoint: sub.endpoint,
-        p256dh: Buffer.from(key).toString("base64"),
-        auth: Buffer.from(authKey).toString("base64"),
-      };
+      console.log("[Push] Obtendo token FCM...");
+      const token = await getOrCreateFCMToken();
 
-      console.log("[Push] Dados da subscription:", {
-        endpoint: subscriptionData.endpoint.substring(0, 50) + "...",
-        p256dhLength: subscriptionData.p256dh.length,
-        authLength: subscriptionData.auth.length,
-      });
+      if (!token) {
+        console.error("[Push] Falha ao obter token");
+        return;
+      }
 
-      console.log("[Push] Chamando savePushSubscription...");
-      await savePushSubscription(subscriptionData);
-      console.log("[Push] Subscription salva com sucesso!");
+      console.log("[Push] Token obtido:", token.substring(0, 50) + "...");
+      console.log("[Push] Salvando no banco...");
 
+      await savePushSubscription(token);
+
+      console.log("[Push] Token salvo com sucesso!");
       setIsSubscribed(true);
     } catch (error) {
       console.error("[Push] Erro completo:", error);
@@ -135,7 +131,7 @@ export function usePushNotifications() {
       await sub.unsubscribe();
       setIsSubscribed(false);
     } catch (error) {
-      console.error("Erro ao desativar notificações:", error);
+      console.error("[Push] Erro ao desativar:", error);
     } finally {
       setIsLoading(false);
     }

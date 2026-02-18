@@ -1,14 +1,13 @@
+// db/schema/push-subscriptions.ts
 import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
-export const pushSubscriptionsTable = pgTable("push_subscriptions", {
+export const pushSubscriptions = pgTable("push_subscriptions", {
   id: uuid("id").defaultRandom().primaryKey(),
-  userId: text("user_id").notNull(), // referencia ao user do Better Auth
-  endpoint: text("endpoint").notNull().unique(),
-  p256dh: text("p256dh").notNull(), // chave pública da subscription
-  auth: text("auth").notNull(), // chave de autenticação
+  userId: text("user_id").notNull(),
+  token: text("token").notNull().unique(), // FCM token em vez de endpoint
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export type PushSubscription = typeof pushSubscriptionsTable.$inferSelect;
-export type NewPushSubscription = typeof pushSubscriptionsTable.$inferInsert;
+export type PushSubscription = typeof pushSubscriptions.$inferSelect;
+export type NewPushSubscription = typeof pushSubscriptions.$inferInsert;
