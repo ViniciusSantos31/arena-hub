@@ -53,29 +53,51 @@ export function usePushNotifications() {
   }, []);
 
   const subscribe = useCallback(async () => {
+    console.log("[Push] subscribe() chamado, isSupported:", isSupported);
     if (!isSupported) return;
     setIsLoading(true);
 
     try {
+      console.log("[Push] Pedindo permissão...");
       const result = await Notification.requestPermission();
+      console.log("[Push] Permissão recebida:", result);
       setPermission(result);
       if (result !== "granted") return;
 
+      console.log("[Push] Aguardando service worker...");
       const registration = await navigator.serviceWorker.ready;
+      console.log("[Push] Service worker ready");
+
       let sub = await registration.pushManager.getSubscription();
+      console.log("[Push] Subscription existente?", !!sub);
 
       if (!sub) {
+        console.log("[Push] Criando nova subscription...");
         sub = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: urlBase64ToUint8Array(
-            process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
+            process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY!,
           ),
         });
+        console.log("[Push] Subscription criada");
       }
+
+      console.log(
+        "[Push] Subscription endpoint:",
+        sub.endpoint.substring(0, 50),
+      );
 
       const key = sub.getKey("p256dh");
       const authKey = sub.getKey("auth");
-      if (!key || !authKey) return;
+      console.log("[Push] Keys obtidas:", {
+        hasP256dh: !!key,
+        hasAuth: !!authKey,
+      });
+
+      if (!key || !authKey) {
+        console.error("[Push] Keys inválidas!");
+        return;
+      }
 
       const subscriptionData = {
         endpoint: sub.endpoint,
@@ -83,16 +105,20 @@ export function usePushNotifications() {
         auth: Buffer.from(authKey).toString("base64"),
       };
 
-      console.log("[Push Client] Salvando subscription:", {
+      console.log("[Push] Dados da subscription:", {
         endpoint: subscriptionData.endpoint.substring(0, 50) + "...",
-        hasKeys: !!subscriptionData.p256dh && !!subscriptionData.auth,
+        p256dhLength: subscriptionData.p256dh.length,
+        authLength: subscriptionData.auth.length,
       });
 
+      console.log("[Push] Chamando savePushSubscription...");
       await savePushSubscription(subscriptionData);
+      console.log("[Push] Subscription salva com sucesso!");
 
       setIsSubscribed(true);
     } catch (error) {
-      console.error("Erro ao ativar notificações:", error);
+      console.error("[Push] Erro completo:", error);
+      console.error("[Push] Stack:", (error as Error).stack);
     } finally {
       setIsLoading(false);
     }

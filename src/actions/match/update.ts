@@ -7,6 +7,7 @@ import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
 import {
   isNotifiableStatus,
+  NotifiableStatus,
   notifyMatchStatusUpdate,
 } from "@/lib/push-notification";
 import dayjs from "dayjs";
@@ -69,7 +70,7 @@ export const updateMatch = actionClient
       .where(eq(matchesTable.id, parsedInput.match.id));
 
     // Só notifica se o status mudou e é um status notificável
-    const newStatus = parsedInput.match.status;
+    const newStatus = parsedInput.match.status as NotifiableStatus;
     if (
       !newStatus ||
       !isNotifiableStatus(newStatus) ||

@@ -1,14 +1,9 @@
 // lib/push-notifications.ts
 import { db } from "@/db";
 import { pushSubscriptionsTable } from "@/db/schema/subscription";
+import { messaging } from "./firebase-admin";
+// import { pushSubscriptions } from '@/db/schema/push-subscriptions'
 import { eq, inArray } from "drizzle-orm";
-import webpush from "web-push";
-
-webpush.setVapidDetails(
-  "mailto:" + process.env.VAPID_EMAIL!,
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!,
-);
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -17,8 +12,20 @@ interface NotificationPayload {
   body: string;
   icon?: string;
   badge?: string;
-  url?: string; // URL para abrir ao clicar na notificação
-  tag?: string; // Agrupa notificações do mesmo tipo (evita spam)
+  url?: string;
+  tag?: string;
+}
+
+// Status que disparam notificação
+export const NOTIFIABLE_STATUSES = [
+  "closed_registration",
+  "cancelled",
+  "team_sorted",
+] as const;
+export type NotifiableStatus = (typeof NOTIFIABLE_STATUSES)[number];
+
+export function isNotifiableStatus(status: string): status is NotifiableStatus {
+  return NOTIFIABLE_STATUSES.includes(status as NotifiableStatus);
 }
 
 // ─── Função base de envio ─────────────────────────────────────────────────────
@@ -33,58 +40,88 @@ async function sendToUsers(userIds: string[], payload: NotificationPayload) {
 
   console.log(`[Push] Enviando para ${subscriptions.length} subscription(s)`);
 
-  const results = await Promise.allSettled(
-    subscriptions.map((sub) =>
-      webpush.sendNotification(
-        {
-          endpoint: sub.endpoint,
-          keys: { p256dh: sub.p256dh, auth: sub.auth },
-        },
-        JSON.stringify({ ...payload, vibrate: [100, 50, 100] }), // Exemplo de padrão de vibração
-      ),
-    ),
-  );
-
-  // Log temporário para diagnosticar
-  results.forEach((result, i) => {
-    if (result.status === "rejected") {
-      console.error(
-        `[Push] Falhou para ${subscriptions[i].endpoint}:`,
-        result.reason,
-      );
-    } else {
-      console.log(
-        `[Push] Enviado com sucesso para ${subscriptions[i].endpoint}`,
-      );
-    }
-  });
-
-  // Remove subscriptions inválidas (usuário removeu permissão no dispositivo)
-  const expiredEndpoints = subscriptions
-    .filter((_, i) => {
-      const result = results[i];
-      return (
-        result.status === "rejected" &&
-        (result.reason?.statusCode === 410 || result.reason?.statusCode === 404)
-      );
+  // FCM precisa do token que está no final do endpoint
+  const tokens = subscriptions
+    .map((sub) => {
+      // Extrai o token do endpoint
+      // Formato: https://fcm.googleapis.com/fcm/send/TOKEN
+      // Ou: https://web.push.apple.com/TOKEN (iOS via FCM também usa esse padrão quando configurado)
+      const parts = sub.endpoint.split("/");
+      return parts[parts.length - 1];
     })
-    .map((sub) => sub.endpoint);
+    .filter((token) => token && token.length > 0);
 
-  if (expiredEndpoints.length > 0) {
-    await Promise.all(
-      expiredEndpoints.map((endpoint) =>
-        db
-          .delete(pushSubscriptionsTable)
-          .where(eq(pushSubscriptionsTable.endpoint, endpoint)),
-      ),
-    );
+  if (tokens.length === 0) {
+    console.log("[Push] Nenhum token válido encontrado");
+    return;
+  }
+
+  try {
+    const message = {
+      notification: {
+        title: payload.title,
+        body: payload.body,
+        image: payload.icon,
+      },
+      data: {
+        url: payload.url ?? "/",
+        tag: payload.tag ?? "",
+      },
+      webpush: {
+        notification: {
+          icon: payload.icon ?? "/icons/icon-192x192.png",
+          badge: payload.badge ?? "/icons/icon-192x192.png",
+          tag: payload.tag,
+        },
+        fcmOptions: {
+          link: payload.url ?? "/",
+        },
+      },
+      tokens,
+    };
+
+    const response = await messaging.sendEachForMulticast(message);
+
+    console.log(`[Push] Sucesso: ${response.successCount}/${tokens.length}`);
+
+    if (response.failureCount > 0) {
+      const failedTokens: string[] = [];
+      response.responses.forEach((resp, idx) => {
+        if (!resp.success) {
+          console.error(`[Push] Falha no token ${idx}:`, resp.error);
+          failedTokens.push(tokens[idx]);
+        }
+      });
+
+      // Remove tokens inválidos (expired ou not registered)
+      const invalidEndpoints = subscriptions
+        .filter((sub) => {
+          const token = sub.endpoint.split("/").pop();
+          return token && failedTokens.includes(token);
+        })
+        .map((sub) => sub.endpoint);
+
+      if (invalidEndpoints.length > 0) {
+        await Promise.all(
+          invalidEndpoints.map((endpoint) =>
+            db
+              .delete(pushSubscriptionsTable)
+              .where(eq(pushSubscriptionsTable.endpoint, endpoint)),
+          ),
+        );
+        console.log(
+          `[Push] Removidos ${invalidEndpoints.length} token(s) inválido(s)`,
+        );
+      }
+    }
+  } catch (error) {
+    console.error("[Push] Erro ao enviar notificações:", error);
   }
 }
 
 // ─── Templates de notificação ─────────────────────────────────────────────────
 
 // 1. Nova solicitação de ingresso em grupo
-//    → Envia somente para moderadores e owner do grupo
 export async function notifyNewJoinRequest({
   groupName,
   requesterName,
@@ -94,7 +131,7 @@ export async function notifyNewJoinRequest({
   groupName: string;
   requesterName: string;
   groupCode: string;
-  moderatorIds: string[]; // IDs dos moderadores + owner do grupo
+  moderatorIds: string[];
 }) {
   await sendToUsers(moderatorIds, {
     title: "📋 Nova solicitação de ingresso",
@@ -107,7 +144,6 @@ export async function notifyNewJoinRequest({
 }
 
 // 2. Nova partida criada no grupo
-//    → Envia para todos os membros do grupo
 export async function notifyNewMatch({
   groupName,
   matchDate,
@@ -116,7 +152,7 @@ export async function notifyNewMatch({
   memberIds,
 }: {
   groupName: string;
-  matchDate: string; // ex: "Sábado, 15/02 às 19h"
+  matchDate: string;
   groupCode: string;
   matchId: string;
   memberIds: string[];
@@ -131,20 +167,7 @@ export async function notifyNewMatch({
   });
 }
 
-// Status que disparam notificação
-export const NOTIFIABLE_STATUSES = [
-  "closed_registration",
-  "cancelled",
-  "team_sorted",
-];
-export type NotifiableStatus = (typeof NOTIFIABLE_STATUSES)[number];
-
-export function isNotifiableStatus(status: string): status is NotifiableStatus {
-  return NOTIFIABLE_STATUSES.includes(status as NotifiableStatus);
-}
-
 // 3. Atualização de status da partida
-//    → Envia somente para usuários que fazem parte da partida
 export async function notifyMatchStatusUpdate({
   groupName,
   matchDate,
@@ -155,15 +178,12 @@ export async function notifyMatchStatusUpdate({
 }: {
   groupName: string;
   matchDate: string;
-  newStatus: NotifiableStatus;
+  newStatus: "team_sorted" | "cancelled" | "closed_registration";
   groupCode: string;
   matchId: string;
   participantIds: string[];
 }) {
-  const statusMessages: Record<
-    NotifiableStatus,
-    { emoji: string; text: string }
-  > = {
+  const statusMessages = {
     cancelled: { emoji: "❌", text: "foi cancelada" },
     closed_registration: { emoji: "🔒", text: "teve as inscrições fechadas" },
     team_sorted: { emoji: "🎲", text: "teve os times sorteados" },
@@ -182,7 +202,6 @@ export async function notifyMatchStatusUpdate({
 }
 
 // 4. Sorteio de times realizado
-//    → Envia somente para usuários que fazem parte da partida
 export async function notifyTeamDraw({
   groupName,
   matchDate,
