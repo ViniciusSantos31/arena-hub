@@ -11,13 +11,6 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-console.log("[Firebase] Config:", {
-  apiKey: firebaseConfig.apiKey?.substring(0, 10) + "...",
-  projectId: firebaseConfig.projectId,
-  messagingSenderId: firebaseConfig.messagingSenderId,
-  hasAppId: !!firebaseConfig.appId,
-});
-
 // Inicializa apenas uma vez
 const app =
   getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
