@@ -1,9 +1,15 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { ChevronLeftIcon, Users2Icon } from "lucide-react";
+import { ChevronLeftIcon, RotateCcwIcon, Users2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { use, useEffect } from "react";
 import { AdvancedSettingsSection } from "./_components/advanced-settings-section";
@@ -22,7 +28,7 @@ export default function MatchDetailPage({
 
   const router = useRouter();
 
-  const { listenMatchEvents } = useWebSocket();
+  const { listenMatchEvents, isConnected, reconnect } = useWebSocket();
 
   useEffect(() => {
     listenMatchEvents(id);
@@ -34,6 +40,39 @@ export default function MatchDetailPage({
         <ChevronLeftIcon />
         Voltar para as partidas
       </Button>
+
+      <div>
+        {!isConnected && (
+          <Card className="border-destructive bg-destructive/5 dark:bg-destructive/5">
+            <CardHeader>
+              <CardTitle className="text-destructive">
+                Conexão perdida
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                A conexão com o servidor foi perdida. Você ainda pode realizar
+                ações na partida, mas não receberá atualizações em tempo real.
+              </CardDescription>
+            </CardHeader>
+            <CardFooter>
+              <Button variant="outline" onClick={reconnect}>
+                <RotateCcwIcon />
+                Tentar reconectar
+              </Button>
+            </CardFooter>
+          </Card>
+        )}
+        {isConnected && (
+          <Card className="border-primary dark:bg-primary/5 bg-primary/5 relative overflow-clip">
+            <CardHeader>
+              <CardTitle>Conectado</CardTitle>
+              <CardDescription className="text-muted-foreground text-balance">
+                Você está conectado ao servidor. As informações da partida estão
+                sendo atualizadas em tempo real.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        )}
+      </div>
 
       <AdvancedSettingsSection />
 

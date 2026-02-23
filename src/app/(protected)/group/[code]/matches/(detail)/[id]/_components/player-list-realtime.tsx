@@ -13,14 +13,15 @@ export const PlayerListRealtime = ({
   children: React.ReactNode;
   matchId: string;
 }) => {
-  const { on, off, listenMatchEvents } = useWebSocket();
+  const { on, off } = useWebSocket();
 
   const refetchPlayersList = useCallback(() => {
-    queryClient.refetchQueries({
+    queryClient.invalidateQueries({
       predicate(query) {
         return (
-          query.queryKey[-1] === matchId &&
-          query.queryKey[0] === matchDetailQueryKeys.all[0]
+          query.queryKey.includes(matchDetailQueryKeys.players(matchId)) ||
+          query.queryKey.includes(matchDetailQueryKeys.waitingQueue(matchId)) ||
+          query.queryKey.includes(matchId)
         );
       },
     });
@@ -38,7 +39,7 @@ export const PlayerListRealtime = ({
       off(WebSocketMessageType.MATCH_PARTICIPANT_JOINED, () => {});
       off(WebSocketMessageType.MATCH_PARTICIPANT_LEFT, () => {});
     };
-  }, [listenMatchEvents, matchId, off, on, refetchPlayersList]);
+  }, [matchId, off, on, refetchPlayersList]);
 
   return <>{children}</>;
 };

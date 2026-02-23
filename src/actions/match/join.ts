@@ -85,7 +85,6 @@ export const joinMatch = actionClient
       (currentPlayersCount.maxPlayers ?? 0) >
       (currentPlayersCount.playersCount ?? 0);
 
-    // TODO: Put the user in the waiting list if no slots are available
     if (!hasAvailableSlots) {
       await db.insert(playersTable).values({
         matchId,

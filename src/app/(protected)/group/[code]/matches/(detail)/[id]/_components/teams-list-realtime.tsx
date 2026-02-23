@@ -17,11 +17,11 @@ export const TeamsListRealtime = ({
 
   const refetchTeamsList = useCallback(() => {
     queryClient.refetchQueries({
-      queryKey: ["teams", matchId],
       predicate(query) {
         return (
           query.queryKey[0] === matchDetailQueryKeys.all[0] ||
-          query.queryKey === matchDetailQueryKeys.teams(matchId)
+          query.queryKey === matchDetailQueryKeys.teams(matchId) ||
+          query.queryKey.includes(matchId)
         );
       },
     });
