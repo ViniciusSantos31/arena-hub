@@ -6,7 +6,6 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import { formatDate } from "@/utils/date";
 import dayjs from "dayjs";
 import { ResponsivePopover } from "../../reponsive-popover";
 import { Label } from "../label";
@@ -47,7 +46,7 @@ export function DatePicker({
   const formatDisplayValue = () => {
     if (!value) return placeholder;
 
-    return formatDate(value, "DD/MM/YYYY");
+    return dayjs(value).locale("pt-BR").format("DD/MM/YYYY");
   };
 
   const handleSelect = (selectedValue: Date | undefined) => {

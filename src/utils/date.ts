@@ -9,7 +9,7 @@ export const formatDate = (
   date: Date | string,
   format: string = "DD/MM/YYYY",
 ): string => {
-  return dayjs(date).format(format);
+  return dayjs(date).locale(ptBR).format(format);
 };
 
 export const getDateWithTime = (date: Date | string, time: string): Date => {
@@ -21,26 +21,26 @@ export const formatDateUTC = (
   date: Date | string,
   format: string = "DD/MM/YYYY",
 ): string => {
-  return dayjs.utc(date).format(format);
+  return dayjs.utc(date).locale(ptBR).format(format);
 };
 
 export const parseDate = (
   dateString: string,
   format: string = "DD/MM/YYYY",
 ): Date => {
-  return dayjs(dateString, format).toDate();
+  return dayjs(dateString, format).locale(ptBR).toDate();
 };
 
 export const isValidDate = (date: Date | string): boolean => {
-  return dayjs(date).isValid();
+  return dayjs(date).locale(ptBR).isValid();
 };
 
 export const addDays = (date: Date | string, days: number): Date => {
-  return dayjs(date).add(days, "day").toDate();
+  return dayjs(date).add(days, "day").locale(ptBR).toDate();
 };
 
 export const subtractDays = (date: Date | string, days: number): Date => {
-  return dayjs(date).subtract(days, "day").toDate();
+  return dayjs(date).subtract(days, "day").locale(ptBR).toDate();
 };
 
 export const differenceInDays = (

@@ -17,7 +17,7 @@ export const RulesButton = ({ rules }: { rules?: string | null }) => {
       onOpenChange={setOpen}
       content={
         <section className="border-t">
-          <p className="text-muted-foreground max-h-[60vh] overflow-y-auto px-4 py-4 whitespace-pre-wrap">
+          <p className="max-h-[60vh] overflow-y-auto px-4 py-4 text-sm font-light whitespace-pre-wrap">
             {rules}
           </p>
           <footer className="bg-card text-muted-foreground sticky bottom-0 flex border-t p-4 text-sm">

@@ -82,7 +82,6 @@ export const GroupNav = ({ code }: { code: string }) => {
             href={buildHref("/settings")}
             title="Ajustes"
             icon={SettingsIcon}
-            isNew
           />
         )}
         {/* <NavLink

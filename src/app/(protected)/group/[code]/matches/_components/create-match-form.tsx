@@ -13,11 +13,14 @@ import { categoryOptions } from "@/utils/categories";
 import { sportOptions } from "@/utils/sports";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
+import ptBR from "dayjs/locale/pt-br";
 import { useAction } from "next-safe-action/hooks";
 import { useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { CreateMatchFormData, createMatchSchema } from "../_schema/create";
+
+dayjs.locale(ptBR);
 
 type CreateMatchFormProps = {
   setOpen: (open: boolean) => void;
@@ -28,7 +31,7 @@ export const CreateMatchForm = ({ setOpen }: CreateMatchFormProps) => {
     resolver: zodResolver(createMatchSchema),
     defaultValues: {
       title: "",
-      date: dayjs().toDate(),
+      date: dayjs().locale(ptBR).toDate(),
       time: "",
       sport: "volei",
       category: "mixed",
@@ -109,11 +112,12 @@ export const CreateMatchForm = ({ setOpen }: CreateMatchFormProps) => {
           />
         </div>
 
-        <div className="grid h-fit grid-cols-2 gap-4">
+        <div className="grid h-fit grid-cols-1 gap-4 md:grid-cols-2">
           <DatePickerField
             name="date"
             label="Data"
             minDate={dayjs().toDate()}
+            className="w-auto"
           />
 
           <InputField

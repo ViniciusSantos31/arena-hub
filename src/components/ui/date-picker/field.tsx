@@ -27,7 +27,7 @@ export const DatePickerField = ({
       control={control}
       name={name}
       render={({ field, fieldState }) => (
-        <FormItem>
+        <FormItem className="w-full">
           {label && (
             <FormLabel>
               {label}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe2Icon, PlusCircleIcon, Users2Icon } from "lucide-react";
+import { Globe2Icon, PlusCircleIcon } from "lucide-react";
 import { NavSidebar } from "./nav-sidebar";
 
 const options = {
@@ -16,11 +16,6 @@ const options = {
       title: "Criar grupo",
       url: "/group/create",
       icon: PlusCircleIcon,
-    },
-    {
-      title: "Entrar em grupo",
-      url: "/group/join",
-      icon: Users2Icon,
     },
     {
       title: "Encontre sua turma",
