@@ -4,9 +4,9 @@ import { getAvatarFallback } from "@/utils/avatar";
 type AvatarStackProps = {
   users?: (
     | {
-        id: string;
-        name: string;
-        image: string | null;
+        id?: string;
+        name?: string;
+        image?: string | null;
       }
     | undefined
   )[];

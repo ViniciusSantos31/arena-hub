@@ -95,7 +95,11 @@ export const listMatches = actionClient
     return response.map((match) => ({
       ...match,
       date: fromUTCDate(match.date),
-      players: match.players?.map((player) => player.user ?? undefined) ?? [],
+      players:
+        match.players?.map((player) => ({
+          ...player.user,
+          waitingQueue: player.waitingQueue,
+        })) ?? [],
     }));
   });
 
@@ -143,10 +147,16 @@ export const listNextMatch = actionClient
       return null;
     }
 
+    const players =
+      response.players?.map((player) => ({
+        ...player.user,
+        waitingQueue: player.waitingQueue,
+      })) ?? [];
+
     return {
       ...response,
       date: fromUTCDate(response.date),
-      players: response.players.map((player) => player.user ?? undefined) ?? [],
+      players,
     };
   });
 

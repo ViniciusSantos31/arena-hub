@@ -20,7 +20,7 @@ const TeamCard = ({ team }: { team: Team }) => {
       <div className="mb-4 flex items-center justify-between">
         <h3 className="font-bold">Time {team.team}</h3>
         <Badge variant="secondary" className="text-sm">
-          Score {team.score}
+          Score {Math.round(team.score)}
         </Badge>
       </div>
       <div className="grid gap-3">

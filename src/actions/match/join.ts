@@ -76,7 +76,13 @@ export const joinMatch = actionClient
         playersCount: count(playersTable.userId),
       })
       .from(matchesTable)
-      .leftJoin(playersTable, eq(matchesTable.id, playersTable.matchId))
+      .leftJoin(
+        playersTable,
+        and(
+          eq(matchesTable.id, playersTable.matchId),
+          eq(playersTable.waitingQueue, false),
+        ),
+      )
       .where(eq(matchesTable.id, matchId))
       .groupBy(matchesTable.id)
       .then((res) => res[0]);

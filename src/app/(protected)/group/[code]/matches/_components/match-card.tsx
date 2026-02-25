@@ -18,19 +18,19 @@ import { MatchStatusBadge } from "./match-status-badge";
 
 type MatchCardProps = {
   match: typeof matchesTable.$inferSelect & {
-    players: (
-      | {
-          id: string;
-          name: string;
-          image: string | null;
-        }
-      | undefined
-    )[];
+    players: {
+      waitingQueue: boolean;
+      id?: string | undefined;
+      name?: string | undefined;
+      image?: string | null | undefined;
+    }[];
   };
 };
 
 export const MatchCard = ({ match }: MatchCardProps) => {
-  const filledPlayers = match.players.length;
+  const filledPlayers = match.players.filter(
+    (player) => player?.waitingQueue === false,
+  ).length;
   const progressValue = (match.players.length * 100) / match.maxPlayers;
 
   const SportIcon = getSportIconById(match.sport as Sport);

@@ -53,6 +53,9 @@ export const listMembers = cache(
             },
           },
           players: {
+            columns: {
+              teamId: true,
+            },
             with: {
               match: {
                 columns: {
@@ -81,7 +84,9 @@ export const listMembers = cache(
         role: member.role as Role,
         userId: member.userId,
         matches: member.players.reduce(
-          (acc, player) => acc + (player.match?.status === "completed" ? 1 : 0),
+          (acc, player) =>
+            acc +
+            (player.match?.status === "completed" && player.teamId ? 1 : 0),
           0,
         ),
       }));

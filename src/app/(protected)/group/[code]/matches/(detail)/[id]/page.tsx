@@ -1,15 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { ChevronLeftIcon, RotateCcwIcon, Users2Icon } from "lucide-react";
+import { ChevronLeftIcon, Users2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { use, useEffect } from "react";
 import { AdvancedSettingsSection } from "./_components/advanced-settings-section";
@@ -41,7 +35,7 @@ export default function MatchDetailPage({
         Voltar para as partidas
       </Button>
 
-      <div>
+      {/* <div>
         {!isConnected && (
           <Card className="border-destructive bg-destructive/5 dark:bg-destructive/5">
             <CardHeader>
@@ -72,7 +66,7 @@ export default function MatchDetailPage({
             </CardHeader>
           </Card>
         )}
-      </div>
+      </div> */}
 
       <AdvancedSettingsSection />
 
