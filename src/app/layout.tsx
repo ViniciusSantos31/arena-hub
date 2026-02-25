@@ -66,7 +66,7 @@ export default function RootLayout({
     <html lang="pt-BR" suppressHydrationWarning>
       <meta name="apple-mobile-web-app-title" content="Arena Hub" />
       <body
-        className={`${nunitoSans.variable} ${nunito.variable} bg-sidebar antialiased`}
+        className={`${nunitoSans.variable} ${nunito.variable} bg-sidebar scroll-smooth antialiased`}
       >
         <ThemeProvider
           attribute="class"
