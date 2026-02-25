@@ -12,11 +12,13 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useState,
 } from "react";
 
 interface WebSocketContextType {
   socket: typeof socket;
   isConnected: boolean;
+  isConnecting: boolean;
   sendMessage: (message: string) => void;
   sendEvent: (data: WebSocketEventData) => void;
   connect: () => void;
@@ -48,11 +50,15 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     () => socket && socket.connected,
   );
 
+  const [isConnecting, setIsConnecting] = useState(false);
+
   const connect = () => {
     if (socket) {
+      setIsConnecting(true);
       socket.connect();
       socket.on("connect", () => {
         setIsConnected(true);
+        setIsConnecting(false);
       });
     }
   };
@@ -128,6 +134,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
   const value: WebSocketContextType = {
     socket,
     isConnected,
+    isConnecting,
     sendMessage,
     sendEvent,
     connect,

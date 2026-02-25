@@ -11,13 +11,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { getAvatarFallback } from "@/utils/avatar";
 import { formatDate } from "@/utils/date";
 import { EyeIcon, Lock } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
+import { UpgradePlanDialog } from "../../_components/upgrade-plan-dialog";
 import { useCheckAlreadyRequested } from "../_hooks";
 
 type GroupFeedCardProps =
@@ -54,6 +57,10 @@ const JoinGroupButton = ({
   isPrivate?: boolean;
 }) => {
   const router = useRouter();
+  const groups = authClient.useListOrganizations();
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const groupsCount = groups.data?.length ?? 0;
 
   const { data: alreadyRequested, refetch } = useCheckAlreadyRequested(
     code ?? "",
@@ -107,6 +114,33 @@ const JoinGroupButton = ({
       id: "join-group-toast",
     });
   };
+
+  if (groupsCount >= 2 && isPrivate) {
+    return (
+      <UpgradePlanDialog
+        feature="join_groups"
+        onOpenChange={setDialogOpen}
+        open={dialogOpen}
+      >
+        <Button variant={"outline"} className="w-full @xl:ml-auto @xl:w-fit">
+          <Lock />
+          Solicitar acesso
+        </Button>
+      </UpgradePlanDialog>
+    );
+  } else if (groupsCount >= 2) {
+    return (
+      <UpgradePlanDialog
+        feature="join_groups"
+        onOpenChange={setDialogOpen}
+        open={dialogOpen}
+      >
+        <Button variant={"outline"} className="w-full @xl:ml-auto @xl:w-fit">
+          Entrar no grupo
+        </Button>
+      </UpgradePlanDialog>
+    );
+  }
 
   if (isPrivate) {
     return (

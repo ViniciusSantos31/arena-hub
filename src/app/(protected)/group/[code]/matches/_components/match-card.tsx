@@ -31,7 +31,7 @@ export const MatchCard = ({ match }: MatchCardProps) => {
   const filledPlayers = match.players.filter(
     (player) => player?.waitingQueue === false,
   ).length;
-  const progressValue = (match.players.length * 100) / match.maxPlayers;
+  const progressValue = (filledPlayers * 100) / match.maxPlayers;
 
   const SportIcon = getSportIconById(match.sport as Sport);
 

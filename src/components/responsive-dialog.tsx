@@ -32,6 +32,7 @@ type ResponsiveDialogProps = {
   asChild?: boolean;
   contentClassName?: string;
   onOpenChange?: (open: boolean) => void;
+  showCloseButton?: boolean;
 };
 
 export type ResponsiveDialogBaseProps = Omit<
@@ -50,6 +51,7 @@ export const ResponsiveDialog = ({
   className,
   contentClassName,
   asChild = true,
+  showCloseButton = true,
 }: ResponsiveDialogProps) => {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
@@ -68,7 +70,7 @@ export const ResponsiveDialog = ({
           <DrawerTrigger asChild={asChild}>{children}</DrawerTrigger>
         )}
         <DrawerContent className={cn("w-full", className)}>
-          <DrawerHeader>
+          <DrawerHeader className="border-b pb-4">
             <DrawerTitle className="flex items-center gap-2">
               {Icon && <Icon className="h-5 w-5" />}
               {title}
@@ -79,7 +81,7 @@ export const ResponsiveDialog = ({
           </DrawerHeader>
           <div
             className={cn(
-              "w-full space-y-6 overflow-y-auto px-4 pb-4",
+              "w-full space-y-6 overflow-y-auto px-4 py-4",
               contentClassName,
             )}
           >
@@ -94,12 +96,13 @@ export const ResponsiveDialog = ({
     <Dialog open={open ?? isOpen} onOpenChange={handleOpenChange}>
       {children && <DialogTrigger asChild={asChild}>{children}</DialogTrigger>}
       <DialogContent
+        showCloseButton={showCloseButton}
         className={cn(
           "flex max-h-[90vh] flex-col overflow-clip px-0 pb-0 sm:max-w-md",
           className,
         )}
       >
-        <DialogHeader className="h-fit px-4">
+        <DialogHeader className="h-fit border-b px-4 pb-4">
           <DialogTitle className="flex items-center gap-1">
             {Icon && <Icon className="h-5 w-5" />}
             {title}

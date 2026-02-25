@@ -10,6 +10,7 @@ import { AdvancedSettingsSection } from "./_components/advanced-settings-section
 import { MatchDetailCard } from "./_components/match-detail-card";
 import { PlayerListRealtime } from "./_components/player-list-realtime";
 import { PlayersList } from "./_components/players-list";
+import { SocketStatusBadge } from "./_components/socket-status-badge";
 import TeamsList from "./_components/teams-list";
 import { WaitingQueueList } from "./_components/waiting-queue-list";
 
@@ -22,52 +23,22 @@ export default function MatchDetailPage({
 
   const router = useRouter();
 
-  const { listenMatchEvents, isConnected, reconnect } = useWebSocket();
+  const { listenMatchEvents } = useWebSocket();
 
   useEffect(() => {
     listenMatchEvents(id);
   }, [id, listenMatchEvents]);
 
   return (
-    <main className="flex flex-col gap-4">
-      <Button variant="outline" className="w-fit" onClick={router.back}>
-        <ChevronLeftIcon />
-        Voltar para as partidas
-      </Button>
+    <main className="flex w-full flex-col gap-4">
+      <section className="flex w-full flex-col gap-3 lg:flex-row lg:items-center">
+        <Button variant="ghost" className="w-fit" onClick={router.back}>
+          <ChevronLeftIcon />
+          Voltar para as partidas
+        </Button>
 
-      {/* <div>
-        {!isConnected && (
-          <Card className="border-destructive bg-destructive/5 dark:bg-destructive/5">
-            <CardHeader>
-              <CardTitle className="text-destructive">
-                Conexão perdida
-              </CardTitle>
-              <CardDescription className="text-muted-foreground">
-                A conexão com o servidor foi perdida. Você ainda pode realizar
-                ações na partida, mas não receberá atualizações em tempo real.
-              </CardDescription>
-            </CardHeader>
-            <CardFooter>
-              <Button variant="outline" onClick={reconnect}>
-                <RotateCcwIcon />
-                Tentar reconectar
-              </Button>
-            </CardFooter>
-          </Card>
-        )}
-        {isConnected && (
-          <Card className="border-primary dark:bg-primary/5 bg-primary/5 relative overflow-clip">
-            <CardHeader>
-              <CardTitle>Conectado</CardTitle>
-              <CardDescription className="text-muted-foreground text-balance">
-                Você está conectado ao servidor. As informações da partida estão
-                sendo atualizadas em tempo real.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        )}
-      </div> */}
-
+        <SocketStatusBadge />
+      </section>
       <AdvancedSettingsSection />
 
       <MatchDetailCard code={code} />
