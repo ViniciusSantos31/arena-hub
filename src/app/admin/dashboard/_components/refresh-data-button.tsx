@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 export const RefreshDataButton = () => {
   const refetchPage = async () => {
     "use server";
-    revalidatePath("/admin/dashboard");
+    revalidatePath("/admin");
   };
 
   return (

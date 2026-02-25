@@ -19,8 +19,8 @@ export const adminResume = actionClient.action(async () => {
     throw new Error("Acesso negado");
   }
 
-  const dateRangeStart = dayjs().subtract(90, "day").toDate();
-  const dateRangeEnd = dayjs().toDate();
+  const dateRangeStart = dayjs().subtract(90, "day").startOf("day").toDate();
+  const dateRangeEnd = dayjs().endOf("day").toDate();
 
   const dateIntervalArray = [];
   let currentDate = dayjs(dateRangeStart);
