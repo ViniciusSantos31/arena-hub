@@ -13,7 +13,8 @@ export type Sport =
   | "volei"
   | "tenis"
   | "futsal"
-  | "corrida";
+  | "corrida"
+  | "society";
 
 export const getSportColor = (sport: Sport) => {
   const colors: { [key in Sport]: string } = {
@@ -27,6 +28,8 @@ export const getSportColor = (sport: Sport) => {
     futsal:
       "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100",
     corrida: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100",
+    society:
+      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100",
   };
   return colors[sport] || "bg-gray-100 text-gray-800";
 };
@@ -53,6 +56,7 @@ export const getSportIconById = (id: Sport) => {
 export const sportOptions: { id: Sport; name: string }[] = [
   { id: "futebol", name: "Futebol" },
   { id: "futsal", name: "Futsal" },
+  { id: "society", name: "Society" },
   { id: "volei", name: "Vôlei" },
   { id: "basquete", name: "Basquete" },
   { id: "tenis", name: "Tênis" },
@@ -66,6 +70,7 @@ const sportLabels: { [key in Sport]: string } = {
   tenis: "Tênis",
   futsal: "Futsal",
   corrida: "Corrida",
+  society: "Society",
 };
 
 export const getSportLabelById = (id: string) => {
