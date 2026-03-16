@@ -25,6 +25,7 @@ export const CreateMatchDialog = ({
       title="Criar Partida"
       description="Preencha os detalhes da partida para começar."
       open={open}
+      contentClassName="pb-0 md:pb-4"
       className="h-fit w-full md:max-w-xl lg:max-w-[calc(100vw-32rem)]"
       onOpenChange={() => setOpen(!open)}
       content={<CreateMatchForm setOpen={setOpen} />}

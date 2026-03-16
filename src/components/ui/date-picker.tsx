@@ -45,7 +45,7 @@ export function DatePicker({
           <Button
             variant="outline"
             className={cn(
-              "w-[280px] justify-start text-left font-normal",
+              "w-full min-w-0 justify-start text-left font-normal",
               !value && "text-muted-foreground",
               classNames?.trigger,
             )}
@@ -54,7 +54,7 @@ export function DatePicker({
             {value ? format(value, "PPP") : <span>{placeholder}</span>}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0">
+        <PopoverContent className="w-auto max-w-full p-0">
           <Calendar
             mode="single"
             selected={value}
@@ -88,7 +88,7 @@ export function DatePickerWithRange({
             id="date"
             variant={"outline"}
             className={cn(
-              "w-[300px] justify-start text-left font-normal",
+              "w-full min-w-0 justify-start text-left font-normal",
               !date && "text-muted-foreground",
             )}
           >
@@ -107,7 +107,7 @@ export function DatePickerWithRange({
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent className="w-auto max-w-full p-0" align="start">
           <Calendar
             initialFocus
             mode="range"

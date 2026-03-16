@@ -65,7 +65,7 @@ export const CreateMatchForm = ({ setOpen }: CreateMatchFormProps) => {
     <Form {...methods}>
       <form
         onSubmit={methods.handleSubmit(handleSubmit)}
-        className="flex h-full flex-col space-y-6 border-t pt-4"
+        className="flex h-full flex-col space-y-4"
       >
         <div className="grid grid-cols-1">
           <InputField
@@ -142,7 +142,7 @@ export const CreateMatchForm = ({ setOpen }: CreateMatchFormProps) => {
           className="resize-none"
         />
 
-        <div className="mt-auto flex gap-4 pb-4">
+        <div className="bg-background bottom-0 mt-auto flex gap-4 py-4 max-md:sticky md:py-0">
           <Button
             type="button"
             variant="outline"
