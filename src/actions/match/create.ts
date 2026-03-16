@@ -58,8 +58,8 @@ export const createMatch = actionClient
       .insert(matchesTable)
       .values({
         ...data,
-        date: dayjs(dateTimeUTC).toDate(),
-        time: dayjs(dateTimeUTC).utc().format("HH:mm"),
+        date: dateTimeUTC,
+        time: dayjs(dateTimeUTC).format("HH:mm"),
         organizationId,
       })
       .onConflictDoNothing()

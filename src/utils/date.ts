@@ -67,7 +67,7 @@ export const fromISOString = (isoString: string): Date => {
 };
 
 export const toUTCDate = (date: Date | string): Date => {
-  return dayjs.utc(date).toDate();
+  return dayjs(date).utc().toDate();
 };
 
 export const fromUTCDate = (date: Date | string): Date => {
