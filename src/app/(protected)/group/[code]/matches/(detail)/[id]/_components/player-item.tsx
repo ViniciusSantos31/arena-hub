@@ -19,7 +19,7 @@ export const PlayerItem = ({ ref, player }: PlayerItemProps) => {
   return (
     <div
       key={player.id}
-      className="flex items-center justify-between"
+      className="flex w-full items-center justify-between"
       ref={ref}
     >
       <div className="flex items-center gap-3">
