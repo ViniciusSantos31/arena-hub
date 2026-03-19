@@ -3,7 +3,6 @@
 import { db } from "@/db";
 import { matchesTable, matchStatusEnum } from "@/db/schema/match";
 import { actionClient } from "@/lib/next-safe-action";
-import { fromUTCDate } from "@/utils/date";
 import dayjs from "dayjs";
 import { gte, ne, Operators } from "drizzle-orm";
 import z from "zod/v4";
@@ -94,7 +93,7 @@ export const listMatches = actionClient
 
     return response.map((match) => ({
       ...match,
-      date: fromUTCDate(match.date),
+      date: dayjs(match.date).local().toDate(),
       players:
         match.players?.map((player) => ({
           ...player.user,
@@ -153,9 +152,12 @@ export const listNextMatch = actionClient
         waitingQueue: player.waitingQueue,
       })) ?? [];
 
+    const dateTime = dayjs(response.date);
+    dateTime.utcOffset(0);
+
     return {
       ...response,
-      date: fromUTCDate(response.date),
+      date: dateTime.toDate(),
       players,
     };
   });
@@ -195,8 +197,11 @@ export const matchDetails = actionClient
       throw new Error("Match not found");
     }
 
+    const dateTime = dayjs(response.date);
+    dateTime.utcOffset(0);
+
     return {
       ...response,
-      date: fromUTCDate(response.date),
+      date: dateTime.toDate(),
     };
   });
