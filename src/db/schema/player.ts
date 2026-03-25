@@ -9,6 +9,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { matchesTable } from "./match";
 import { member } from "./member";
+import { paymentStatusEnum } from "./payment";
 import { usersTable } from "./user";
 
 export const playersTable = pgTable("player", {
@@ -27,6 +28,10 @@ export const playersTable = pgTable("player", {
   }),
   confirmed: boolean("confirmed").notNull().default(false),
   waitingQueue: boolean("waiting_queue").notNull().default(false),
+
+  //Payment
+  paymentStatus: paymentStatusEnum("payment_status").default("pending"),
+
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()

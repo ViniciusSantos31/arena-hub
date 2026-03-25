@@ -21,6 +21,7 @@ export const NOTIFIABLE_STATUSES = [
   "closed_registration",
   "cancelled",
   "team_sorted",
+  "completed",
 ] as const;
 export type NotifiableStatus = (typeof NOTIFIABLE_STATUSES)[number];
 
@@ -199,7 +200,7 @@ export async function notifyMatchStatusUpdate({
 }: {
   groupName: string;
   matchDate: string;
-  newStatus: "team_sorted" | "cancelled" | "closed_registration";
+  newStatus: "team_sorted" | "cancelled" | "closed_registration" | "completed";
   groupCode: string;
   matchId: string;
   participantIds: string[];
@@ -208,6 +209,7 @@ export async function notifyMatchStatusUpdate({
     cancelled: { emoji: "❌", text: "foi cancelada" },
     closed_registration: { emoji: "🔒", text: "teve as inscrições fechadas" },
     team_sorted: { emoji: "🎲", text: "teve os times sorteados" },
+    completed: { emoji: "✅", text: "foi concluída" },
   };
 
   const { emoji, text } = statusMessages[newStatus];
