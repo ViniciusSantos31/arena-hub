@@ -1,11 +1,11 @@
 // Constantes financeiras — altere aqui para ajustar o modelo
 export const PAYMENT_CONFIG = {
   // Comissão da plataforma sobre o valor líquido (após taxa do gateway)
-  PLATFORM_FEE_RATE: 0.08,
+  PLATFORM_FEE_RATE: 0.05, // 5%
 
-  // Taxa estimada do Pagar.me (usada para cálculo de preview ao organizador)
-  GATEWAY_FEE_RATE: 0.025,
-  GATEWAY_FEE_FIXED: 0.09, // R$0,09 por transação
+  // Taxa estimada do Stripe (usada para cálculo de preview ao organizador)
+  GATEWAY_FEE_RATE: 0.039, // 3,9%
+  GATEWAY_FEE_FIXED: 0.39, // R$0,39 por transação
 
   // Valor mínimo por jogador em centavos (R$5,00)
   MIN_PRICE_PER_PLAYER_CENTS: 500,

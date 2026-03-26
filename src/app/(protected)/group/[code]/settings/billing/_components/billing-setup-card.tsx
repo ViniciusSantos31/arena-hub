@@ -5,8 +5,9 @@ import {
   SettingsAction,
   SettingsSection,
 } from "@/app/(protected)/group/[code]/settings/_components/settings-section";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { PAYMENT_CONFIG } from "@/lib/payments";
+import { formatBRL, PAYMENT_CONFIG } from "@/lib/payments";
 import {
   AlertCircleIcon,
   CheckCircle2Icon,
@@ -28,28 +29,31 @@ interface BillingSetupCardProps {
 function StatusBadge({ status }: { status: RecipientStatus }) {
   if (status === "active") {
     return (
-      <div className="flex items-center gap-2 rounded-full bg-green-500/10 px-3 py-1.5 text-sm font-medium text-green-600 dark:text-green-400">
-        <CheckCircle2Icon className="h-4 w-4" />
+      <Badge className="flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium">
+        <CheckCircle2Icon />
         Conta ativa — você pode criar partidas pagas
-      </div>
+      </Badge>
     );
   }
 
   if (status === "pending") {
     return (
-      <div className="flex items-center gap-2 rounded-full bg-yellow-500/10 px-3 py-1.5 text-sm font-medium text-yellow-600 dark:text-yellow-400">
-        <AlertCircleIcon className="h-4 w-4" />
+      <Badge className="flex items-center gap-2 rounded-full bg-yellow-300 px-3 py-1.5 text-sm font-medium text-yellow-900">
+        <AlertCircleIcon />
         Cadastro pendente — conclua o onboarding no Stripe
-      </div>
+      </Badge>
     );
   }
 
   if (status === "blocked") {
     return (
-      <div className="flex items-center gap-2 rounded-full bg-red-500/10 px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400">
-        <AlertCircleIcon className="h-4 w-4" />
+      <Badge
+        variant={"destructive"}
+        className="flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium"
+      >
+        <AlertCircleIcon />
         Conta bloqueada — entre em contato com o suporte
-      </div>
+      </Badge>
     );
   }
 
@@ -99,7 +103,8 @@ export function BillingSetupCard({
   };
 
   const platformFeePercent = PAYMENT_CONFIG.PLATFORM_FEE_RATE * 100;
-
+  const gatewayFeePercent = PAYMENT_CONFIG.GATEWAY_FEE_RATE * 100;
+  const gatewayFeeFixed = formatBRL(PAYMENT_CONFIG.GATEWAY_FEE_FIXED * 100);
   return (
     <div className="space-y-4">
       <SettingsSection
@@ -108,26 +113,33 @@ export function BillingSetupCard({
       >
         <div className="space-y-6">
           {recipientStatus && <StatusBadge status={recipientStatus} />}
-
           <div className="grid gap-3 sm:grid-cols-3">
-            <div className="bg-muted/50 rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold">{platformFeePercent}%</p>
+            <div className="bg-muted/50 flex flex-col justify-center space-y-1 rounded-lg p-4 text-center">
               <p className="text-muted-foreground mt-1 text-xs">
                 Comissão da plataforma
               </p>
+              <p className="text-2xl font-bold">{platformFeePercent}%</p>
             </div>
-            <div className="bg-muted/50 rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold">2,5%</p>
+            <div className="bg-muted/50 flex flex-col items-center justify-center space-y-1 rounded-lg p-4 text-center">
               <p className="text-muted-foreground mt-1 text-xs">
                 Taxa do gateway
               </p>
+              <span className="inline-flex gap-2 text-2xl font-bold">
+                <p className="flex flex-col items-center">
+                  {gatewayFeeFixed}
+                  <span className="text-muted-foreground text-xs">
+                    por transação
+                  </span>
+                </p>
+                <p>+ {gatewayFeePercent}%</p>
+              </span>
             </div>
-            <div className="bg-muted/50 rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold">
-                {100 - platformFeePercent - 2.5}%
-              </p>
+            <div className="bg-muted/50 flex flex-col justify-center space-y-1 rounded-lg p-4 text-center">
               <p className="text-muted-foreground mt-1 text-xs">
                 Você recebe (aprox.)
+              </p>
+              <p className="text-2xl font-bold">
+                {100 - platformFeePercent - gatewayFeePercent}%
               </p>
             </div>
           </div>

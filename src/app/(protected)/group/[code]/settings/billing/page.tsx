@@ -3,6 +3,7 @@ import { getUserMembership } from "@/actions/group/membership";
 import { can } from "@/hooks/use-guard";
 import { redirect } from "next/navigation";
 import { LoadingGroupPage } from "../../_components/loading-page";
+import { BalanceCard } from "./_components/balance-card";
 import { BillingSetupCard } from "./_components/billing-setup-card";
 
 type BillingPageProps = {
@@ -33,9 +34,14 @@ export default async function BillingPage({ params }: BillingPageProps) {
   const recipientStatus = recipient?.status ?? null;
 
   return (
-    <BillingSetupCard
-      organizationCode={code}
-      recipientStatus={recipientStatus}
-    />
+    <div className="space-y-4">
+      <BillingSetupCard
+        organizationCode={code}
+        recipientStatus={recipientStatus}
+      />
+      {recipientStatus === "active" && (
+        <BalanceCard organizationCode={code} />
+      )}
+    </div>
   );
 }
