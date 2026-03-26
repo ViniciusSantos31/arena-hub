@@ -1,8 +1,8 @@
 import { db } from "@/db";
-import { paymentsTable } from "@/db/schema/payment";
+import { paymentRecipientsTable, paymentsTable } from "@/db/schema/payment";
 import { playersTable } from "@/db/schema/player";
 import { stripe } from "@/lib/stripe";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -11,7 +11,6 @@ export async function POST(req: NextRequest) {
 
   let event;
   try {
-    // Stripe valida a assinatura automaticamente — dispara erro se inválida
     event = stripe.webhooks.constructEvent(
       rawBody,
       signature,
@@ -22,8 +21,48 @@ export async function POST(req: NextRequest) {
   }
 
   switch (event.type) {
+    // ── Conta Connect do organizador ─────────────────────────────────────────
+
+    case "account.updated": {
+      // Dispara quando o organizador conclui o onboarding ou altera dados.
+      // `charges_enabled` fica true quando o KYC é aprovado e a conta pode aceitar cobranças.
+      const account = event.data.object;
+
+      if (account.charges_enabled && account.details_submitted) {
+        await db
+          .update(paymentRecipientsTable)
+          .set({ status: "active", updatedAt: new Date() })
+          .where(eq(paymentRecipientsTable.stripeAccountId, account.id));
+      } else {
+        // Conta suspensa/bloqueada após ter sido ativa
+        await db
+          .update(paymentRecipientsTable)
+          .set({ status: "blocked", updatedAt: new Date() })
+          .where(
+            and(
+              eq(paymentRecipientsTable.stripeAccountId, account.id),
+              eq(paymentRecipientsTable.status, "active"),
+            ),
+          );
+      }
+      break;
+    }
+
+    case "account.application.deauthorized": {
+      // Organizador revogou o acesso da plataforma à conta dele
+      const account = event.data.object;
+      await db
+        .update(paymentRecipientsTable)
+        .set({ status: "blocked", updatedAt: new Date() })
+        .where(eq(paymentRecipientsTable.stripeAccountId, account.id));
+      break;
+    }
+
+    // ── Pagamentos dos jogadores ──────────────────────────────────────────────
+
     case "payment_intent.amount_capturable_updated": {
-      // Cartão autorizado — jogador confirmado na partida
+      // Cartão autorizado com `capture_method: "manual"` — valor está em escrow.
+      // Confirma o jogador na partida.
       const pi = event.data.object;
       const payment = await db.query.paymentsTable.findFirst({
         where: (p, { eq }) => eq(p.stripePaymentIntentId, pi.id),
@@ -35,10 +74,16 @@ export async function POST(req: NextRequest) {
         .set({ status: "paid", updatedAt: new Date() })
         .where(eq(paymentsTable.id, payment.id));
 
+      // Filtro por userId E matchId para não confirmar jogador em outras partidas
       await db
         .update(playersTable)
         .set({ paymentStatus: "paid", confirmed: true })
-        .where(eq(playersTable.userId, payment.userId));
+        .where(
+          and(
+            eq(playersTable.userId, payment.userId),
+            eq(playersTable.matchId, payment.matchId),
+          ),
+        );
 
       break;
     }
@@ -55,9 +100,15 @@ export async function POST(req: NextRequest) {
         .set({ status: "failed", updatedAt: new Date() })
         .where(eq(paymentsTable.id, payment.id));
 
+      // Remove apenas o registro desta partida específica
       await db
         .delete(playersTable)
-        .where(eq(playersTable.userId, payment.userId));
+        .where(
+          and(
+            eq(playersTable.userId, payment.userId),
+            eq(playersTable.matchId, payment.matchId),
+          ),
+        );
 
       break;
     }

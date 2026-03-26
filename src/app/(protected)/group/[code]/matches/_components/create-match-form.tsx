@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 
 import { createMatch } from "@/actions/match/create";
 import { DatePickerField } from "@/components/ui/date-picker/field";
-import { Form } from "@/components/ui/form";
+import { Form, FormDescription, FormLabel } from "@/components/ui/form";
 import { InputField } from "@/components/ui/input/field";
 import { SelectField } from "@/components/ui/select/field";
+import { SwitchField } from "@/components/ui/switch/field";
 import { TextareaField } from "@/components/ui/textarea/field";
 import { queryClient } from "@/lib/react-query";
 import { categoryOptions } from "@/utils/categories";
@@ -16,9 +17,13 @@ import dayjs from "dayjs";
 import ptBR from "dayjs/locale/pt-br";
 import { useAction } from "next-safe-action/hooks";
 import { useParams } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { CreateMatchFormData, createMatchSchema } from "../_schema/create";
+
+import { Input } from "@/components/ui/input";
+import { PAYMENT_CONFIG } from "@/lib/payments";
+import { NumericFormat } from "react-number-format";
 
 dayjs.locale(ptBR);
 
@@ -27,19 +32,23 @@ type CreateMatchFormProps = {
 };
 
 export const CreateMatchForm = ({ setOpen }: CreateMatchFormProps) => {
-  const methods = useForm<CreateMatchFormData>({
+  const methods = useForm({
     resolver: zodResolver(createMatchSchema),
     defaultValues: {
       title: "",
-      date: dayjs().locale(ptBR).toDate(),
+      date: dayjs().toDate(),
       time: "",
       sport: "volei",
       category: "mixed",
       location: "",
       minPlayers: 10,
       maxPlayers: 50,
+      isPaid: false,
+      paymentDeadlineMinutes: 30,
     },
   });
+
+  const isPaid = useWatch({ control: methods.control, name: "isPaid" });
 
   const { code } = useParams<{ code: string }>();
 
@@ -55,7 +64,16 @@ export const CreateMatchForm = ({ setOpen }: CreateMatchFormProps) => {
   });
 
   const handleSubmit = (data: CreateMatchFormData) => {
-    createMatchAction.execute({ ...data, organizationCode: code });
+    const totalPriceCents =
+      data.isPaid && data.totalPrice
+        ? Math.round(data.totalPrice * 100)
+        : undefined;
+
+    createMatchAction.execute({
+      ...data,
+      organizationCode: code,
+      totalPriceCents,
+    });
   };
 
   const disableButton =
@@ -141,6 +159,59 @@ export const CreateMatchForm = ({ setOpen }: CreateMatchFormProps) => {
           placeholder="Adicione informações extras sobre a partida..."
           className="resize-none"
         />
+
+        <div className="space-y-4 rounded-lg border p-4">
+          <SwitchField
+            name="isPaid"
+            label="Partida paga"
+            description="Jogadores precisarão pagar para confirmar presença"
+            className="ml-auto"
+          />
+
+          {isPaid && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <FormLabel>Valor por jogador</FormLabel>
+                <NumericFormat
+                  prefix="R$"
+                  customInput={Input}
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  decimalScale={2}
+                  min={PAYMENT_CONFIG.MIN_PRICE_PER_PLAYER_CENTS / 100}
+                  max={PAYMENT_CONFIG.MAX_PRICE_PER_PLAYER_CENTS / 100}
+                  fixedDecimalScale
+                  onValueChange={(values) => {
+                    methods.setValue(
+                      "totalPrice",
+                      (values.floatValue ?? 0) *
+                        (methods.watch("maxPlayers", 1) ?? 1),
+                    );
+                  }}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <FormLabel>Valor total da partida (aprox.)</FormLabel>
+                <NumericFormat
+                  prefix="R$"
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  decimalScale={2}
+                  fixedDecimalScale
+                  customInput={Input}
+                  onFocus={(e) => e.target.select()}
+                  disabled
+                  readOnly
+                  value={methods.watch("totalPrice", 0)}
+                />
+                <FormDescription>
+                  O valor total da partida será calculado automaticamente com
+                  base no número de jogadores e o valor por jogador.
+                </FormDescription>
+              </div>
+            </div>
+          )}
+        </div>
 
         <div className="bg-background bottom-0 mt-auto flex gap-4 py-4 max-md:sticky md:py-0">
           <Button

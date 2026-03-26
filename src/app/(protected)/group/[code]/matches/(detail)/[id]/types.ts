@@ -13,6 +13,9 @@ export interface MatchDetail {
   organizationId: string;
   createdAt: Date;
   updatedAt: Date;
+  isPaid: boolean;
+  totalPriceCents: number | null;
+  paymentDeadlineMinutes: number | null;
 }
 
 export interface MatchPlayer {

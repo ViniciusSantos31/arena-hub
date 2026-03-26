@@ -9,7 +9,7 @@ export const formatDate = (
   date: Date | string,
   format: string = "DD/MM/YYYY",
 ): string => {
-  return dayjs(date).locale(ptBR).utc().format(format);
+  return dayjs(date).locale(ptBR).format(format);
 };
 
 export const getDateWithTime = (date: Date | string, time: string): Date => {

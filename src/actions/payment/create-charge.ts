@@ -57,6 +57,7 @@ export const createCharge = actionClient
     const recipient = await db.query.paymentRecipientsTable.findFirst({
       where: (r, { eq }) => eq(r.organizationId, match.organizationId!),
     });
+
     if (!recipient || recipient.status !== "active") {
       throw new Error("Organizador não configurou o recebimento");
     }

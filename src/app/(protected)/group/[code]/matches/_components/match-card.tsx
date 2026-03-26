@@ -9,6 +9,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { matchesTable } from "@/db/schema/match";
+import { formatBRL } from "@/lib/payments";
 import { getCategoryLabelById } from "@/utils/categories";
 import { formatDate } from "@/utils/date";
 import { getSportIconById, getSportLabelById, Sport } from "@/utils/sports";
@@ -68,8 +69,16 @@ export const MatchCard = ({ match }: MatchCardProps) => {
               <p className="text-muted-foreground text-sm">vagas preenchidas</p>
             </div>
             <div className="text-right">
-              <p className="text-lg font-medium">Grátis</p>
-              {/* <p className="text-muted-foreground text-sm">por pessoa</p> */}
+              {match.isPaid && match.totalPriceCents ? (
+                <span className="text-lg font-medium">
+                  {formatBRL(
+                    Math.ceil(match.totalPriceCents / match.maxPlayers),
+                  )}
+                  <p className="text-muted-foreground text-sm">por pessoa</p>
+                </span>
+              ) : (
+                <p className="text-lg font-medium">Grátis</p>
+              )}
             </div>
           </div>
           <div className="mb-4 w-full">

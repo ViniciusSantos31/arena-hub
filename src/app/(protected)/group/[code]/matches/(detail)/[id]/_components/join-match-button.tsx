@@ -1,5 +1,6 @@
 "use client";
 
+import { cancelCharge } from "@/actions/payment/cancel-charge";
 import { getUserMatchPlayer, joinMatch } from "@/actions/match/join";
 import { Button } from "@/components/ui/button";
 import { useWebSocket } from "@/hooks/use-websocket";
@@ -9,8 +10,10 @@ import { Status } from "@/utils/status";
 import { useQuery } from "@tanstack/react-query";
 import { PlayIcon, UserRoundMinusIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
+import { useState } from "react";
 import { toast } from "sonner";
 import { matchDetailQueryKeys } from "../_hooks";
+import { PaymentCheckoutModal } from "./payment-checkout-modal";
 
 export const JoinMatchButton = ({
   match,
@@ -20,8 +23,13 @@ export const JoinMatchButton = ({
   match: {
     id: string;
     status: Status;
+    isPaid: boolean;
+    totalPriceCents: number | null;
+    maxPlayers: number;
   };
 }) => {
+  const [paymentOpen, setPaymentOpen] = useState(false);
+
   const { data: player } = useQuery({
     queryKey: ["player", match.id],
     enabled: !!match.id,
@@ -31,18 +39,43 @@ export const JoinMatchButton = ({
 
   const { sendEvent } = useWebSocket();
 
-  const joinMatchAction = useAction(joinMatch, {
+  const invalidateMatchQueries = () => {
+    queryClient.invalidateQueries({
+      predicate(query) {
+        return (
+          query.queryKey[0] === matchDetailQueryKeys.all[0] ||
+          query.queryKey[0] === "player"
+        );
+      },
+    });
+  };
+
+  // ── Saída de partida paga (cancela PI + remove jogador) ─────────────────
+  const cancelChargeAction = useAction(cancelCharge, {
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        predicate(query) {
-          return (
-            query.queryKey[0] === matchDetailQueryKeys.all[0] ||
-            query.queryKey[0] === "player"
-          );
-        },
+      invalidateMatchQueries();
+      toast.warning("Você saiu da partida. O valor foi estornado.");
+      sendEvent({
+        event: WebSocketMessageType.MATCH_PARTICIPANT_LEFT,
+        payload: { playerId: player?.userId ?? "", matchId: match.id },
       });
-      if (player) {
+    },
+    onError: () => {
+      toast.error("Não foi possível sair da partida. Tente novamente.");
+    },
+  });
+
+  // ── Entrada/saída de partida gratuita ───────────────────────────────────
+  const joinMatchAction = useAction(joinMatch, {
+    onSuccess: (result) => {
+      invalidateMatchQueries();
+      const action = result.data?.action;
+      if (action === "left") {
         toast.warning("Você saiu da partida!");
+        sendEvent({
+          event: WebSocketMessageType.MATCH_PARTICIPANT_LEFT,
+          payload: { playerId: player?.userId ?? "", matchId: match.id },
+        });
         return;
       }
       toast.success("Inscrição realizada com sucesso!");
@@ -52,54 +85,40 @@ export const JoinMatchButton = ({
     },
   });
 
-  const handleJoinMatch = async () => {
-    await joinMatchAction
-      .executeAsync({
-        matchId: match.id,
-        organizationCode,
-      })
-      .then((res) => {
-        const { data } = res;
+  const isDisabled =
+    match.status !== "open_registration" ||
+    joinMatchAction.isExecuting ||
+    cancelChargeAction.isExecuting;
 
-        const action = data?.action;
+  const pricePerPlayerCents = match.totalPriceCents
+    ? Math.ceil(match.totalPriceCents / match.maxPlayers)
+    : 0;
 
-        if (action === "joined") {
-          sendEvent({
-            event: WebSocketMessageType.MATCH_PARTICIPANT_JOINED,
-            payload: {
-              player: {
-                id: data?.player?.id || "",
-                name: data?.player?.name || "",
-                image: data?.player?.image || null,
-                score: data?.player?.score || 0,
-              },
-              matchId: match.id,
-            },
-          });
-          return;
-        }
-
-        if (action === "left") {
-          sendEvent({
-            event: WebSocketMessageType.MATCH_PARTICIPANT_LEFT,
-            payload: {
-              playerId: data?.player.id || "",
-              matchId: match.id,
-            },
-          });
-        }
-      });
-  };
-
+  // ── Jogador já está na partida — mostra botão de saída ─────────────────
   if (player) {
+    const handleLeave = () => {
+      if (match.isPaid) {
+        cancelChargeAction.execute({ matchId: match.id });
+      } else {
+        joinMatchAction.executeAsync({ matchId: match.id, organizationCode }).then(
+          (res) => {
+            if (res?.data?.action === "left") {
+              sendEvent({
+                event: WebSocketMessageType.MATCH_PARTICIPANT_LEFT,
+                payload: { playerId: player.userId ?? "", matchId: match.id },
+              });
+            }
+          },
+        );
+      }
+    };
+
     return (
       <Button
         className="flex-1 @md:flex-none"
-        variant={"outline"}
-        onClick={handleJoinMatch}
-        disabled={
-          match.status !== "open_registration" || joinMatchAction.isExecuting
-        }
+        variant="outline"
+        onClick={handleLeave}
+        disabled={isDisabled}
       >
         <UserRoundMinusIcon />
         <span className="hidden @md:block">Sair da Partida</span>
@@ -108,17 +127,54 @@ export const JoinMatchButton = ({
     );
   }
 
+  // ── Jogador não está na partida — mostra botão de entrada ───────────────
+  const handleJoin = () => {
+    if (match.isPaid && match.totalPriceCents) {
+      setPaymentOpen(true);
+      return;
+    }
+
+    joinMatchAction.executeAsync({ matchId: match.id, organizationCode }).then(
+      (res) => {
+        if (res?.data?.action === "joined") {
+          sendEvent({
+            event: WebSocketMessageType.MATCH_PARTICIPANT_JOINED,
+            payload: {
+              player: {
+                id: res.data.player?.id || "",
+                name: res.data.player?.name || "",
+                image: res.data.player?.image || null,
+                score: res.data.player?.score || 0,
+              },
+              matchId: match.id,
+            },
+          });
+        }
+      },
+    );
+  };
+
   return (
-    <Button
-      disabled={
-        match.status !== "open_registration" || joinMatchAction.isExecuting
-      }
-      className="flex-1 @md:flex-none"
-      onClick={handleJoinMatch}
-    >
-      <PlayIcon />
-      <span className="hidden @md:block">Participar da Partida</span>
-      <span className="@md:hidden">Participar</span>
-    </Button>
+    <>
+      <Button
+        disabled={isDisabled}
+        className="flex-1 @md:flex-none"
+        onClick={handleJoin}
+      >
+        <PlayIcon />
+        <span className="hidden @md:block">Participar da Partida</span>
+        <span className="@md:hidden">Participar</span>
+      </Button>
+
+      {match.isPaid && match.totalPriceCents && (
+        <PaymentCheckoutModal
+          open={paymentOpen}
+          onClose={() => setPaymentOpen(false)}
+          matchId={match.id}
+          organizationCode={organizationCode}
+          pricePerPlayerCents={pricePerPlayerCents}
+        />
+      )}
+    </>
   );
 };

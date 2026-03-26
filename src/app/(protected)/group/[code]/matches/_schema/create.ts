@@ -1,3 +1,4 @@
+import { PAYMENT_CONFIG } from "@/lib/payments";
 import { categoriesIds } from "@/utils/categories";
 import { sportsIds } from "@/utils/sports";
 import z from "zod/v4";
@@ -22,6 +23,16 @@ export const createMatchSchema = z.object({
     .number()
     .min(2, "O número máximo de jogadores deve ser pelo menos 2")
     .max(100, "O número máximo de jogadores não pode exceder 100"),
+  isPaid: z.boolean().optional().default(false),
+  // Valor total da partida em reais (ex: 200.00) — convertido para centavos ao salvar
+  totalPrice: z
+    .number()
+    .min(
+      PAYMENT_CONFIG.MIN_PRICE_PER_PLAYER_CENTS / 100,
+      `Valor mínimo por jogador é R$${PAYMENT_CONFIG.MIN_PRICE_PER_PLAYER_CENTS / 100}`,
+    )
+    .optional(),
+  paymentDeadlineMinutes: z.number().min(5).max(1440).optional().default(30),
 });
 
 export type CreateMatchFormData = z.infer<typeof createMatchSchema>;

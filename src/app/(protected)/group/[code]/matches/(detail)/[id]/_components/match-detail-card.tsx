@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { formatBRL } from "@/lib/payments";
 import { formatDate } from "@/utils/date";
 import { getSportIconById, Sport } from "@/utils/sports";
 import { Status } from "@/utils/status";
@@ -63,13 +64,32 @@ export const MatchDetailCard = ({ code }: { code: string }) => {
             </p>
             <p className="text-muted-foreground text-sm">vagas preenchidas</p>
           </div>
+          <div className="text-right">
+            {match.isPaid && match.totalPriceCents ? (
+              <span className="text-lg font-medium">
+                {formatBRL(Math.ceil(match.totalPriceCents / match.maxPlayers))}
+                <p className="text-muted-foreground text-sm">por pessoa</p>
+              </span>
+            ) : (
+              <p className="text-lg font-medium">Grátis</p>
+            )}
+          </div>
         </div>
         <div className="mb-4 w-full">
           <Progress value={progressValue} className="h-1" />
         </div>
       </CardContent>
       <CardFooter className="w-full space-x-2 border-t">
-        <JoinMatchButton match={match} organizationCode={code} />
+        <JoinMatchButton
+          match={{
+            id: match.id,
+            status: match.status,
+            isPaid: match.isPaid,
+            totalPriceCents: match.totalPriceCents,
+            maxPlayers: match.maxPlayers,
+          }}
+          organizationCode={code}
+        />
         <ConfirmPresenceButton matchId={match.id} matchStatus={match.status} />
       </CardFooter>
     </Card>
