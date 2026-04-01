@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { LoadingGroupPage } from "../../_components/loading-page";
 import { BalanceCard } from "./_components/balance-card";
 import { BillingSetupCard } from "./_components/billing-setup-card";
+import { MembershipPlanCard } from "./_components/membership-plan-card";
 
 type BillingPageProps = {
   params: Promise<{ code: string }>;
@@ -40,7 +41,10 @@ export default async function BillingPage({ params }: BillingPageProps) {
         recipientStatus={recipientStatus}
       />
       {recipientStatus === "active" && (
-        <BalanceCard organizationCode={code} />
+        <>
+          <BalanceCard organizationCode={code} />
+          <MembershipPlanCard organizationCode={code} />
+        </>
       )}
     </div>
   );

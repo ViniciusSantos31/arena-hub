@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  boolean,
   integer,
   pgEnum,
   pgTable,
@@ -92,6 +93,23 @@ export const paymentRecipientsTable = pgTable("payment_recipients", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+// ── Tabela: saved_payment_methods ─────────────────────────────────────────
+// Cartões salvos por usuário para pagamentos futuros (partidas e mensalidades)
+
+export const savedPaymentMethodsTable = pgTable("saved_payment_methods", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => usersTable.id, { onDelete: "cascade" }),
+  stripePaymentMethodId: text("stripe_payment_method_id").notNull().unique(),
+  brand: text("brand").notNull(),
+  last4: text("last4").notNull(),
+  expMonth: integer("exp_month").notNull(),
+  expYear: integer("exp_year").notNull(),
+  isDefault: boolean("is_default").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // ── Relations ─────────────────────────────────────────────────────────────
 
 export const paymentsRelations = relations(paymentsTable, ({ one }) => ({
@@ -115,6 +133,16 @@ export const paymentRecipientsRelations = relations(
     organization: one(organization, {
       fields: [paymentRecipientsTable.organizationId],
       references: [organization.id],
+    }),
+  }),
+);
+
+export const savedPaymentMethodsRelations = relations(
+  savedPaymentMethodsTable,
+  ({ one }) => ({
+    user: one(usersTable, {
+      fields: [savedPaymentMethodsTable.userId],
+      references: [usersTable.id],
     }),
   }),
 );

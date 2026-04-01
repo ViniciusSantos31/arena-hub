@@ -2,6 +2,7 @@
 
 import { cancelCharge } from "@/actions/payment/cancel-charge";
 import { getUserMatchPlayer, joinMatch } from "@/actions/match/join";
+import { getSubscription } from "@/actions/membership/get-subscription";
 import { Button } from "@/components/ui/button";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { queryClient } from "@/lib/react-query";
@@ -18,8 +19,10 @@ import { PaymentCheckoutModal } from "./payment-checkout-modal";
 export const JoinMatchButton = ({
   match,
   organizationCode,
+  memberRole,
 }: {
   organizationCode: string;
+  memberRole?: "owner" | "admin" | "member" | "guest" | null;
   match: {
     id: string;
     status: Status;
@@ -36,6 +39,18 @@ export const JoinMatchButton = ({
     queryFn: async () =>
       getUserMatchPlayer({ matchId: match.id }).then((res) => res.data),
   });
+
+  // Verifica assinatura ativa para membros (não guests)
+  const isEligibleForSubscription = memberRole !== "guest" && memberRole != null;
+  const { data: subscription } = useQuery({
+    queryKey: ["subscription", organizationCode],
+    enabled: isEligibleForSubscription && match.isPaid,
+    queryFn: async () =>
+      getSubscription({ organizationCode }).then((res) => res?.data ?? null),
+  });
+
+  const hasActiveSubscription =
+    subscription?.status === "active" || subscription?.status === "trialing";
 
   const { sendEvent } = useWebSocket();
 
@@ -97,7 +112,8 @@ export const JoinMatchButton = ({
   // ── Jogador já está na partida — mostra botão de saída ─────────────────
   if (player) {
     const handleLeave = () => {
-      if (match.isPaid) {
+      if (match.isPaid && !hasActiveSubscription) {
+        // Só cancela charge se pagou por esta partida (não por assinatura)
         cancelChargeAction.execute({ matchId: match.id });
       } else {
         joinMatchAction.executeAsync({ matchId: match.id, organizationCode }).then(
@@ -130,6 +146,30 @@ export const JoinMatchButton = ({
   // ── Jogador não está na partida — mostra botão de entrada ───────────────
   const handleJoin = () => {
     if (match.isPaid && match.totalPriceCents) {
+      // Membros com assinatura ativa entram grátis
+      if (hasActiveSubscription) {
+        joinMatchAction.executeAsync({ matchId: match.id, organizationCode }).then(
+          (res) => {
+            if (res?.data?.action === "joined") {
+              sendEvent({
+                event: WebSocketMessageType.MATCH_PARTICIPANT_JOINED,
+                payload: {
+                  player: {
+                    id: res.data.player?.id || "",
+                    name: res.data.player?.name || "",
+                    image: res.data.player?.image || null,
+                    score: res.data.player?.score || 0,
+                  },
+                  matchId: match.id,
+                },
+              });
+            }
+          },
+        );
+        return;
+      }
+
+      // Guests e membros sem assinatura abrem modal de pagamento
       setPaymentOpen(true);
       return;
     }

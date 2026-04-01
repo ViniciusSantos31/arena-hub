@@ -3,10 +3,12 @@
 import { db } from "@/db";
 import { paymentsTable } from "@/db/schema/payment";
 import { playersTable } from "@/db/schema/player";
+import { usersTable } from "@/db/schema/user";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
 import { calculateSplit, PAYMENT_CONFIG } from "@/lib/payments";
 import { stripe } from "@/lib/stripe";
+import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import z from "zod/v4";
 
@@ -17,10 +19,12 @@ export const createCharge = actionClient
       organizationCode: z.string(),
       // Stripe só aceita card no Brasil por enquanto
       method: z.enum(["credit_card", "debit_card"]),
+      // Método salvo opcional para 1-click pay
+      savedPaymentMethodId: z.string().optional(),
     }),
   )
   .action(async ({ parsedInput }) => {
-    const { matchId } = parsedInput;
+    const { matchId, savedPaymentMethodId } = parsedInput;
 
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session?.user) throw new Error("Não autenticado");
@@ -62,15 +66,38 @@ export const createCharge = actionClient
       throw new Error("Organizador não configurou o recebimento");
     }
 
+    // ── Garante Stripe Customer ────────────────────────────────────────────
+    const userRecord = await db.query.usersTable.findFirst({
+      where: eq(usersTable.id, session.user.id),
+    });
+
+    let stripeCustomerId = userRecord?.stripeCustomerId;
+
+    if (!stripeCustomerId) {
+      const customer = await stripe.customers.create({
+        email: session.user.email,
+        name: session.user.name,
+        metadata: { arenaHubUserId: session.user.id },
+      });
+      stripeCustomerId = customer.id;
+      await db
+        .update(usersTable)
+        .set({ stripeCustomerId })
+        .where(eq(usersTable.id, session.user.id));
+    }
+
     const split = calculateSplit(pricePerPlayerCents);
 
-    // Stripe Connect: capture_method "manual" = escrow
-    // O dinheiro fica autorizado mas não capturado até chamarmos .capture()
-    // application_fee_amount = comissão da Arena Hub (em centavos)
-    const paymentIntent = await stripe.paymentIntents.create({
+    // ── Cria PaymentIntent com escrow + salvamento de método ──────────────
+    const paymentIntentParams: Parameters<
+      typeof stripe.paymentIntents.create
+    >[0] = {
       amount: split.grossAmountCents,
       currency: "brl",
-      capture_method: "manual", // ← escrow
+      capture_method: "manual",
+      customer: stripeCustomerId,
+      // Salva o método automaticamente para uso futuro
+      setup_future_usage: "off_session",
       application_fee_amount: split.platformFeeCents,
       transfer_data: {
         destination: recipient.stripeAccountId,
@@ -78,10 +105,21 @@ export const createCharge = actionClient
       metadata: {
         matchId,
         userId: session.user.id,
-        arenaHubPaymentId: "pending", // atualizado após insert
+        arenaHubPaymentId: "pending",
       },
       description: `Arena Hub — ${match.title}`,
-    });
+    };
+
+    // Se há método salvo, confirma sem exigir ação do frontend
+    if (savedPaymentMethodId) {
+      paymentIntentParams.payment_method = savedPaymentMethodId;
+      paymentIntentParams.confirm = true;
+      paymentIntentParams.return_url = undefined;
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create(
+      paymentIntentParams,
+    );
 
     const [payment] = await db
       .insert(paymentsTable)
@@ -99,12 +137,10 @@ export const createCharge = actionClient
       })
       .returning();
 
-    // Atualiza metadata com o ID real do pagamento
     await stripe.paymentIntents.update(paymentIntent.id, {
       metadata: { arenaHubPaymentId: payment.id },
     });
 
-    // Insere jogador com pagamento pendente — confirmação vem via webhook
     await db
       .insert(playersTable)
       .values({
@@ -117,8 +153,12 @@ export const createCharge = actionClient
 
     return {
       paymentId: payment.id,
-      // client_secret é enviado ao browser para o Stripe.js confirmar o cartão
       clientSecret: paymentIntent.client_secret,
       totalCents: split.grossAmountCents,
+      stripeCustomerId,
+      // Indica se o pagamento já foi confirmado (método salvo)
+      alreadyConfirmed: savedPaymentMethodId
+        ? paymentIntent.status === "requires_capture"
+        : false,
     };
   });

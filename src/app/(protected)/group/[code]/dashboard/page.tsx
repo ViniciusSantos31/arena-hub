@@ -15,6 +15,7 @@ import {
   UsersIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { MemberSubscriptionCard } from "./_components/member-subscription-card";
 import { NextMatchCard } from "./_components/next-match-card";
 
 export default async function GroupDashboardPage({
@@ -96,6 +97,9 @@ export default async function GroupDashboardPage({
       </section>
 
       <section className="flex h-fit w-full flex-1 flex-wrap gap-4">
+        {/* Plano Mensal — visível apenas se o grupo tiver plano configurado */}
+        <MemberSubscriptionCard organizationCode={code} />
+
         {/* Members Section */}
         <Card className="bg-card @container/card w-full border shadow-sm">
           <CardHeader className="border-b">

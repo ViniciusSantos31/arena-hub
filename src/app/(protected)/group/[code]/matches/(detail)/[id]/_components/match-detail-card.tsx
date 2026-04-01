@@ -12,6 +12,7 @@ import { formatBRL } from "@/lib/payments";
 import { formatDate } from "@/utils/date";
 import { getSportIconById, Sport } from "@/utils/sports";
 import { Status } from "@/utils/status";
+import { useMemberStore } from "@/app/(protected)/group/[code]/_store/group";
 import { MatchStatusBadge } from "../../../_components/match-status-badge";
 import { MatchStatusBadgeRealtime } from "../../../_components/match-status-badge-realtime";
 import { JoinMatchButton } from "../_components/join-match-button";
@@ -22,6 +23,7 @@ import { ConfirmPresenceButton } from "./confirm-presence-button";
 export const MatchDetailCard = ({ code }: { code: string }) => {
   const { data: match, isLoading } = useMatch();
   const { data: matchPlayers } = useMatchPlayers(match?.id ?? "");
+  const memberRole = useMemberStore((s) => s.member?.role);
 
   const filledPlayers = matchPlayers?.players.length ?? 0;
   const maxPlayers = match?.maxPlayers ?? 1;
@@ -89,6 +91,7 @@ export const MatchDetailCard = ({ code }: { code: string }) => {
             maxPlayers: match.maxPlayers,
           }}
           organizationCode={code}
+          memberRole={memberRole}
         />
         <ConfirmPresenceButton matchId={match.id} matchStatus={match.status} />
       </CardFooter>

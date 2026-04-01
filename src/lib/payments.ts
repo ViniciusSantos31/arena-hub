@@ -1,7 +1,10 @@
 // Constantes financeiras — altere aqui para ajustar o modelo
 export const PAYMENT_CONFIG = {
-  // Comissão da plataforma sobre o valor líquido (após taxa do gateway)
-  PLATFORM_FEE_RATE: 0.05, // 5%
+  // Comissão da plataforma sobre o valor líquido por partida (após taxa do gateway)
+  PLATFORM_FEE_RATE: 0.03, // 3%
+
+  // Comissão da plataforma sobre mensalidades (application_fee_percent no Stripe)
+  PLATFORM_SUBSCRIPTION_FEE_PERCENT: 3, // 3%
 
   // Taxa estimada do Stripe (usada para cálculo de preview ao organizador)
   GATEWAY_FEE_RATE: 0.039, // 3,9%
@@ -12,6 +15,12 @@ export const PAYMENT_CONFIG = {
 
   // Valor máximo por jogador em centavos (R$500,00)
   MAX_PRICE_PER_PLAYER_CENTS: 50000,
+
+  // Valor mínimo de mensalidade em centavos (R$10,00)
+  MIN_SUBSCRIPTION_CENTS: 1000,
+
+  // Valor máximo de mensalidade em centavos (R$500,00)
+  MAX_SUBSCRIPTION_CENTS: 50000,
 
   // Moeda
   CURRENCY: "BRL",
