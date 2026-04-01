@@ -2,160 +2,191 @@
 
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
+import {
+  BellIcon,
+  CalendarIcon,
+  CheckIcon,
+  CreditCardIcon,
+  GroupIcon,
+  LayoutDashboardIcon,
+  ShieldCheckIcon,
+  SmartphoneIcon,
+  SparklesIcon,
+  UsersIcon,
+  ZapIcon,
+} from "lucide-react";
 import Link from "next/link";
 
-export default function Home() {
+const features = [
+  {
+    icon: CalendarIcon,
+    title: "Partidas organizadas",
+    desc: "Crie partidas, defina valor por jogador, limite de vagas e data. Os membros se inscrevem com um clique.",
+  },
+  {
+    icon: UsersIcon,
+    title: "Gestão de membros",
+    desc: "Aprove solicitações de entrada, gerencie funções e controle quem faz parte do seu grupo.",
+  },
+  {
+    icon: CreditCardIcon,
+    title: "Pagamentos integrados",
+    desc: "Cobrança automática por partida via cartão de crédito. Cartões salvos para pagamentos mais rápidos.",
+  },
+  {
+    icon: SparklesIcon,
+    title: "Assinatura mensal",
+    desc: "Membros podem assinar um plano mensal e ficam isentos de pagar individualmente por cada partida.",
+  },
+  {
+    icon: ZapIcon,
+    title: "Sorteio de times",
+    desc: "Divida os jogadores confirmados em times equilibrados de forma automática e justa.",
+  },
+  {
+    icon: BellIcon,
+    title: "Notificações push",
+    desc: "Avise seus membros sobre novas partidas, pagamentos e atualizações em tempo real.",
+  },
+  {
+    icon: SmartphoneIcon,
+    title: "App instalável",
+    desc: "Instale o Arena Hub no celular como um aplicativo nativo, sem precisar de loja de apps.",
+  },
+  {
+    icon: LayoutDashboardIcon,
+    title: "Dashboard completo",
+    desc: "Acompanhe o histórico de partidas, pagamentos e a situação dos membros em um só lugar.",
+  },
+];
+
+const steps = [
+  {
+    step: "01",
+    title: "Crie seu grupo",
+    desc: "Cadastre-se, crie um grupo para o seu time e convide os membros com um link ou código único.",
+  },
+  {
+    step: "02",
+    title: "Organize as partidas",
+    desc: "Crie uma partida com data, local, valor e vagas. Os membros confirmam presença e pagam diretamente pelo app.",
+  },
+  {
+    step: "03",
+    title: "Jogue sem burocracia",
+    desc: "Com o pagamento resolvido e os times sorteados, é só aparecer e jogar.",
+  },
+];
+
+export default function LandingPage() {
   return (
-    <div className="bg-background text-foreground relative min-h-screen scroll-smooth">
-      {/* Header */}
-      <header className="border-border/50 sticky top-0 z-50 border-b backdrop-blur-md">
+    <div className="bg-background text-foreground min-h-screen">
+      {/* ── Header ─────────────────────────────────────────────────────── */}
+      <header className="border-border/60 sticky top-0 z-50 border-b bg-background/80 backdrop-blur-md">
         <nav className="container mx-auto flex items-center justify-between px-4 py-4">
-          <div className="from-primary to-primary/60 bg-gradient-to-r bg-clip-text text-2xl font-bold text-transparent">
+          <div className="from-primary to-primary/70 bg-gradient-to-r bg-clip-text text-xl font-bold text-transparent">
             Arena Hub
           </div>
+
           <div className="hidden items-center gap-8 md:flex">
             <Link
-              href="#features"
-              className="hover:text-primary transition-colors"
+              href="#como-funciona"
+              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+            >
+              Como funciona
+            </Link>
+            <Link
+              href="#recursos"
+              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
             >
               Recursos
             </Link>
-            <Link
-              href="#pricing"
-              className="hover:text-primary transition-colors"
-            >
-              Preços
-            </Link>
           </div>
-          <div className="flex items-center gap-4">
-            <Button asChild variant="default">
-              <Link href="/auth/sign-in">Começar</Link>
+
+          <div className="flex items-center gap-3">
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/auth/sign-in">Entrar</Link>
+            </Button>
+            <Button asChild size="sm">
+              <Link href="/auth/sign-up">Criar conta</Link>
             </Button>
             <ModeToggle />
           </div>
         </nav>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative container mx-auto overflow-hidden px-4 py-32 text-center">
-        <div className="relative inset-0 z-10 animate-pulse">
-          <div className="from-primary/5 to-primary/5 absolute inset-0 bg-gradient-to-br via-transparent" />
-          <div className="bg-primary/10 absolute top-0 left-1/4 h-96 w-96 animate-pulse rounded-full blur-3xl" />
-          <div className="bg-primary/10 absolute right-1/4 bottom-0 h-96 w-96 animate-pulse rounded-full blur-3xl delay-1000" />
+      {/* ── Hero ───────────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden px-4 py-28 md:py-36">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="bg-primary/8 absolute top-0 left-1/3 h-[500px] w-[500px] -translate-x-1/2 rounded-full blur-3xl" />
+          <div className="bg-primary/6 absolute right-1/4 bottom-0 h-[400px] w-[400px] rounded-full blur-3xl" />
         </div>
-        <div className="animate-fade-in space-y-6">
-          <div className="inline-block">
-            <span className="bg-primary/10 border-primary/20 text-primary hover:bg-primary/20 rounded-full border px-4 py-2 text-sm font-semibold transition-colors">
-              ✨ Bem-vindo ao Arena Hub
-            </span>
+
+        <div className="container relative mx-auto max-w-4xl text-center">
+          <div className="bg-primary/10 border-primary/20 text-primary mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium">
+            <span className="bg-primary size-1.5 rounded-full" />
+            Fase beta — acesso gratuito completo
           </div>
-          <h1 className="from-primary via-primary/80 to-primary/60 mb-6 bg-gradient-to-r bg-clip-text text-6xl leading-tight font-bold text-transparent md:text-7xl">
-            Plataforma definitiva para jogos competitivos
+
+          <h1 className="text-foreground mb-6 text-5xl leading-[1.1] font-bold tracking-tight md:text-7xl">
+            Chega de WhatsApp
+            <br />
+            <span className="from-primary to-primary/60 bg-gradient-to-r bg-clip-text text-transparent">
+              para organizar suas peladas
+            </span>
           </h1>
-          <p className="text-muted-foreground line-height mx-auto mb-8 max-w-3xl text-lg leading-relaxed md:text-2xl">
-            Gerenciamento completo de torneios, partidas e equipes em uma única
-            plataforma intuitiva e poderosa
+
+          <p className="text-muted-foreground mx-auto mb-10 max-w-2xl text-lg leading-relaxed md:text-xl">
+            Arena Hub reúne tudo em um lugar: confirmações de presença,
+            pagamentos automáticos, sorteio de times e notificações para todos.
           </p>
-          <div className="flex flex-col justify-center gap-4 pt-4 sm:flex-row">
-            <Button
-              asChild
-              size="lg"
-              className="from-primary to-primary/80 hover:shadow-primary/50 h-12 rounded-lg bg-gradient-to-r px-8 text-base transition-all hover:shadow-lg"
-            >
-              <Link href="/auth/sign-in">Começar gratuitamente</Link>
+
+          <div className="flex flex-col justify-center gap-3 sm:flex-row">
+            <Button asChild size="lg" className="h-12 px-8 text-base">
+              <Link href="/auth/sign-up">Começar gratuitamente</Link>
             </Button>
             <Button
               asChild
               variant="outline"
               size="lg"
-              className="border-primary/20 hover:bg-primary/5 h-12 rounded-lg px-8 text-base"
+              className="h-12 px-8 text-base"
             >
-              <Link href="#features">Explorar recursos</Link>
+              <Link href="#como-funciona">Ver como funciona</Link>
             </Button>
           </div>
-        </div>
 
-        {/* Stats */}
-        <div className="border-primary/10 mt-20 grid grid-cols-3 gap-8 border-t pt-20">
-          <div className="space-y-2">
-            <div className="from-primary to-primary/60 bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent md:text-4xl">
-              10K+
-            </div>
-            <p className="text-muted-foreground">Usuários ativos</p>
-          </div>
-          <div className="space-y-2">
-            <div className="from-primary to-primary/60 bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent md:text-4xl">
-              500+
-            </div>
-            <p className="text-muted-foreground">Partidas realizadas</p>
-          </div>
-          <div className="space-y-2">
-            <div className="from-primary to-primary/60 bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent md:text-4xl">
-              99.9%
-            </div>
-            <p className="text-muted-foreground">Uptime</p>
-          </div>
+          <p className="text-muted-foreground mt-4 text-sm">
+            Sem cartão de crédito. Sem limite de grupos.
+          </p>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="relative py-32">
-        <div className="container mx-auto px-4">
-          <div className="mb-16 text-center">
-            <h2 className="mb-4 text-5xl font-bold md:text-6xl">
-              Recursos poderosos
+      {/* ── Como funciona ──────────────────────────────────────────────── */}
+      <section
+        id="como-funciona"
+        className="border-border/60 border-y bg-muted/30 py-24 px-4"
+      >
+        <div className="container mx-auto max-w-5xl">
+          <div className="mb-14 text-center">
+            <h2 className="text-foreground mb-3 text-4xl font-bold md:text-5xl">
+              Simples assim
             </h2>
-            <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
-              Tudo que você precisa para gerenciar competições de forma
-              profissional
+            <p className="text-muted-foreground text-lg">
+              Do cadastro à quadra em três passos
             </p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            {[
-              {
-                icon: "🎮",
-                title: "Gerenciamento de Partidas",
-                desc: "Crie, organize e gerencie partidas com inscrições automáticas e controle completo de resultados",
-              },
-              {
-                icon: "👥",
-                title: "Colaboração em Equipe",
-                desc: "Organize equipes, acompanhe estatísticas de jogadores e coordene com ferramentas avançadas",
-              },
-              {
-                icon: "📱",
-                title: "Aplicativo Instalável",
-                desc: "Instale o Arena Hub no seu celular como um app nativo para acesso rápido",
-              },
-              {
-                icon: "🔔",
-                title: "Notificações em Tempo Real",
-                desc: "Mantenha todos informados com notificações automáticas de atualizações",
-              },
-              {
-                icon: "🌙",
-                title: "Temas Personalizáveis",
-                desc: "Escolha entre modo claro e escuro com cores adaptáveis ao seu gosto",
-              },
-              {
-                icon: "⚡",
-                title: "Performance Otimizada",
-                desc: "Plataforma rápida e responsiva para melhor experiência de usuário",
-              },
-            ].map((feature, idx) => (
-              <div
-                key={idx}
-                className="group bg-card border-primary/10 hover:border-primary/30 hover:bg-primary/5 hover:shadow-primary/10 rounded-2xl border p-8 transition-all duration-300 hover:shadow-xl"
-              >
-                <div className="mb-4 text-4xl transition-transform">
-                  {feature.icon}
+          <div className="grid gap-8 md:grid-cols-3">
+            {steps.map((item) => (
+              <div key={item.step} className="relative">
+                <div className="text-primary/20 mb-4 text-6xl font-bold leading-none">
+                  {item.step}
                 </div>
-                <h3 className="group-hover:text-primary mb-3 text-xl font-semibold transition-colors">
-                  {feature.title}
+                <h3 className="text-foreground mb-2 text-xl font-semibold">
+                  {item.title}
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  {feature.desc}
+                  {item.desc}
                 </p>
               </div>
             ))}
@@ -163,178 +194,200 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section
-        id="pricing"
-        className="from-background/5 to-background/10 relative overflow-hidden border-y bg-gradient-to-b py-32"
-      >
-        <div className="container mx-auto px-4">
-          <h2 className="mb-4 text-5xl font-bold md:text-6xl">
-            Planos em breve
-          </h2>
-          <p className="text-muted-foreground max-w-2xl text-lg">
-            Estamos preparando planos especiais para você
-          </p>
-          <p className="text-primary mt-8 text-base font-semibold">
-            🎉 Por enquanto, todos têm acesso completo durante a fase beta!
-          </p>
-          <Button
-            asChild
-            size="lg"
-            className="from-primary to-primary/80 hover:shadow-primary/50 mt-8 h-12 rounded-lg bg-gradient-to-r px-8 text-base transition-all hover:shadow-lg"
-          >
-            <Link href="/auth/sign-in">Comece agora</Link>
-          </Button>
+      {/* ── Recursos ───────────────────────────────────────────────────── */}
+      <section id="recursos" className="px-4 py-24">
+        <div className="container mx-auto max-w-6xl">
+          <div className="mb-14 text-center">
+            <h2 className="text-foreground mb-3 text-4xl font-bold md:text-5xl">
+              Tudo que você precisa
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              Funcionalidades pensadas para quem organiza times regularmente
+            </p>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {features.map((feature) => {
+              const Icon = feature.icon;
+              return (
+                <div
+                  key={feature.title}
+                  className="bg-card border-border/60 hover:border-primary/30 hover:bg-primary/5 group rounded-2xl border p-6 transition-all duration-200"
+                >
+                  <div className="bg-primary/10 group-hover:bg-primary/15 mb-4 flex h-10 w-10 items-center justify-center rounded-xl transition-colors">
+                    <Icon className="text-primary size-5" />
+                  </div>
+                  <h3 className="text-foreground mb-2 font-semibold">
+                    {feature.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    {feature.desc}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
         </div>
-        <div className="bg-primary/10 absolute top-0 left-1/4 h-96 w-96 rounded-full blur-3xl" />
-        <div className="bg-primary absolute top-10 right-0 hidden size-11/12 translate-x-1/2 rotate-45 lg:block" />
       </section>
 
-      {/* CTA Section */}
-      <section className="relative overflow-hidden py-32">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0">
-          <div className="bg-primary/5 absolute top-0 left-1/4 h-72 w-72 animate-pulse rounded-full blur-3xl" />
-          <div className="bg-primary/5 absolute right-1/4 bottom-0 h-72 w-72 animate-pulse rounded-full blur-3xl delay-1000" />
-        </div>
+      {/* ── Destaque de pagamentos ─────────────────────────────────────── */}
+      <section className="border-border/60 border-y bg-muted/30 px-4 py-24">
+        <div className="container mx-auto max-w-5xl">
+          <div className="grid items-center gap-12 md:grid-cols-2">
+            <div>
+              <div className="bg-primary/10 border-primary/20 text-primary mb-5 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-medium">
+                <ShieldCheckIcon className="size-3.5" />
+                Powered by Stripe
+              </div>
+              <h2 className="text-foreground mb-4 text-4xl font-bold leading-tight md:text-5xl">
+                Pagamentos sem dor de cabeça
+              </h2>
+              <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
+                Cada jogador paga a sua parte diretamente pelo app. Sem fiado,
+                sem transferência manual, sem confusão.
+              </p>
 
-        <div className="relative z-10 container mx-auto px-4">
-          <div className="border-primary/20 from-primary/10 via-primary/5 relative overflow-hidden rounded-3xl border bg-gradient-to-br to-transparent p-12 backdrop-blur-sm md:p-24">
-            {/* Gradient Overlay */}
-            <div className="from-primary/10 absolute inset-0 bg-gradient-to-r to-transparent opacity-50" />
+              <ul className="space-y-3">
+                {[
+                  "Cobrança por partida via cartão de crédito",
+                  "Cartões salvos para pagamento com 1 clique",
+                  "Plano de assinatura mensal para isenção por partida",
+                  "Histórico completo de pagamentos",
+                  "Cancelamento e reembolso gerenciados automaticamente",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-3">
+                    <div className="bg-primary/15 mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full">
+                      <CheckIcon className="text-primary size-3" />
+                    </div>
+                    <span className="text-muted-foreground text-sm">
+                      {item}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-            <div className="relative z-10 space-y-8">
-              <div className="inline-block">
-                <span className="bg-primary/15 border-primary/30 text-primary rounded-full border px-4 py-2 text-sm font-semibold">
-                  🚀 Comece agora
+            <div className="bg-card border-border/60 rounded-3xl border p-8 shadow-sm">
+              <div className="mb-6 flex items-center justify-between">
+                <span className="text-foreground font-semibold">
+                  Resumo da partida
+                </span>
+                <span className="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium">
+                  Confirmada
                 </span>
               </div>
 
-              <div className="space-y-4">
-                <h2 className="from-primary via-primary/90 to-primary/70 bg-gradient-to-r bg-clip-text text-5xl leading-tight font-bold text-transparent md:text-6xl">
-                  Pronto para começar?
-                </h2>
-                <p className="text-muted-foreground max-w-2xl text-lg leading-relaxed md:text-xl">
-                  Junte-se a milhares de organizadores e jogadores que já
-                  confiam no Arena Hub. Crie sua conta gratuitamente e comece a
-                  gerenciar seus torneios.
-                </p>
+              <div className="space-y-3">
+                {[
+                  { label: "Data", value: "Sáb, 05 Abr · 20h" },
+                  { label: "Local", value: "Quadra Central" },
+                  { label: "Jogadores confirmados", value: "12 / 14" },
+                  { label: "Valor por jogador", value: "R$ 25,00" },
+                ].map((row) => (
+                  <div
+                    key={row.label}
+                    className="flex items-center justify-between"
+                  >
+                    <span className="text-muted-foreground text-sm">
+                      {row.label}
+                    </span>
+                    <span className="text-foreground text-sm font-medium">
+                      {row.value}
+                    </span>
+                  </div>
+                ))}
               </div>
 
-              <div className="flex flex-col gap-4 pt-4 sm:flex-row">
-                <Button
-                  asChild
-                  size="lg"
-                  className="from-primary to-primary/80 hover:shadow-primary/50 h-12 rounded-lg bg-gradient-to-r px-8 text-base font-semibold transition-all hover:scale-105 hover:shadow-xl"
-                >
-                  <Link href="/auth/sign-in">Criar conta gratuitamente</Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="lg"
-                  className="border-primary/30 hover:bg-primary/10 hover:border-primary/50 h-12 rounded-lg px-8 text-base font-semibold transition-all"
-                >
-                  <Link href="#features">Conhecer recursos</Link>
-                </Button>
+              <div className="border-border/60 mt-6 border-t pt-5">
+                <div className="mb-4 flex items-center justify-between">
+                  <span className="text-muted-foreground text-sm">
+                    Seu pagamento
+                  </span>
+                  <span className="text-primary font-semibold">
+                    R$ 25,00 — Pago
+                  </span>
+                </div>
+                <div className="bg-primary/10 border-primary/20 flex items-center gap-2 rounded-xl border px-4 py-3">
+                  <SparklesIcon className="text-primary size-4 shrink-0" />
+                  <span className="text-muted-foreground text-xs">
+                    Assinante mensal — isento de cobrança por partida
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-primary/10 bg-background/80 border-t py-12 backdrop-blur-sm">
-        <div className="container mx-auto px-4">
-          <div className="mb-8 grid gap-12 md:grid-cols-4">
-            <div>
-              <div className="from-primary to-primary/60 mb-4 bg-gradient-to-r bg-clip-text text-2xl font-bold text-transparent">
-                Arena Hub
-              </div>
-              <p className="text-muted-foreground text-sm">
-                A plataforma definitiva para gerenciamento de jogos competitivos
-              </p>
-            </div>
-            <div>
-              <h4 className="mb-4 font-semibold">Produto</h4>
-              <div className="text-muted-foreground space-y-2 text-sm">
-                <Link
-                  href="#features"
-                  className="hover:text-primary transition-colors"
-                >
-                  Recursos
-                </Link>
-                <br />
-                <Link
-                  href="#pricing"
-                  className="hover:text-primary transition-colors"
-                >
-                  Preços
-                </Link>
-                <br />
-              </div>
-            </div>
-            <div>
-              <h4 className="mb-4 font-semibold">Empresa</h4>
-              <div className="text-muted-foreground space-y-2 text-sm">
-                <Link href="#" className="hover:text-primary transition-colors">
-                  Sobre
-                </Link>
-                <br />
-                <Link href="#" className="hover:text-primary transition-colors">
-                  Contato
-                </Link>
-                <br />
-                <Link
-                  href="https://forms.gle/3fdBhX9aRTDskp4eA"
-                  target="_blank"
-                  className="hover:text-primary transition-colors"
-                >
-                  Suporte
-                </Link>
-              </div>
-            </div>
-            <div>
-              <h4 className="mb-4 font-semibold">Legal</h4>
-              <div className="text-muted-foreground space-y-2 text-sm">
-                <Link href="#" className="hover:text-primary transition-colors">
-                  Privacidade
-                </Link>
-                <br />
-                <Link href="#" className="hover:text-primary transition-colors">
-                  Termos
-                </Link>
-                <br />
-                <Link href="#" className="hover:text-primary transition-colors">
-                  Cookies
-                </Link>
-              </div>
-            </div>
+      {/* ── Beta CTA ───────────────────────────────────────────────────── */}
+      <section className="px-4 py-24">
+        <div className="container mx-auto max-w-3xl text-center">
+          <div className="bg-primary/10 border-primary/20 mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium">
+            <GroupIcon className="text-primary size-3.5" />
+            <span className="text-primary">Fase beta aberta</span>
           </div>
-          <div className="border-primary/10 text-muted-foreground border-t pt-8 text-center text-sm">
-            © 2026 Arena Hub. Todos os direitos reservados.
+
+          <h2 className="text-foreground mb-4 text-4xl font-bold leading-tight md:text-5xl">
+            Pronto para acabar com a
+            <br />
+            bagunça da pelada?
+          </h2>
+
+          <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
+            Crie sua conta gratuitamente. Durante a fase beta, todos os recursos
+            estão disponíveis sem custo.
+          </p>
+
+          <div className="flex flex-col justify-center gap-3 sm:flex-row">
+            <Button asChild size="lg" className="h-12 px-10 text-base">
+              <Link href="/auth/sign-up">Criar conta grátis</Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="h-12 px-10 text-base"
+            >
+              <Link href="/auth/sign-in">Já tenho conta</Link>
+            </Button>
           </div>
         </div>
-      </footer>
+      </section>
 
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.6s ease-out;
-        }
-        .delay-1000 {
-          animation-delay: 1s;
-        }
-      `}</style>
+      {/* ── Footer ─────────────────────────────────────────────────────── */}
+      <footer className="border-border/60 border-t py-10 px-4">
+        <div className="container mx-auto flex flex-col items-center justify-between gap-6 md:flex-row">
+          <div className="from-primary to-primary/70 bg-gradient-to-r bg-clip-text text-lg font-bold text-transparent">
+            Arena Hub
+          </div>
+
+          <div className="flex items-center gap-8">
+            <Link
+              href="#como-funciona"
+              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+            >
+              Como funciona
+            </Link>
+            <Link
+              href="#recursos"
+              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+            >
+              Recursos
+            </Link>
+            <Link
+              href="https://forms.gle/3fdBhX9aRTDskp4eA"
+              target="_blank"
+              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+            >
+              Suporte
+            </Link>
+          </div>
+
+          <p className="text-muted-foreground text-sm">
+            © 2026 Arena Hub. Todos os direitos reservados.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
