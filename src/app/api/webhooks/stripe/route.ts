@@ -1,4 +1,5 @@
 import { db } from "@/db";
+import { matchesTable } from "@/db/schema/match";
 import {
   memberSubscriptionsTable,
 } from "@/db/schema/memberships";
@@ -9,6 +10,7 @@ import {
 } from "@/db/schema/payment";
 import { playersTable } from "@/db/schema/player";
 import { usersTable } from "@/db/schema/user";
+import { calculateSplit } from "@/lib/payments";
 import { stripe } from "@/lib/stripe";
 import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
@@ -127,6 +129,103 @@ export async function POST(req: NextRequest) {
             charge.payment_intent as string,
           ),
         );
+      break;
+    }
+
+    // ── Stripe Checkout (redirect) ────────────────────────────────────────────
+
+    case "checkout.session.completed": {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const cs = event.data.object as any;
+      const meta = cs.metadata ?? {};
+
+      if (meta.type === "match_payment") {
+        const { matchId, userId } = meta;
+        if (!matchId || !userId) break;
+
+        const piId =
+          typeof cs.payment_intent === "string"
+            ? cs.payment_intent
+            : (cs.payment_intent as { id: string } | null)?.id;
+        if (!piId) break;
+
+        // Evita duplicidade (webhook pode ser entregue mais de uma vez)
+        const existingPayment = await db.query.paymentsTable.findFirst({
+          where: (p, { eq }) => eq(p.stripePaymentIntentId, piId),
+        });
+        if (existingPayment) break;
+
+        const match = await db.query.matchesTable.findFirst({
+          where: eq(matchesTable.id, matchId),
+        });
+        if (!match?.totalPriceCents) break;
+
+        const pricePerPlayerCents = Math.ceil(
+          match.totalPriceCents / match.maxPlayers,
+        );
+        const split = calculateSplit(pricePerPlayerCents);
+
+        const [payment] = await db
+          .insert(paymentsTable)
+          .values({
+            matchId,
+            userId,
+            grossAmountCents: split.grossAmountCents,
+            gatewayFeeCents: split.gatewayFeeCents,
+            platformFeeCents: split.platformFeeCents,
+            organizerAmountCents: split.organizerAmountCents,
+            status: "pending",
+            method: "credit_card",
+            stripePaymentIntentId: piId,
+            stripeClientSecret: null,
+          })
+          .returning();
+
+        await stripe.paymentIntents.update(piId, {
+          metadata: { arenaHubPaymentId: payment.id },
+        });
+
+        await db
+          .insert(playersTable)
+          .values({
+            matchId,
+            userId,
+            waitingQueue: false,
+            paymentStatus: "pending",
+          })
+          .onConflictDoNothing();
+      } else if (meta.type === "subscription") {
+        const { arenaHubUserId, arenaHubOrgId } = meta;
+        if (!arenaHubUserId || !arenaHubOrgId) break;
+
+        const subId =
+          typeof cs.subscription === "string"
+            ? cs.subscription
+            : (cs.subscription as { id: string } | null)?.id;
+        if (!subId) break;
+
+        const existing = await db.query.memberSubscriptionsTable.findFirst({
+          where: eq(memberSubscriptionsTable.stripeSubscriptionId, subId),
+        });
+        if (existing) break;
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const stripeSub = await stripe.subscriptions.retrieve(subId) as any;
+
+        await db.insert(memberSubscriptionsTable).values({
+          userId: arenaHubUserId,
+          organizationId: arenaHubOrgId,
+          stripeSubscriptionId: subId,
+          status: mapStripeSubStatus(stripeSub.status as string),
+          currentPeriodStart: stripeSub.current_period_start
+            ? new Date((stripeSub.current_period_start as number) * 1000)
+            : undefined,
+          currentPeriodEnd: stripeSub.current_period_end
+            ? new Date((stripeSub.current_period_end as number) * 1000)
+            : undefined,
+        });
+      }
+
       break;
     }
 

@@ -19,31 +19,31 @@ export const PlayerItem = ({ ref, player }: PlayerItemProps) => {
   return (
     <div
       key={player.id}
-      className="flex w-full items-center justify-between"
+      className="hover:bg-muted/40 flex w-full items-center justify-between rounded-xl px-2 py-2 transition-colors"
       ref={ref}
     >
       <div className="flex items-center gap-3">
         <Avatar
           className={cn(
-            "relative size-10 overflow-visible",
+            "relative size-9 overflow-visible",
             player.confirmed
-              ? "ring-primary ring-offset-card ring-2 ring-offset-2"
-              : "ring-muted-foreground/10 ring-offset-card ring-2 ring-offset-2",
+              ? "ring-primary ring-offset-card ring-2 ring-offset-1"
+              : "ring-border ring-offset-card ring-1 ring-offset-1",
           )}
         >
           <div
             className={cn(
-              "ring-card absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full ring-2",
+              "ring-card absolute -right-0.5 -bottom-0.5 flex size-3.5 items-center justify-center rounded-full ring-2",
               player.confirmed ? "bg-primary" : "bg-muted",
             )}
           >
             {player.confirmed ? (
-              <CheckIcon className="size-3" />
+              <CheckIcon className="size-2" />
             ) : (
-              <LoaderIcon className="size-3" />
+              <LoaderIcon className="size-2" />
             )}
           </div>
-          <AvatarFallback className="rounded-full">
+          <AvatarFallback className="rounded-full text-xs">
             {getAvatarFallback(player.name)}
           </AvatarFallback>
           <AvatarImage
@@ -51,10 +51,10 @@ export const PlayerItem = ({ ref, player }: PlayerItemProps) => {
             src={player.image || undefined}
           />
         </Avatar>
-        <span>{player.name}</span>
+        <span className="text-sm font-medium">{player.name}</span>
       </div>
       {player.score !== undefined && (
-        <span className="text-muted-foreground text-sm font-medium">
+        <span className="text-muted-foreground text-xs font-medium">
           {player.score} pts
         </span>
       )}

@@ -1,12 +1,14 @@
 "use client";
 
+import { createSubscriptionCheckout } from "@/actions/membership/create-subscription-checkout";
 import { getMembershipPlan } from "@/actions/membership/get-membership-plan";
 import { getSubscription } from "@/actions/membership/get-subscription";
+import { useMemberStore } from "@/app/(protected)/group/[code]/_store/group";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useMemberStore } from "@/app/(protected)/group/[code]/_store/group";
 import { formatBRL } from "@/lib/payments";
+import { cn } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   CalendarCheckIcon,
@@ -14,11 +16,10 @@ import {
   Loader2Icon,
   SparklesIcon,
 } from "lucide-react";
-import { useState } from "react";
-import {
-  CancelSubscriptionButton,
-  SubscriptionModal,
-} from "./subscription-modal";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+import { CancelSubscriptionButton } from "./subscription-modal";
 
 interface MemberSubscriptionCardProps {
   organizationCode: string;
@@ -27,9 +28,12 @@ interface MemberSubscriptionCardProps {
 export function MemberSubscriptionCard({
   organizationCode,
 }: MemberSubscriptionCardProps) {
-  const [modalOpen, setModalOpen] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const queryClient = useQueryClient();
   const memberRole = useMemberStore((s) => s.member?.role);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const returnHandledRef = useRef(false);
 
   const { data: plan, isLoading: isLoadingPlan } = useQuery({
     queryKey: ["membership-plan", organizationCode],
@@ -49,18 +53,53 @@ export function MemberSubscriptionCard({
 
   const isLoading = isLoadingPlan || isLoadingSub;
 
+  // Lida com retorno do Stripe após assinatura
+  useEffect(() => {
+    const subParam = searchParams.get("subscription");
+    if (subParam !== "success" || returnHandledRef.current) return;
+    returnHandledRef.current = true;
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete("subscription");
+    router.replace(url.pathname + url.search, { scroll: false });
+
+    toast.success("Assinatura realizada! Aguardando confirmação...");
+    queryClient.invalidateQueries({
+      queryKey: ["subscription", organizationCode],
+    });
+
+    const interval = setInterval(() => {
+      queryClient.invalidateQueries({
+        queryKey: ["subscription", organizationCode],
+      });
+    }, 2000);
+    const timeout = setTimeout(() => {
+      clearInterval(interval);
+    }, 20000);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Convidados não têm acesso ao plano mensal
   if (memberRole === "guest") return null;
 
   // Sem plano configurado pelo organizer → não exibe o card
   if (!isLoading && !plan) return null;
 
-  const handleSubscribed = () => {
-    setModalOpen(false);
-    refetchSub();
-    queryClient.invalidateQueries({
-      queryKey: ["subscription", organizationCode],
-    });
+  const handleSubscribeClick = async () => {
+    setIsRedirecting(true);
+    const result = await createSubscriptionCheckout({ organizationCode });
+    if (result?.data?.url) {
+      window.location.href = result.data.url;
+    } else {
+      toast.error(
+        result?.serverError ?? "Não foi possível iniciar a assinatura.",
+      );
+      setIsRedirecting(false);
+    }
   };
 
   const handleCancelled = () => {
@@ -79,11 +118,19 @@ export function MemberSubscriptionCard({
 
   return (
     <>
-      <Card className="bg-card @container/card w-full border shadow-sm">
+      <Card
+        className={cn(
+          "bg-card @container/card w-full border border-orange-500 shadow-sm",
+          isActive && "border-green-500",
+          isCancellingAtPeriodEnd && "border-amber-500",
+          !isActive && !isCancellingAtPeriodEnd && "border-orange-500",
+          isLoading && "border-muted-foreground",
+        )}
+      >
         <CardHeader className="border-b pb-4">
           <CardTitle className="text-foreground flex items-center gap-3 font-medium">
-            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg">
-              <SparklesIcon className="text-muted-foreground h-5 w-5" />
+            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-tl from-purple-500 via-orange-400 to-pink-500 shadow-lg">
+              <SparklesIcon className="dark:text-foreground text-background h-5 w-5" />
             </div>
             Assinatura
           </CardTitle>
@@ -172,24 +219,27 @@ export function MemberSubscriptionCard({
                 </div>
               </div>
 
-              <Button onClick={() => setModalOpen(true)} size="sm">
-                <SparklesIcon className="size-4" />
-                Assinar plano mensal
+              <Button
+                onClick={handleSubscribeClick}
+                size="sm"
+                disabled={isRedirecting}
+              >
+                {isRedirecting ? (
+                  <>
+                    <Loader2Icon className="size-4 animate-spin" />
+                    Redirecionando...
+                  </>
+                ) : (
+                  <>
+                    <SparklesIcon className="size-4" />
+                    Assinar plano mensal
+                  </>
+                )}
               </Button>
             </div>
           )}
         </CardContent>
       </Card>
-
-      {plan && (
-        <SubscriptionModal
-          open={modalOpen}
-          onClose={() => setModalOpen(false)}
-          organizationCode={organizationCode}
-          amountCents={plan.amountCents}
-          onSubscribed={handleSubscribed}
-        />
-      )}
     </>
   );
 }

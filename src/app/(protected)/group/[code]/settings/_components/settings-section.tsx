@@ -29,17 +29,17 @@ export function SettingsSection({
   return (
     <Card
       className={cn(
-        "w-full",
+        "border-border/60 w-full",
         variant === "destructive" &&
-          "border-destructive dark:bg-background bg-background **:data-[slot=card-title]:text-destructive **:data-[slot=card-description]:text-foreground",
+          "border-destructive bg-background dark:bg-background **:data-[slot=card-title]:text-destructive **:data-[slot=card-description]:text-foreground",
         className,
       )}
     >
-      <CardHeader>
-        <CardTitle className="text-lg">{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+      <CardHeader className="border-b pb-4">
+        <CardTitle className="text-base font-semibold">{title}</CardTitle>
+        {description && <CardDescription className="text-sm">{description}</CardDescription>}
       </CardHeader>
-      <CardContent className="space-y-4">{children}</CardContent>
+      <CardContent className="space-y-4 pt-4">{children}</CardContent>
     </Card>
   );
 }
@@ -105,16 +105,17 @@ export function SettingsAction({
   return (
     <div
       className={cn(
-        "flex items-center justify-between rounded-lg border p-4",
+        "border-border/60 flex items-center justify-between rounded-xl border p-4",
         className,
       )}
     >
-      <div className="flex flex-col space-y-1">
-        <h4 className="font-medium">{title}</h4>
-        <p className="text-muted-foreground text-sm">{description}</p>
+      <div className="flex flex-col space-y-0.5">
+        <h4 className="text-sm font-medium">{title}</h4>
+        <p className="text-muted-foreground text-xs">{description}</p>
       </div>
       <Button
         variant={variant}
+        size="sm"
         disabled={disabled || loading}
         onClick={onAction}
       >

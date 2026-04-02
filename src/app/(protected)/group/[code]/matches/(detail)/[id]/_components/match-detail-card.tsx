@@ -1,3 +1,4 @@
+import { useMemberStore } from "@/app/(protected)/group/[code]/_store/group";
 import {
   Card,
   CardAction,
@@ -12,7 +13,6 @@ import { formatBRL } from "@/lib/payments";
 import { formatDate } from "@/utils/date";
 import { getSportIconById, Sport } from "@/utils/sports";
 import { Status } from "@/utils/status";
-import { useMemberStore } from "@/app/(protected)/group/[code]/_store/group";
 import { MatchStatusBadge } from "../../../_components/match-status-badge";
 import { MatchStatusBadgeRealtime } from "../../../_components/match-status-badge-realtime";
 import { JoinMatchButton } from "../_components/join-match-button";
@@ -36,52 +36,49 @@ export const MatchDetailCard = ({ code }: { code: string }) => {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-1 items-center gap-2">
-          <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg">
-            <SportIcon className="text-muted-foreground h-5 w-5" />
+    <Card className="border-border/60">
+      <CardHeader className="border-b pb-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex flex-1 items-center gap-3">
+            <div className="bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
+              <SportIcon className="text-primary h-5 w-5" />
+            </div>
+            <div>
+              <CardTitle className="text-base">{match?.title}</CardTitle>
+              <CardDescription className="mt-0.5 text-xs">
+                {formatDate(
+                  match.date,
+                  "dddd[,] DD [de] MMM [de] YYYY [•] HH[:]mm",
+                )}
+              </CardDescription>
+            </div>
           </div>
-          <div className="flex flex-col justify-center gap-1">
-            <CardTitle>{match?.title}</CardTitle>
-            <CardDescription>
-              {formatDate(
-                match.date,
-                "dddd[,] DD [de] MMM [de] YYYY [•] HH[:]mm",
-              )}
-            </CardDescription>
-          </div>
+          <CardAction>
+            <MatchStatusBadgeRealtime matchId={match.id}>
+              <MatchStatusBadge status={match.status as Status} />
+            </MatchStatusBadgeRealtime>
+          </CardAction>
         </div>
-        <CardAction>
-          <MatchStatusBadgeRealtime matchId={match.id}>
-            <MatchStatusBadge status={match.status as Status} />
-          </MatchStatusBadgeRealtime>
-        </CardAction>
       </CardHeader>
       <CardContent>
-        <div className="mb-2 flex items-center justify-between">
-          <div>
-            <p>
-              {filledPlayers} de {maxPlayers}
-            </p>
-            <p className="text-muted-foreground text-sm">vagas preenchidas</p>
-          </div>
-          <div className="text-right">
-            {match.isPaid && match.totalPriceCents ? (
-              <span className="text-lg font-medium">
-                {formatBRL(Math.ceil(match.totalPriceCents / match.maxPlayers))}
-                <p className="text-muted-foreground text-sm">por pessoa</p>
+        <div className="mb-3 flex items-center justify-between">
+          <span className="text-muted-foreground text-sm">
+            {filledPlayers} / {maxPlayers} vagas
+          </span>
+          {match.isPaid && match.totalPriceCents ? (
+            <span className="text-foreground font-semibold">
+              {formatBRL(Math.ceil(match.totalPriceCents / match.maxPlayers))}
+              <span className="text-muted-foreground ml-1 text-xs font-normal">
+                / pessoa
               </span>
-            ) : (
-              <p className="text-lg font-medium">Grátis</p>
-            )}
-          </div>
+            </span>
+          ) : (
+            <span className="text-primary font-semibold">Grátis</span>
+          )}
         </div>
-        <div className="mb-4 w-full">
-          <Progress value={progressValue} className="h-1" />
-        </div>
+        <Progress value={progressValue} className="h-1.5" />
       </CardContent>
-      <CardFooter className="w-full space-x-2 border-t">
+      <CardFooter className="gap-2 border-t pt-4">
         <JoinMatchButton
           match={{
             id: match.id,
@@ -101,38 +98,29 @@ export const MatchDetailCard = ({ code }: { code: string }) => {
 
 export function MatchDetailCardLoading() {
   return (
-    <div className="bg-card text-card-foreground rounded-lg border shadow-sm">
-      <div className="flex flex-col space-y-1.5 p-6">
-        <div className="flex flex-1 items-center gap-2">
-          <div className="bg-muted h-10 w-10 animate-pulse rounded-lg"></div>
-          <div className="flex flex-col justify-center gap-2">
-            <div className="bg-muted h-6 w-48 animate-pulse rounded"></div>
-            <div className="bg-muted h-4 w-64 animate-pulse rounded"></div>
+    <div className="bg-card border-border/60 animate-pulse rounded-xl border">
+      <div className="border-b p-5">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="bg-muted h-10 w-10 rounded-xl" />
+            <div className="space-y-2">
+              <div className="bg-muted h-4 w-40 rounded" />
+              <div className="bg-muted h-3 w-56 rounded" />
+            </div>
           </div>
-        </div>
-        <div className="ml-auto">
-          <div className="bg-muted h-6 w-32 animate-pulse rounded-full"></div>
+          <div className="bg-muted h-6 w-28 rounded-full" />
         </div>
       </div>
-
-      <div className="p-6 pt-0">
-        <div className="mb-2 flex items-center justify-between">
-          <div>
-            <div className="bg-muted h-5 w-16 animate-pulse rounded"></div>
-            <div className="bg-muted mt-1 h-4 w-32 animate-pulse rounded"></div>
-          </div>
+      <div className="space-y-3 p-5">
+        <div className="flex justify-between">
+          <div className="bg-muted h-3.5 w-24 rounded" />
+          <div className="bg-muted h-3.5 w-16 rounded" />
         </div>
-        <div className="mb-4 w-full">
-          <div className="bg-muted h-1 w-full animate-pulse rounded"></div>
-        </div>
+        <div className="bg-muted h-1.5 w-full rounded-full" />
       </div>
-
-      <div className="flex items-center space-x-2 border-t p-6">
-        <div className="bg-muted h-10 flex-1 animate-pulse rounded-md @md:w-48 @md:flex-none"></div>
-        <div className="ml-auto flex gap-2">
-          <div className="bg-muted hidden h-10 w-36 animate-pulse rounded-md @sm:block"></div>
-          <div className="bg-muted h-10 w-10 animate-pulse rounded-md"></div>
-        </div>
+      <div className="flex gap-2 border-t p-5">
+        <div className="bg-muted h-9 flex-1 rounded-md" />
+        <div className="bg-muted h-9 w-9 rounded-md" />
       </div>
     </div>
   );

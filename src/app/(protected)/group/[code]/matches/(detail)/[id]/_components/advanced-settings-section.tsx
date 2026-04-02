@@ -27,15 +27,16 @@ export const AdvancedSettingsSection = () => {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Configurações avançadas</CardTitle>
-        <CardDescription>
-          Só você e outros moderadores do grupo podem ver e alterar essas
-          configurações.
+    <Card className="border-border/60">
+      <CardHeader className="border-b pb-4">
+        <CardTitle className="text-sm font-semibold">
+          Configurações avançadas
+        </CardTitle>
+        <CardDescription className="text-xs">
+          Visível apenas para você e outros moderadores do grupo.
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-2">
+      <CardContent className="flex flex-wrap gap-2">
         <CompleteMatchButton />
         <ShuffleTeamsButton />
         <CloseRegistrationButton />

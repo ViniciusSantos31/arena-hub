@@ -17,19 +17,19 @@ interface TeamsListProps {
 const TeamCard = ({ team }: { team: Team }) => {
   return (
     <CardContent>
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="font-bold">Time {team.team}</h3>
-        <Badge variant="secondary" className="text-sm">
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-sm font-semibold">Time {team.team}</h3>
+        <Badge variant="secondary" className="text-xs">
           Score {Math.round(team.score)}
         </Badge>
       </div>
-      <div className="grid gap-3">
+      <div className="space-y-1.5">
         {team.players.map((player) => (
           <div
             key={player.id}
-            className="bg-muted/50 flex items-center justify-between rounded-lg p-3"
+            className="bg-muted/40 hover:bg-muted/60 flex items-center justify-between rounded-xl px-3 py-2 transition-colors"
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <Avatar className="h-8 w-8">
                 {player.image && (
                   <AvatarImage
@@ -43,10 +43,9 @@ const TeamCard = ({ team }: { team: Team }) => {
               </Avatar>
               <span className="text-sm font-medium">{player.name}</span>
             </div>
-
-            <Badge variant="outline" className="font-mono">
-              {player.score}
-            </Badge>
+            <span className="text-muted-foreground text-xs font-medium">
+              {player.score} pts
+            </span>
           </div>
         ))}
       </div>
@@ -64,19 +63,25 @@ export default function TeamsList({ matchId }: TeamsListProps) {
       }).then((res) => res.data),
   });
 
+  const CardHeaderContent = () => (
+    <CardHeader className="border-b pb-4">
+      <CardTitle className="flex items-center gap-2.5 text-sm font-semibold">
+        <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg">
+          <Grid2x2CheckIcon className="text-primary h-4 w-4" />
+        </div>
+        Times
+      </CardTitle>
+    </CardHeader>
+  );
+
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader className="border-b">
-          <CardTitle className="text-foreground flex items-center gap-3 font-medium">
-            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg">
-              <Grid2x2CheckIcon className="text-muted-foreground h-5 w-5" />
-            </div>
-            Times
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center py-6 text-center">
-          <span className="text-lg font-semibold">Carregando times...</span>
+      <Card className="border-border/60">
+        <CardHeaderContent />
+        <CardContent className="flex flex-col items-center justify-center py-8">
+          <span className="text-muted-foreground text-sm">
+            Carregando times...
+          </span>
         </CardContent>
       </Card>
     );
@@ -84,15 +89,8 @@ export default function TeamsList({ matchId }: TeamsListProps) {
 
   if (isError || !data || data.teams.length === 0) {
     return (
-      <Card id="team-list-card">
-        <CardHeader className="border-b">
-          <CardTitle className="text-foreground flex items-center gap-3 font-medium">
-            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg">
-              <Grid2x2CheckIcon className="text-muted-foreground h-5 w-5" />
-            </div>
-            Times
-          </CardTitle>
-        </CardHeader>
+      <Card id="team-list-card" className="border-border/60">
+        <CardHeaderContent />
         <TeamEmptyList />
       </Card>
     );
@@ -100,20 +98,12 @@ export default function TeamsList({ matchId }: TeamsListProps) {
 
   return (
     <TeamsListRealtime matchId={matchId}>
-      <Card id="team-list-card">
-        <CardHeader className="border-b">
-          <CardTitle className="text-foreground flex items-center gap-3 font-medium">
-            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg">
-              <Grid2x2CheckIcon className="text-muted-foreground h-5 w-5" />
-            </div>
-            Times
-          </CardTitle>
-        </CardHeader>
-
+      <Card id="team-list-card" className="border-border/60">
+        <CardHeaderContent />
         {data.teams.map((team) => (
           <Fragment key={team.team}>
             <TeamCard team={team} />
-            <div className="my-6 h-px w-full border border-dashed last:hidden" />
+            <div className="border-border/40 mx-4 border-t border-dashed last:hidden" />
           </Fragment>
         ))}
       </Card>

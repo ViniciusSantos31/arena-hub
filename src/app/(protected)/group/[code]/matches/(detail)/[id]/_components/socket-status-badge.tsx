@@ -6,47 +6,37 @@ import { RotateCwIcon, WifiIcon, WifiOffIcon } from "lucide-react";
 export const SocketStatusBadge = () => {
   const { isConnected, isConnecting, reconnect } = useWebSocket();
   return (
-    <div className="text-muted-foreground bg-card flex h-11.5 items-center gap-2 rounded-md border px-2 py-1 text-xs lg:ml-auto">
+    <div className="border-border/60 bg-card flex items-center gap-2 rounded-lg border px-3 py-2 text-xs">
       {isConnected && !isConnecting ? (
         <>
-          <WifiIcon className="text-primary size-5" />
-          <div className="flex flex-col">
-            <span className="text-primary">Conectado</span>
-            <p>Recebendo atualizações em tempo real sobre a partida.</p>
-          </div>
+          <div className="bg-primary size-1.5 rounded-full" />
+          <span className="text-primary font-medium">Ao vivo</span>
+          <span className="text-muted-foreground">· atualizações em tempo real</span>
         </>
       ) : (
         <>
-          <WifiOffIcon
+          <div
             className={cn(
-              "text-destructive size-5",
-              isConnecting && "animate-pulse text-yellow-400",
+              "size-1.5 rounded-full bg-destructive",
+              isConnecting && "animate-pulse bg-yellow-400",
             )}
           />
-          <div className="flex flex-col">
-            {isConnecting ? (
-              <span className="text-yellow-400">Conectando...</span>
-            ) : (
-              <span className="text-destructive">Desconectado</span>
-            )}
-            {isConnecting ? (
-              <p>
-                Conectando à partida para receber atualizações em tempo real.
-              </p>
-            ) : (
-              <p className="max-w-sm text-pretty">
-                As informações da partida podem estar desatualizadas.
-              </p>
-            )}
-          </div>
+          {isConnecting ? (
+            <span className="text-yellow-500 font-medium">Conectando...</span>
+          ) : (
+            <span className="text-destructive font-medium">Desconectado</span>
+          )}
+          <span className="text-muted-foreground">
+            {isConnecting ? "· aguarde" : "· dados podem estar desatualizados"}
+          </span>
           <Button
             size="icon"
             variant="ghost"
             onClick={reconnect}
             disabled={isConnecting}
-            className="ml-auto"
+            className="ml-auto h-6 w-6"
           >
-            <RotateCwIcon className={cn(isConnecting && "animate-spin")} />
+            <RotateCwIcon className={cn("size-3", isConnecting && "animate-spin")} />
           </Button>
         </>
       )}

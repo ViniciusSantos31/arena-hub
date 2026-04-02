@@ -1,19 +1,49 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { getLinkedAccounts } from "@/actions/user/get-linked-accounts";
+import { getMySubscriptions } from "@/actions/user/get-subscriptions";
+import { db } from "@/db";
+import { usersTable } from "@/db/schema/user";
+import { Separator } from "@/components/ui/separator";
 import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 import { auth } from "@/lib/auth";
-import { cn } from "@/lib/utils";
-import { getAvatarFallback } from "@/utils/avatar";
+import { eq } from "drizzle-orm";
+import { SwordsIcon } from "lucide-react";
 import { headers } from "next/headers";
-import Link from "next/link";
+import {
+  PageContainer,
+  PageContent,
+  PageHeader,
+  PageHeaderContent,
+} from "../_components/page-structure";
+import { AccountSettingsForm } from "./_components/account-settings-form";
+import { PrivateProfileHeader } from "./_components/private-profile-header";
+import { SecuritySection } from "./_components/security-section";
+import { SubscriptionsSection } from "./_components/subscriptions-section";
+
+const tabTriggerClass =
+  "data-[state=active]:bg-background dark:data-[state=active]:bg-background data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:border-b-primary dark:data-[state=active]:border-primary max-w-fit flex-1 rounded-none border-0 border-b-2 border-transparent px-8 text-center";
+
+function formatDate(date: Date | null): string | null {
+  if (!date) return null;
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  })
+    .format(date)
+    .replace(".", "");
+}
+
+const mockActivity = [
+  { id: "1", group: "Arena FC", date: "28 Mar 2026", confirmed: true },
+  { id: "2", group: "Pelada do Bairro", date: "22 Mar 2026", confirmed: true },
+  { id: "3", group: "Arena FC", date: "15 Mar 2026", confirmed: false },
+  { id: "4", group: "Liga Amigos", date: "10 Mar 2026", confirmed: true },
+];
 
 export default async function ProfilePage() {
   const session = await auth.api.getSession({
@@ -22,109 +52,114 @@ export default async function ProfilePage() {
 
   const user = session?.user;
 
+  const [userProfile, subscriptionsResult, linkedAccountsResult] =
+    await Promise.all([
+      user?.id
+        ? db.query.usersTable.findFirst({
+            where: eq(usersTable.id, user.id),
+            columns: { bio: true },
+          })
+        : Promise.resolve(null),
+      getMySubscriptions(),
+      getLinkedAccounts(),
+    ]);
+
+  const subscriptions = (subscriptionsResult?.data ?? []).map((sub) => ({
+    id: sub.id,
+    groupName: sub.groupName,
+    groupCode: sub.groupCode,
+    amountCents: sub.amountCents,
+    status: sub.status,
+    currentPeriodEnd: formatDate(sub.currentPeriodEnd),
+    cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
+    stripeSubscriptionId: sub.stripeSubscriptionId,
+    organizationId: sub.organizationId,
+  }));
+
+  const linkedAccounts = (linkedAccountsResult?.data ?? []).map((acc) => ({
+    id: acc.id,
+    providerId: acc.providerId,
+    createdAt: acc.createdAt.toISOString(),
+  }));
+
   return (
-    <div className="mt-2 flex w-full flex-col items-center space-y-3">
-      <div className="relative">
-        <Avatar
-          className={cn(
-            "mb-4 h-32 w-32 rounded-full",
-            "ring-offset-background ring-primary ring-2 ring-offset-3",
-            user?.image
-              ? "ring-offset-background ring-2 ring-offset-2"
-              : "bg-muted",
-          )}
-        >
-          {user?.image && <AvatarImage src={user.image} alt={user?.name} />}
-          <AvatarFallback className="text-2xl">
-            {getAvatarFallback(user?.name)}
-          </AvatarFallback>
-        </Avatar>
-        <Badge className="text-background absolute bottom-1 left-1/2 z-10 -translate-x-1/2 font-bold uppercase">
-          Pro
-        </Badge>
-      </div>
-      <div className="flex flex-col items-center">
-        <span className="text-2xl font-bold">{user?.name}</span>
-        <span className="text-muted-foreground">{user?.email}</span>
-      </div>
+    <PageContainer>
+      <PageHeader>
+        <PageHeaderContent title="Perfil" />
+      </PageHeader>
+      <PageContent className="p-0">
+        <Tabs defaultValue="profile" className="flex flex-col gap-0">
+          <TabsList className="bg-background sticky top-0 z-10 min-h-12 w-full justify-start rounded-none border-b p-0">
+            <TabsTrigger value="profile" className={tabTriggerClass}>
+              Perfil
+            </TabsTrigger>
+            <TabsTrigger value="settings" className={tabTriggerClass}>
+              Configurações
+            </TabsTrigger>
+          </TabsList>
 
-      <section>
-        <div className="border-border flex rounded-full border">
-          <Button
-            variant="outline"
-            className="rounded-none rounded-l-full border-0 border-r"
-          >
-            340 Seguidores
-          </Button>
-          <Button
-            variant="outline"
-            className="rounded-none rounded-r-full border-0"
-          >
-            219 Seguindo
-          </Button>
-        </div>
-      </section>
+          <TabsContent value="profile" className="space-y-4 px-4 py-5">
+            <PrivateProfileHeader
+              user={user}
+              bio={userProfile?.bio ?? null}
+            />
 
-      <main className="flex w-full max-w-4xl flex-1 flex-col gap-2 md:flex-row [&>div]:flex-1">
-        <Card>
-          <CardHeader>
-            <CardTitle>Meus grupos</CardTitle>
-            <CardDescription>Grupos que você faz parte</CardDescription>
-            <CardAction>
-              <Link
-                className={buttonVariants({
-                  variant: "link",
-                  className: "!px-0",
-                })}
-                href="/groups"
-              >
-                Ver grupos
-              </Link>
-            </CardAction>
-          </CardHeader>
-          <CardContent>
-            <section className="flex items-center space-x-2">
-              <div>
-                <span className="text-xl">2</span>
-                <p className="text-muted-foreground text-xs">Participante</p>
+            <Separator />
+
+            <div className="space-y-3">
+              <h3 className="flex items-center gap-2 text-sm font-medium">
+                <SwordsIcon className="h-4 w-4 text-muted-foreground" />
+                Atividade recente
+              </h3>
+              <div className="space-y-2">
+                {mockActivity.map((match) => (
+                  <div
+                    key={match.id}
+                    className="flex items-center justify-between rounded-lg border p-3"
+                  >
+                    <div>
+                      <p className="text-sm font-medium">{match.group}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {match.date}
+                      </p>
+                    </div>
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                        match.confirmed
+                          ? "bg-green-500/10 text-green-600 dark:text-green-400"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {match.confirmed ? "Confirmado" : "Na fila"}
+                    </span>
+                  </div>
+                ))}
               </div>
-              <div>
-                <span className="text-xl">5</span>
-                <p className="text-muted-foreground text-xs">Proprietário</p>
-              </div>
-            </section>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Partidas</CardTitle>
-            <CardDescription>Partidas que você participou</CardDescription>
-            <CardAction>
-              <Link
-                className={buttonVariants({
-                  variant: "link",
-                  className: "!px-0",
-                })}
-                href="/groups"
-              >
-                Ver partidas
-              </Link>
-            </CardAction>
-          </CardHeader>
-          <CardContent>
-            <section className="flex items-center space-x-2">
-              <div>
-                <span className="text-xl">7</span>
-                <p className="text-muted-foreground text-xs">Participante</p>
-              </div>
-              <div>
-                <span className="text-xl">5</span>
-                <p className="text-muted-foreground text-xs">Criador</p>
-              </div>
-            </section>
-          </CardContent>
-        </Card>
-      </main>
-    </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="settings" className="space-y-6 px-4 py-5">
+            <div className="space-y-1">
+              <h2 className="text-base font-semibold">Informações pessoais</h2>
+              <p className="text-sm text-muted-foreground">
+                Atualize suas informações de perfil
+              </p>
+            </div>
+
+            <AccountSettingsForm
+              user={{ ...user, bio: userProfile?.bio }}
+            />
+
+            <Separator />
+
+            <SubscriptionsSection subscriptions={subscriptions} />
+
+            <Separator />
+
+            <SecuritySection user={user} linkedAccounts={linkedAccounts} />
+          </TabsContent>
+        </Tabs>
+      </PageContent>
+    </PageContainer>
   );
 }

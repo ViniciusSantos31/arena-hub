@@ -10,10 +10,10 @@ export const NextMatchCard = async ({ code }: { code: string }) => {
   }
 
   return (
-    <Card className="w-full border-dashed">
-      <CardContent className="flex h-64 items-center justify-center">
-        <div className="text-muted-foreground text-center">
-          Nenhuma próxima partida encontrada
+    <Card className="border-border/60 w-full border-dashed">
+      <CardContent className="flex h-48 items-center justify-center">
+        <div className="text-muted-foreground text-center text-sm">
+          Nenhuma partida agendada
         </div>
       </CardContent>
     </Card>

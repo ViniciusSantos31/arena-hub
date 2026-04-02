@@ -18,11 +18,11 @@ export default function FeedPage() {
   }
 
   return (
-    <main className="relative flex h-fit w-full flex-col">
-      <div className="from-background via-background/50 to-background/10 sticky top-0 z-10 flex h-fit w-full items-center justify-center bg-linear-to-b p-3">
+    <main className="relative flex h-fit w-full flex-col gap-4">
+      <div className="sticky top-0 z-10 flex w-full items-center justify-center">
         <SearchInput />
       </div>
-      <section className="mt-3 grid w-full grid-cols-1 gap-4 @xl:grid-cols-2 @4xl:grid-cols-3">
+      <section className="grid w-full grid-cols-1 gap-3 @xl:grid-cols-2 @4xl:grid-cols-3">
         {data.map((group) => (
           <GroupFeedCard
             key={group.id}
@@ -34,9 +34,9 @@ export default function FeedPage() {
           />
         ))}
       </section>
-      <footer className="mt-2 flex h-16 w-full flex-col items-center justify-center space-x-2">
-        <span className="text-muted-foreground text-sm">
-          Isso é tudo por enquanto! Mais grupos em breve.
+      <footer className="flex h-12 w-full flex-col items-center justify-center">
+        <span className="text-muted-foreground text-xs">
+          Todos os grupos disponíveis
         </span>
       </footer>
     </main>

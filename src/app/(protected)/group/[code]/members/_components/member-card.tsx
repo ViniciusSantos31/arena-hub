@@ -1,5 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
 import { getAvatarFallback } from "@/utils/avatar";
 import { Role } from "@/utils/role";
 import { MemberActions } from "./member-actions";
@@ -18,65 +17,52 @@ interface MemberCardProps {
 
 export const MemberCard = ({ member }: MemberCardProps) => {
   return (
-    <Card className="bg-muted/30 hover:bg-muted/50 transition-all duration-200 dark:border-0">
-      <CardContent>
-        <div className="flex flex-col justify-between @md:flex-row @md:items-center">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-12 w-12">
-              <AvatarImage src={member.image ?? undefined} alt={member.name} />
-              <AvatarFallback className="bg-primary/10 text-primary font-medium">
-                {getAvatarFallback(member.name ?? "")}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h3 className="text-foreground font-medium">{member.name}</h3>
-              <p className="text-muted-foreground truncate text-sm">
-                {member.email}
-              </p>
-              <MemberActions member={member} className="mt-0.5" />
-            </div>
-          </div>
-          <div className="mt-4 flex items-center gap-6 @md:mt-0">
-            <div>
-              <p className="text-sm font-medium">{member.score ?? 0}</p>
-              <p className="text-muted-foreground text-xs">Nota</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">{member.matches ?? 0}</p>
-              <p className="text-muted-foreground text-xs">Partidas</p>
-            </div>
-          </div>
+    <div className="bg-card border-border/60 hover:border-primary/20 @container flex items-center justify-between gap-3 rounded-xl border px-4 py-3 transition-all duration-200">
+      <div className="flex min-w-0 flex-1 items-center gap-3">
+        <Avatar className="h-10 w-10 shrink-0">
+          <AvatarImage src={member.image ?? undefined} alt={member.name} />
+          <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
+            {getAvatarFallback(member.name ?? "")}
+          </AvatarFallback>
+        </Avatar>
+        <div className="min-w-0">
+          <h3 className="text-foreground truncate text-sm font-semibold">{member.name}</h3>
+          <p className="text-muted-foreground truncate text-xs">{member.email}</p>
+          <MemberActions member={member} className="mt-0.5" />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+      <div className="flex shrink-0 items-center gap-4">
+        <div className="text-center">
+          <p className="text-foreground text-sm font-semibold">{member.score ?? 0}</p>
+          <p className="text-muted-foreground text-xs">Nota</p>
+        </div>
+        <div className="text-center">
+          <p className="text-foreground text-sm font-semibold">{member.matches ?? 0}</p>
+          <p className="text-muted-foreground text-xs">Partidas</p>
+        </div>
+      </div>
+    </div>
   );
 };
 
 export const MemberCardLoading = () => {
   return (
-    <Card className="bg-muted/30 animate-pulse dark:border-0">
-      <CardContent>
-        <div className="flex flex-col justify-between @md:flex-row @md:items-center">
-          <div className="flex items-center gap-3">
-            <div className="bg-muted h-12 min-w-12 rounded-full" />
-            <div className="flex flex-col space-y-1 @md:space-y-0.5">
-              <div className="bg-muted h-5 w-32 rounded @md:h-5.5" />
-              <div className="bg-muted h-5 w-1/2 rounded @md:w-48" />
-              <div className="bg-muted h-5.5 w-20 rounded" />
-            </div>
-          </div>
-          <div className="mt-4 flex items-center gap-6 @md:mt-0">
-            <div>
-              <div className="bg-muted h-4 w-8 rounded" />
-              <div className="bg-muted mt-1 h-3.5 w-16 rounded" />
-            </div>
-            <div>
-              <div className="bg-muted h-4 w-8 rounded" />
-              <div className="bg-muted mt-1 h-3 w-16 rounded" />
-            </div>
-          </div>
+    <div className="bg-card border-border/60 flex animate-pulse items-center gap-3 rounded-xl border px-4 py-3">
+      <div className="bg-muted h-10 w-10 shrink-0 rounded-full" />
+      <div className="min-w-0 flex-1 space-y-1.5">
+        <div className="bg-muted h-4 w-32 rounded" />
+        <div className="bg-muted h-3 w-48 rounded" />
+      </div>
+      <div className="flex items-center gap-4">
+        <div className="space-y-1 text-center">
+          <div className="bg-muted h-4 w-6 rounded" />
+          <div className="bg-muted h-3 w-8 rounded" />
         </div>
-      </CardContent>
-    </Card>
+        <div className="space-y-1 text-center">
+          <div className="bg-muted h-4 w-6 rounded" />
+          <div className="bg-muted h-3 w-12 rounded" />
+        </div>
+      </div>
+    </div>
   );
 };

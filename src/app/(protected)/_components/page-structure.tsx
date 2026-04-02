@@ -51,7 +51,7 @@ export const PageHeader = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const PageTitle = ({ children }: { children: React.ReactNode }) => {
-  return <h1 className="font-mono text-lg font-bold">{children}</h1>;
+  return <h1 className="text-foreground text-base font-semibold tracking-tight">{children}</h1>;
 };
 
 export const PageDescription = ({

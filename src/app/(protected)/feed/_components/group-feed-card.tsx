@@ -215,44 +215,48 @@ export const GroupFeedCard = ({
   return (
     <Card
       className={cn(
-        "dark:bg-background from-transparent to-transparent",
-        "hover:bg-accent hover:from-accent/10 transition-colors",
-        "cursor-pointer",
-        "relative h-full w-full flex-1",
+        "bg-card border-border/60 hover:border-primary/20 hover:bg-primary/5",
+        "relative h-full w-full flex-1 cursor-pointer transition-all duration-200",
       )}
     >
       {preview && (
-        <Badge variant={"secondary"} className="absolute top-2 right-2">
+        <Badge variant={"secondary"} className="absolute top-3 right-3 text-xs">
           Prévia
         </Badge>
       )}
-      <CardHeader>
-        <Avatar className="size-10 rounded-lg">
-          <AvatarImage src={group.logo || undefined} className="object-cover" />
-          <AvatarFallback>{getAvatarFallback(group.name)}</AvatarFallback>
-        </Avatar>
-        <CardTitle className="min-h-4 leading-3">{group.name}</CardTitle>
-        <CardDescription className="line-clamp-2 whitespace-pre-wrap">
+      <CardHeader className="gap-3">
+        <div className="flex items-center gap-3">
+          <Avatar className="size-10 rounded-xl">
+            <AvatarImage src={group.logo || undefined} className="object-cover" />
+            <AvatarFallback className="bg-primary/10 text-primary rounded-xl text-sm font-semibold">
+              {getAvatarFallback(group.name)}
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0 flex-1">
+            <CardTitle className="truncate text-base leading-snug">{group.name}</CardTitle>
+            {group.isPrivate && (
+              <span className="text-muted-foreground flex items-center gap-1 text-xs">
+                <Lock className="size-3" />
+                Grupo privado
+              </span>
+            )}
+          </div>
+        </div>
+        <CardDescription className="line-clamp-2 whitespace-pre-wrap text-sm">
           {group.description}
         </CardDescription>
       </CardHeader>
-      <CardContent className="mt-auto flex min-h-5 flex-row items-center justify-between">
+      <CardContent className="flex items-center justify-between pt-0">
         <span className="text-muted-foreground text-xs">
-          Criado em: {formatDate(group.createdAt)}
+          Criado em {formatDate(group.createdAt)}
         </span>
-        {group.isPrivate && (
-          <span className="text-muted-foreground flex items-center text-sm font-medium">
-            <Lock className="mr-1 mb-0.5 inline-block size-3" />
-            Grupo privado
-          </span>
-        )}
       </CardContent>
       {preview ? (
-        <CardFooter className="mt-auto flex flex-col gap-2 @xl:flex-row">
+        <CardFooter className="pt-0">
           <JoinButtonPreview isPrivate={group.isPrivate} />
         </CardFooter>
       ) : (
-        <CardFooter className="mt-auto flex flex-col gap-2 @xl:flex-row">
+        <CardFooter className="pt-0">
           {group.isMember ? (
             <ViewGroupButton code={group.code} />
           ) : (

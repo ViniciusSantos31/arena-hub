@@ -3,18 +3,18 @@
 import { cancelCharge } from "@/actions/payment/cancel-charge";
 import { getUserMatchPlayer, joinMatch } from "@/actions/match/join";
 import { getSubscription } from "@/actions/membership/get-subscription";
+import { createMatchCheckout } from "@/actions/payment/create-match-checkout";
 import { Button } from "@/components/ui/button";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { queryClient } from "@/lib/react-query";
 import { WebSocketMessageType } from "@/lib/websocket/types";
 import { Status } from "@/utils/status";
 import { useQuery } from "@tanstack/react-query";
-import { PlayIcon, UserRoundMinusIcon } from "lucide-react";
+import { Loader2Icon, PlayIcon, UserRoundMinusIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import { toast } from "sonner";
 import { matchDetailQueryKeys } from "../_hooks";
-import { PaymentCheckoutModal } from "./payment-checkout-modal";
 
 export const JoinMatchButton = ({
   match,
@@ -31,7 +31,7 @@ export const JoinMatchButton = ({
     maxPlayers: number;
   };
 }) => {
-  const [paymentOpen, setPaymentOpen] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const { data: player } = useQuery({
     queryKey: ["player", match.id],
@@ -103,7 +103,8 @@ export const JoinMatchButton = ({
   const isDisabled =
     match.status !== "open_registration" ||
     joinMatchAction.isExecuting ||
-    cancelChargeAction.isExecuting;
+    cancelChargeAction.isExecuting ||
+    isRedirecting;
 
   const pricePerPlayerCents = match.totalPriceCents
     ? Math.ceil(match.totalPriceCents / match.maxPlayers)
@@ -144,7 +145,7 @@ export const JoinMatchButton = ({
   }
 
   // ── Jogador não está na partida — mostra botão de entrada ───────────────
-  const handleJoin = () => {
+  const handleJoin = async () => {
     if (match.isPaid && match.totalPriceCents) {
       // Membros com assinatura ativa entram grátis
       if (hasActiveSubscription) {
@@ -169,8 +170,15 @@ export const JoinMatchButton = ({
         return;
       }
 
-      // Guests e membros sem assinatura abrem modal de pagamento
-      setPaymentOpen(true);
+      // Guests e membros sem assinatura → redireciona para Stripe Checkout
+      setIsRedirecting(true);
+      const result = await createMatchCheckout({ matchId: match.id, organizationCode });
+      if (result?.data?.url) {
+        window.location.href = result.data.url;
+      } else {
+        toast.error(result?.serverError ?? "Não foi possível iniciar o pagamento.");
+        setIsRedirecting(false);
+      }
       return;
     }
 
@@ -195,26 +203,23 @@ export const JoinMatchButton = ({
   };
 
   return (
-    <>
-      <Button
-        disabled={isDisabled}
-        className="flex-1 @md:flex-none"
-        onClick={handleJoin}
-      >
-        <PlayIcon />
-        <span className="hidden @md:block">Participar da Partida</span>
-        <span className="@md:hidden">Participar</span>
-      </Button>
-
-      {match.isPaid && match.totalPriceCents && (
-        <PaymentCheckoutModal
-          open={paymentOpen}
-          onClose={() => setPaymentOpen(false)}
-          matchId={match.id}
-          organizationCode={organizationCode}
-          pricePerPlayerCents={pricePerPlayerCents}
-        />
+    <Button
+      disabled={isDisabled}
+      className="flex-1 @md:flex-none"
+      onClick={handleJoin}
+    >
+      {isRedirecting ? (
+        <>
+          <Loader2Icon className="size-4 animate-spin" />
+          <span>Redirecionando...</span>
+        </>
+      ) : (
+        <>
+          <PlayIcon />
+          <span className="hidden @md:block">Participar da Partida</span>
+          <span className="@md:hidden">Participar</span>
+        </>
       )}
-    </>
+    </Button>
   );
 };

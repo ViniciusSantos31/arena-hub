@@ -24,14 +24,14 @@ export const WaitingQueueList = ({ id }: { id: string }) => {
 
   return (
     <>
-      <div className="relative flex items-center py-4">
-        <div className="border-muted-foreground/30 flex-1 divide-dashed border-t border-dashed"></div>
-        <div className="text-muted-foreground bg-card px-4 text-xs">
-          Lista de Espera
-        </div>
-        <div className="border-muted-foreground/30 flex-1 border-t border-dashed"></div>
+      <div className="relative flex items-center px-4 py-3">
+        <div className="border-border/50 flex-1 border-t border-dashed" />
+        <span className="text-muted-foreground bg-card px-3 text-xs font-medium">
+          Lista de espera
+        </span>
+        <div className="border-border/50 flex-1 border-t border-dashed" />
       </div>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-1 pt-0">
         {players?.map((player) => (
           <PlayerItem key={player.id} player={player} />
         ))}

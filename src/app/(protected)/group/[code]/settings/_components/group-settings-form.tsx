@@ -32,16 +32,16 @@ export function GroupSettingsForm({ group, userRole }: GroupSettingsFormProps) {
         title="Pagamentos"
         description="Configure os recebimentos para criar partidas pagas."
       >
-        <div className="flex items-center justify-between rounded-lg border p-4">
-          <div className="flex flex-col space-y-1">
-            <h4 className="font-medium">Recebimentos via Stripe</h4>
-            <p className="text-muted-foreground text-sm">
+        <div className="border-border/60 flex items-center justify-between rounded-xl border p-4">
+          <div className="flex flex-col space-y-0.5">
+            <h4 className="text-sm font-medium">Recebimentos via Stripe</h4>
+            <p className="text-muted-foreground text-xs">
               Cadastre sua conta bancária para receber os pagamentos das partidas.
             </p>
           </div>
-          <Button variant="outline" asChild>
+          <Button variant="outline" size="sm" asChild>
             <Link href={`/group/${group.code}/settings/billing`}>
-              <CreditCardIcon className="h-4 w-4" />
+              <CreditCardIcon className="h-3.5 w-3.5" />
               Configurar
             </Link>
           </Button>

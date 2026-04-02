@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { use, useEffect } from "react";
 import { AdvancedSettingsSection } from "./_components/advanced-settings-section";
 import { MatchDetailCard } from "./_components/match-detail-card";
+import { PaymentReturnHandler } from "./_components/payment-return-handler";
 import { PlayerListRealtime } from "./_components/player-list-realtime";
 import { PlayersList } from "./_components/players-list";
 import { SocketStatusBadge } from "./_components/socket-status-badge";
@@ -31,34 +32,36 @@ export default function MatchDetailPage({
 
   return (
     <main className="flex w-full flex-col gap-4">
-      <section className="flex w-full flex-col gap-3 lg:flex-row lg:items-center">
-        <Button variant="ghost" className="w-fit" onClick={router.back}>
-          <ChevronLeftIcon />
-          Voltar para as partidas
+      <section className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
+        <Button variant="ghost" size="sm" className="w-fit gap-1.5 pl-1" onClick={router.back}>
+          <ChevronLeftIcon className="size-4" />
+          Voltar
         </Button>
-
-        <SocketStatusBadge />
+        <div className="sm:ml-auto">
+          <SocketStatusBadge />
+        </div>
       </section>
+
+      <PaymentReturnHandler matchId={id} />
       <AdvancedSettingsSection />
 
       <MatchDetailCard code={code} />
 
-      <div className="space-y-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-foreground flex items-center gap-3 font-medium">
-              <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg">
-                <Users2Icon className="text-muted-foreground h-5 w-5" />
-              </div>
-              Jogadores participantes
-            </CardTitle>
-          </CardHeader>
-          <PlayerListRealtime matchId={id}>
-            <PlayersList id={id} />
-            <WaitingQueueList id={id} />
-          </PlayerListRealtime>
-        </Card>
-      </div>
+      <Card className="border-border/60">
+        <CardHeader className="border-b pb-4">
+          <CardTitle className="flex items-center gap-2.5 text-sm font-semibold">
+            <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg">
+              <Users2Icon className="text-primary h-4 w-4" />
+            </div>
+            Jogadores participantes
+          </CardTitle>
+        </CardHeader>
+        <PlayerListRealtime matchId={id}>
+          <PlayersList id={id} />
+          <WaitingQueueList id={id} />
+        </PlayerListRealtime>
+      </Card>
+
       <TeamsList matchId={id} />
     </main>
   );
