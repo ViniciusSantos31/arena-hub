@@ -117,7 +117,7 @@ export default function SortTeamsPage({
     teams.length > 0 &&
     reserves.length === 0 &&
     teams.every(
-      (t) => t.players.length > 0 && t.players.length === playersPerTeam,
+      (t) => t.players.length > 0,
     );
 
   return (
