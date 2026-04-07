@@ -76,17 +76,17 @@ export const sortTeams = actionClient
 
     const finalPlayers = getFinalPlayerList(players).slice(0, matchMaxPlayers);
 
-    if (finalPlayers.length % nTeams !== 0) {
-      return {
-        teams: [] as Team[],
-        reserves: finalPlayers.map((player) => ({
-          id: player.id,
-          name: player.name,
-          score: player.score ?? 0,
-          confirmed: player.confirmed,
-        })),
-      };
-    }
+    // if (finalPlayers.length % nTeams !== 0) {
+    //   return {
+    //     teams: [] as Team[],
+    //     reserves: finalPlayers.map((player) => ({
+    //       id: player.id,
+    //       name: player.name,
+    //       score: player.score ?? 0,
+    //       confirmed: player.confirmed,
+    //     })),
+    //   };
+    // }
 
     const playersPerTeam = Math.floor(finalPlayers.length / nTeams);
     const playersSortedByScore = [...finalPlayers].sort(
