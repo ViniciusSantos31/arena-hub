@@ -115,7 +115,6 @@ export default function SortTeamsPage({
 
   const canSave =
     teams.length > 0 &&
-    reserves.length === 0 &&
     teams.every(
       (t) => t.players.length > 0,
     );
