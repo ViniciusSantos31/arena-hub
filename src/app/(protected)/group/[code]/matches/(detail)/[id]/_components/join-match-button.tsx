@@ -1,56 +1,40 @@
 "use client";
 
-import { cancelCharge } from "@/actions/payment/cancel-charge";
 import { getUserMatchPlayer, joinMatch } from "@/actions/match/join";
-import { getSubscription } from "@/actions/membership/get-subscription";
-import { createMatchCheckout } from "@/actions/payment/create-match-checkout";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { queryClient } from "@/lib/react-query";
 import { WebSocketMessageType } from "@/lib/websocket/types";
 import { Status } from "@/utils/status";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2Icon, PlayIcon, UserRoundMinusIcon } from "lucide-react";
+import {
+  AlertCircle,
+  Loader2Icon,
+  PlayIcon,
+  UserRoundMinusIcon,
+} from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
-import { useState } from "react";
 import { toast } from "sonner";
 import { matchDetailQueryKeys } from "../_hooks";
 
 export const JoinMatchButton = ({
   match,
   organizationCode,
-  memberRole,
 }: {
   organizationCode: string;
-  memberRole?: "owner" | "admin" | "member" | "guest" | null;
   match: {
     id: string;
     status: Status;
-    isPaid: boolean;
-    totalPriceCents: number | null;
     maxPlayers: number;
   };
 }) => {
-  const [isRedirecting, setIsRedirecting] = useState(false);
-
   const { data: player } = useQuery({
     queryKey: ["player", match.id],
     enabled: !!match.id,
     queryFn: async () =>
       getUserMatchPlayer({ matchId: match.id }).then((res) => res.data),
   });
-
-  // Verifica assinatura ativa para membros (não guests)
-  const isEligibleForSubscription = memberRole !== "guest" && memberRole != null;
-  const { data: subscription } = useQuery({
-    queryKey: ["subscription", organizationCode],
-    enabled: isEligibleForSubscription && match.isPaid,
-    queryFn: async () =>
-      getSubscription({ organizationCode }).then((res) => res?.data ?? null),
-  });
-
-  const hasActiveSubscription =
-    subscription?.status === "active" || subscription?.status === "trialing";
 
   const { sendEvent } = useWebSocket();
 
@@ -64,21 +48,6 @@ export const JoinMatchButton = ({
       },
     });
   };
-
-  // ── Saída de partida paga (cancela PI + remove jogador) ─────────────────
-  const cancelChargeAction = useAction(cancelCharge, {
-    onSuccess: () => {
-      invalidateMatchQueries();
-      toast.warning("Você saiu da partida. O valor foi estornado.");
-      sendEvent({
-        event: WebSocketMessageType.MATCH_PARTICIPANT_LEFT,
-        payload: { playerId: player?.userId ?? "", matchId: match.id },
-      });
-    },
-    onError: () => {
-      toast.error("Não foi possível sair da partida. Tente novamente.");
-    },
-  });
 
   // ── Entrada/saída de partida gratuita ───────────────────────────────────
   const joinMatchAction = useAction(joinMatch, {
@@ -101,34 +70,37 @@ export const JoinMatchButton = ({
   });
 
   const isDisabled =
-    match.status !== "open_registration" ||
-    joinMatchAction.isExecuting ||
-    cancelChargeAction.isExecuting ||
-    isRedirecting;
-
-  const pricePerPlayerCents = match.totalPriceCents
-    ? Math.ceil(match.totalPriceCents / match.maxPlayers)
-    : 0;
+    match.status !== "open_registration" || joinMatchAction.isExecuting;
 
   // ── Jogador já está na partida — mostra botão de saída ─────────────────
   if (player) {
     const handleLeave = () => {
-      if (match.isPaid && !hasActiveSubscription) {
-        // Só cancela charge se pagou por esta partida (não por assinatura)
-        cancelChargeAction.execute({ matchId: match.id });
-      } else {
-        joinMatchAction.executeAsync({ matchId: match.id, organizationCode }).then(
-          (res) => {
-            if (res?.data?.action === "left") {
-              sendEvent({
-                event: WebSocketMessageType.MATCH_PARTICIPANT_LEFT,
-                payload: { playerId: player.userId ?? "", matchId: match.id },
-              });
-            }
-          },
-        );
-      }
+      joinMatchAction
+        .executeAsync({ matchId: match.id, organizationCode })
+        .then((res) => {
+          if (res?.data?.action === "left") {
+            sendEvent({
+              event: WebSocketMessageType.MATCH_PARTICIPANT_LEFT,
+              payload: { playerId: player.userId ?? "", matchId: match.id },
+            });
+          }
+        });
     };
+
+    if (player.bannedFromMatch) {
+      return (
+        <Alert variant="destructive">
+          <AlertCircle />
+          <AlertTitle>Você foi banido da partida</AlertTitle>
+          <AlertDescription>
+            Você não pode participar da partida porque foi banido.
+            <div className="text-muted-foreground text-sm">
+              Motivo: {player.removalReason}
+            </div>
+          </AlertDescription>
+        </Alert>
+      );
+    }
 
     return (
       <Button
@@ -146,44 +118,9 @@ export const JoinMatchButton = ({
 
   // ── Jogador não está na partida — mostra botão de entrada ───────────────
   const handleJoin = async () => {
-    if (match.isPaid && match.totalPriceCents) {
-      // Membros com assinatura ativa entram grátis
-      if (hasActiveSubscription) {
-        joinMatchAction.executeAsync({ matchId: match.id, organizationCode }).then(
-          (res) => {
-            if (res?.data?.action === "joined") {
-              sendEvent({
-                event: WebSocketMessageType.MATCH_PARTICIPANT_JOINED,
-                payload: {
-                  player: {
-                    id: res.data.player?.id || "",
-                    name: res.data.player?.name || "",
-                    image: res.data.player?.image || null,
-                    score: res.data.player?.score || 0,
-                  },
-                  matchId: match.id,
-                },
-              });
-            }
-          },
-        );
-        return;
-      }
-
-      // Guests e membros sem assinatura → redireciona para Stripe Checkout
-      setIsRedirecting(true);
-      const result = await createMatchCheckout({ matchId: match.id, organizationCode });
-      if (result?.data?.url) {
-        window.location.href = result.data.url;
-      } else {
-        toast.error(result?.serverError ?? "Não foi possível iniciar o pagamento.");
-        setIsRedirecting(false);
-      }
-      return;
-    }
-
-    joinMatchAction.executeAsync({ matchId: match.id, organizationCode }).then(
-      (res) => {
+    joinMatchAction
+      .executeAsync({ matchId: match.id, organizationCode })
+      .then((res) => {
         if (res?.data?.action === "joined") {
           sendEvent({
             event: WebSocketMessageType.MATCH_PARTICIPANT_JOINED,
@@ -198,8 +135,7 @@ export const JoinMatchButton = ({
             },
           });
         }
-      },
-    );
+      });
   };
 
   return (
@@ -208,10 +144,10 @@ export const JoinMatchButton = ({
       className="flex-1 @md:flex-none"
       onClick={handleJoin}
     >
-      {isRedirecting ? (
+      {joinMatchAction.isExecuting ? (
         <>
           <Loader2Icon className="size-4 animate-spin" />
-          <span>Redirecionando...</span>
+          <span>Aguarde...</span>
         </>
       ) : (
         <>

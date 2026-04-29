@@ -42,7 +42,7 @@ export const joinMatch = actionClient
       throw new Error("User is not a member of the organization");
     }
 
-    // Verify if the user is already joined to the match
+    // Verify if the user is already joined to the match (or banned)
     const isAlreadyJoined = await db
       .select()
       .from(playersTable)
@@ -50,6 +50,12 @@ export const joinMatch = actionClient
         and(eq(playersTable.matchId, matchId), eq(playersTable.userId, userId)),
       )
       .limit(1);
+
+    if (isAlreadyJoined.length > 0 && isAlreadyJoined[0].bannedFromMatch) {
+      throw new Error(
+        "Você foi banido desta partida e não pode se inscrever novamente.",
+      );
+    }
 
     const player = {
       id: userId,

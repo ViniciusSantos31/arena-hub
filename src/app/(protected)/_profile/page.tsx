@@ -1,5 +1,4 @@
 import { getLinkedAccounts } from "@/actions/user/get-linked-accounts";
-import { getMySubscriptions } from "@/actions/user/get-subscriptions";
 import { db } from "@/db";
 import { usersTable } from "@/db/schema/user";
 import { Separator } from "@/components/ui/separator";
@@ -22,7 +21,6 @@ import {
 import { AccountSettingsForm } from "./_components/account-settings-form";
 import { PrivateProfileHeader } from "./_components/private-profile-header";
 import { SecuritySection } from "./_components/security-section";
-import { SubscriptionsSection } from "./_components/subscriptions-section";
 
 const tabTriggerClass =
   "data-[state=active]:bg-background dark:data-[state=active]:bg-background data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:border-b-primary dark:data-[state=active]:border-primary max-w-fit flex-1 rounded-none border-0 border-b-2 border-transparent px-8 text-center";
@@ -52,29 +50,15 @@ export default async function ProfilePage() {
 
   const user = session?.user;
 
-  const [userProfile, subscriptionsResult, linkedAccountsResult] =
-    await Promise.all([
-      user?.id
-        ? db.query.usersTable.findFirst({
-            where: eq(usersTable.id, user.id),
-            columns: { bio: true },
-          })
-        : Promise.resolve(null),
-      getMySubscriptions(),
-      getLinkedAccounts(),
-    ]);
-
-  const subscriptions = (subscriptionsResult?.data ?? []).map((sub) => ({
-    id: sub.id,
-    groupName: sub.groupName,
-    groupCode: sub.groupCode,
-    amountCents: sub.amountCents,
-    status: sub.status,
-    currentPeriodEnd: formatDate(sub.currentPeriodEnd),
-    cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
-    stripeSubscriptionId: sub.stripeSubscriptionId,
-    organizationId: sub.organizationId,
-  }));
+  const [userProfile, linkedAccountsResult] = await Promise.all([
+    user?.id
+      ? db.query.usersTable.findFirst({
+          where: eq(usersTable.id, user.id),
+          columns: { bio: true },
+        })
+      : Promise.resolve(null),
+    getLinkedAccounts(),
+  ]);
 
   const linkedAccounts = (linkedAccountsResult?.data ?? []).map((acc) => ({
     id: acc.id,
@@ -149,10 +133,6 @@ export default async function ProfilePage() {
             <AccountSettingsForm
               user={{ ...user, bio: userProfile?.bio }}
             />
-
-            <Separator />
-
-            <SubscriptionsSection subscriptions={subscriptions} />
 
             <Separator />
 

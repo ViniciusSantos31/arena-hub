@@ -71,8 +71,10 @@ export const listMatchPlayers = actionClient
       },
     });
 
-    const mainList = response.filter((player) => !player.waitingQueue);
-    const waitingList = response.filter((player) => player.waitingQueue);
+    const activeResponse = response.filter((player) => !player.bannedFromMatch);
+
+    const mainList = activeResponse.filter((player) => !player.waitingQueue);
+    const waitingList = activeResponse.filter((player) => player.waitingQueue);
 
     return {
       players: mainList.map(buildReturnPlayer),

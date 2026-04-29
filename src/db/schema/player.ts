@@ -9,7 +9,6 @@ import {
 } from "drizzle-orm/pg-core";
 import { matchesTable } from "./match";
 import { member } from "./member";
-import { paymentStatusEnum } from "./payment";
 import { usersTable } from "./user";
 
 export const playersTable = pgTable("player", {
@@ -29,8 +28,10 @@ export const playersTable = pgTable("player", {
   confirmed: boolean("confirmed").notNull().default(false),
   waitingQueue: boolean("waiting_queue").notNull().default(false),
 
-  //Payment
-  paymentStatus: paymentStatusEnum("payment_status").default("pending"),
+  // Moderator removal
+  removedByModerator: boolean("removed_by_moderator").notNull().default(false),
+  removalReason: text("removal_reason"),
+  bannedFromMatch: boolean("banned_from_match").notNull().default(false),
 
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")

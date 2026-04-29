@@ -1,12 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Role } from "@/utils/role";
-import { CreditCardIcon } from "lucide-react";
-import Link from "next/link";
 import { BasicInfoForm } from "./basic-info-form";
 import { ConfigAccessForm } from "./config-access-form";
-import { SettingsSection } from "./settings-section";
 
 interface GroupSettingsFormProps {
   group: {
@@ -27,26 +23,6 @@ export function GroupSettingsForm({ group, userRole }: GroupSettingsFormProps) {
     <div className="space-y-4">
       <BasicInfoForm group={group} userRole={userRole} />
       <ConfigAccessForm group={group} userRole={userRole} />
-
-      <SettingsSection
-        title="Pagamentos"
-        description="Configure os recebimentos para criar partidas pagas."
-      >
-        <div className="border-border/60 flex items-center justify-between rounded-xl border p-4">
-          <div className="flex flex-col space-y-0.5">
-            <h4 className="text-sm font-medium">Recebimentos via Stripe</h4>
-            <p className="text-muted-foreground text-xs">
-              Cadastre sua conta bancária para receber os pagamentos das partidas.
-            </p>
-          </div>
-          <Button variant="outline" size="sm" asChild>
-            <Link href={`/group/${group.code}/settings/billing`}>
-              <CreditCardIcon className="h-3.5 w-3.5" />
-              Configurar
-            </Link>
-          </Button>
-        </div>
-      </SettingsSection>
     </div>
   );
 }

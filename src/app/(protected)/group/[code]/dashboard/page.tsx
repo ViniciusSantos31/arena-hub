@@ -15,7 +15,6 @@ import {
   UsersIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { MemberSubscriptionCard } from "./_components/member-subscription-card";
 import { NextMatchCard } from "./_components/next-match-card";
 
 export default async function GroupDashboardPage({
@@ -33,7 +32,7 @@ export default async function GroupDashboardPage({
       <section className="flex w-full flex-1 flex-col gap-4">
         <NextMatchCard code={code} />
 
-        <Card className="@container/card border-border/60 w-full">
+        <Card className="border-border/60 @container/card w-full">
           <CardHeader className="border-b pb-4">
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2.5 text-sm font-semibold">
@@ -43,7 +42,12 @@ export default async function GroupDashboardPage({
                 Partidas
               </CardTitle>
               <CardAction className="hidden @[26rem]/card:flex">
-                <Button asChild size="sm" variant="ghost" className="h-8 text-xs">
+                <Button
+                  asChild
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 text-xs"
+                >
                   <Link href={`/group/${code}/matches`}>
                     Ver todas
                     <ArrowRightIcon className="h-3.5 w-3.5" />
@@ -75,13 +79,19 @@ export default async function GroupDashboardPage({
               <div className="bg-primary/5 border-primary/10 mt-3 flex items-center gap-2 rounded-xl border p-3">
                 <TrendingUpIcon className="text-primary h-4 w-4 shrink-0" />
                 <span className="text-primary text-xs font-medium">
-                  +{details.data?.matchesPercentageRate}% em relação ao período anterior
+                  +{details.data?.matchesPercentageRate}% em relação ao período
+                  anterior
                 </span>
               </div>
             )}
           </CardContent>
           <CardFooter className="border-t pt-3 @[26rem]/card:hidden">
-            <Button variant="outline" size="sm" asChild className="ml-auto h-8 text-xs">
+            <Button
+              variant="outline"
+              size="sm"
+              asChild
+              className="ml-auto h-8 text-xs"
+            >
               <Link href={`/group/${code}/matches`}>
                 Ver partidas
                 <ArrowRightIcon className="h-3.5 w-3.5" />
@@ -92,9 +102,9 @@ export default async function GroupDashboardPage({
       </section>
 
       <section className="flex h-fit w-full flex-1 flex-col gap-4">
-        <MemberSubscriptionCard organizationCode={code} />
+        {/* <MemberSubscriptionCard organizationCode={code} /> */}
 
-        <Card className="@container/card border-border/60 w-full">
+        <Card className="border-border/60 @container/card w-full">
           <CardHeader className="border-b pb-4">
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2.5 text-sm font-semibold">
@@ -104,7 +114,12 @@ export default async function GroupDashboardPage({
                 Membros
               </CardTitle>
               <CardAction className="hidden @[28rem]/card:flex">
-                <Button variant="ghost" size="sm" asChild className="h-8 text-xs">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  asChild
+                  className="h-8 text-xs"
+                >
                   <Link href={`/group/${code}/members`}>
                     Ver todos
                     <ArrowRightIcon className="h-3.5 w-3.5" />
@@ -132,7 +147,12 @@ export default async function GroupDashboardPage({
             </div>
           </CardContent>
           <CardFooter className="border-t pt-3 @[28rem]/card:hidden">
-            <Button variant="outline" size="sm" asChild className="ml-auto h-8 text-xs">
+            <Button
+              variant="outline"
+              size="sm"
+              asChild
+              className="ml-auto h-8 text-xs"
+            >
               <Link href={`/group/${code}/members`}>
                 Ver membros
                 <ArrowRightIcon className="h-3.5 w-3.5" />

@@ -1,9 +1,19 @@
 import { CardContent } from "@/components/ui/card";
+import { useGuard } from "@/hooks/use-guard";
 import { useWaitingQueue } from "../_hooks";
 import { PlayerItem } from "./player-item";
 
-export const WaitingQueueList = ({ id }: { id: string }) => {
+interface WaitingQueueListProps {
+  id: string;
+  organizationCode: string;
+}
+
+export const WaitingQueueList = ({
+  id,
+  organizationCode,
+}: WaitingQueueListProps) => {
   const { data: players, isLoading } = useWaitingQueue(id);
+  const canModerate = useGuard({ action: ["match:update"] });
 
   if (isLoading) {
     return (
@@ -33,7 +43,13 @@ export const WaitingQueueList = ({ id }: { id: string }) => {
       </div>
       <CardContent className="space-y-1 pt-0">
         {players?.map((player) => (
-          <PlayerItem key={player.id} player={player} />
+          <PlayerItem
+            key={player.id}
+            player={player}
+            canModerate={canModerate}
+            matchId={id}
+            organizationCode={organizationCode}
+          />
         ))}
       </CardContent>
     </>

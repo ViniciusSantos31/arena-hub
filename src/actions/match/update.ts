@@ -15,8 +15,6 @@ import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import z from "zod/v4";
 import { getUserMembership } from "../group/membership";
-import { refundMatchPayments } from "../payment/refund";
-import { releaseMatchEscrow } from "../payment/release-escrow";
 
 export const updateMatch = actionClient
   .inputSchema(
@@ -110,12 +108,5 @@ export const updateMatch = actionClient
       participantIds,
     }).catch(console.error);
 
-    if (newStatus === "completed") {
-      await releaseMatchEscrow(parsedInput.match.id).catch(console.error);
-    }
-
-    // Também chame o reembolso ao cancelar:
-    if (newStatus === "cancelled") {
-      await refundMatchPayments(parsedInput.match.id).catch(console.error);
-    }
+    // Recursos removidos do produto.
   });

@@ -1,10 +1,17 @@
 import { CardContent } from "@/components/ui/card";
+import { useGuard } from "@/hooks/use-guard";
 import { useMatchPlayers } from "../_hooks";
 import { PlayerEmptyList } from "./player-empty-list";
 import { PlayerItem } from "./player-item";
 
-export const PlayersList = ({ id }: { id: string }) => {
+interface PlayersListProps {
+  id: string;
+  organizationCode: string;
+}
+
+export const PlayersList = ({ id, organizationCode }: PlayersListProps) => {
   const { data: players, isLoading } = useMatchPlayers(id);
+  const canModerate = useGuard({ action: ["match:update"] });
 
   if (isLoading) {
     return (
@@ -29,7 +36,13 @@ export const PlayersList = ({ id }: { id: string }) => {
   return (
     <CardContent className="space-y-1">
       {players?.players.map((player) => (
-        <PlayerItem key={player.id} player={player} />
+        <PlayerItem
+          key={player.id}
+          player={player}
+          canModerate={canModerate}
+          matchId={id}
+          organizationCode={organizationCode}
+        />
       ))}
     </CardContent>
   );

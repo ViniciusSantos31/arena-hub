@@ -1,4 +1,3 @@
-import { useMemberStore } from "@/app/(protected)/group/[code]/_store/group";
 import {
   Card,
   CardAction,
@@ -9,7 +8,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { formatBRL } from "@/lib/payments";
 import { formatDate } from "@/utils/date";
 import { getSportIconById, Sport } from "@/utils/sports";
 import { Status } from "@/utils/status";
@@ -23,7 +21,6 @@ import { ConfirmPresenceButton } from "./confirm-presence-button";
 export const MatchDetailCard = ({ code }: { code: string }) => {
   const { data: match, isLoading } = useMatch();
   const { data: matchPlayers } = useMatchPlayers(match?.id ?? "");
-  const memberRole = useMemberStore((s) => s.member?.role);
 
   const filledPlayers = matchPlayers?.players.length ?? 0;
   const maxPlayers = match?.maxPlayers ?? 1;
@@ -65,16 +62,7 @@ export const MatchDetailCard = ({ code }: { code: string }) => {
           <span className="text-muted-foreground text-sm">
             {filledPlayers} / {maxPlayers} vagas
           </span>
-          {match.isPaid && match.totalPriceCents ? (
-            <span className="text-foreground font-semibold">
-              {formatBRL(Math.ceil(match.totalPriceCents / match.maxPlayers))}
-              <span className="text-muted-foreground ml-1 text-xs font-normal">
-                / pessoa
-              </span>
-            </span>
-          ) : (
-            <span className="text-primary font-semibold">Grátis</span>
-          )}
+          <span className="text-primary font-semibold">Grátis</span>
         </div>
         <Progress value={progressValue} className="h-1.5" />
       </CardContent>
@@ -83,12 +71,9 @@ export const MatchDetailCard = ({ code }: { code: string }) => {
           match={{
             id: match.id,
             status: match.status,
-            isPaid: match.isPaid,
-            totalPriceCents: match.totalPriceCents,
             maxPlayers: match.maxPlayers,
           }}
           organizationCode={code}
-          memberRole={memberRole}
         />
         <ConfirmPresenceButton matchId={match.id} matchStatus={match.status} />
       </CardFooter>

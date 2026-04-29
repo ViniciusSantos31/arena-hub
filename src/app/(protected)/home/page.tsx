@@ -10,7 +10,7 @@ export default function ProtectedPage() {
             Arena Hub
           </div>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            Organize partidas, gerencie membros e simplifique seus pagamentos.
+            Organize partidas, gerencie membros e mantenha tudo em um só lugar.
           </p>
         </div>
 

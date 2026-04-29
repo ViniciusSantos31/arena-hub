@@ -12,7 +12,6 @@ export const usersTable = pgTable("user", {
     .notNull(),
   image: text("image"),
   bio: text("bio"),
-  stripeCustomerId: text("stripe_customer_id"),
   createdAt: timestamp("created_at")
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),

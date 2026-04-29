@@ -9,7 +9,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { matchesTable } from "@/db/schema/match";
-import { formatBRL } from "@/lib/payments";
 import { getCategoryLabelById } from "@/utils/categories";
 import { formatDate } from "@/utils/date";
 import { getSportIconById, getSportLabelById, Sport } from "@/utils/sports";
@@ -66,14 +65,7 @@ export const MatchCard = ({ match }: MatchCardProps) => {
               <span className="text-muted-foreground">
                 {filledPlayers} / {match.maxPlayers} vagas
               </span>
-              {match.isPaid && match.totalPriceCents ? (
-                <span className="text-foreground font-semibold">
-                  {formatBRL(Math.ceil(match.totalPriceCents / match.maxPlayers))}
-                  <span className="text-muted-foreground ml-1 font-normal text-xs">/ pessoa</span>
-                </span>
-              ) : (
-                <span className="text-primary text-sm font-semibold">Grátis</span>
-              )}
+              <span className="text-primary text-sm font-semibold">Grátis</span>
             </div>
             <Progress value={progressValue} className="h-1.5" />
           </div>

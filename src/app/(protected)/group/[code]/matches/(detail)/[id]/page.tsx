@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { use, useEffect } from "react";
 import { AdvancedSettingsSection } from "./_components/advanced-settings-section";
 import { MatchDetailCard } from "./_components/match-detail-card";
-import { PaymentReturnHandler } from "./_components/payment-return-handler";
 import { PlayerListRealtime } from "./_components/player-list-realtime";
 import { PlayersList } from "./_components/players-list";
 import { SocketStatusBadge } from "./_components/socket-status-badge";
@@ -42,7 +41,6 @@ export default function MatchDetailPage({
         </div>
       </section>
 
-      <PaymentReturnHandler matchId={id} />
       <AdvancedSettingsSection />
 
       <MatchDetailCard code={code} />
@@ -57,8 +55,8 @@ export default function MatchDetailPage({
           </CardTitle>
         </CardHeader>
         <PlayerListRealtime matchId={id}>
-          <PlayersList id={id} />
-          <WaitingQueueList id={id} />
+          <PlayersList id={id} organizationCode={code} />
+          <WaitingQueueList id={id} organizationCode={code} />
         </PlayerListRealtime>
       </Card>
 

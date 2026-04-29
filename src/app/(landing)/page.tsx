@@ -1,42 +1,28 @@
-"use client";
-
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
 import {
   BellIcon,
   CalendarIcon,
-  CheckIcon,
-  CreditCardIcon,
   GroupIcon,
   LayoutDashboardIcon,
-  ShieldCheckIcon,
   SmartphoneIcon,
-  SparklesIcon,
   UsersIcon,
   ZapIcon,
 } from "lucide-react";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 const features = [
   {
     icon: CalendarIcon,
     title: "Partidas organizadas",
-    desc: "Crie partidas, defina valor por jogador, limite de vagas e data. Os membros se inscrevem com um clique.",
+    desc: "Crie partidas, defina limite de vagas, data e local. Os membros se inscrevem com um clique.",
   },
   {
     icon: UsersIcon,
     title: "Gestão de membros",
     desc: "Aprove solicitações de entrada, gerencie funções e controle quem faz parte do seu grupo.",
-  },
-  {
-    icon: CreditCardIcon,
-    title: "Pagamentos integrados",
-    desc: "Cobrança automática por partida via cartão de crédito. Cartões salvos para pagamentos mais rápidos.",
-  },
-  {
-    icon: SparklesIcon,
-    title: "Assinatura mensal",
-    desc: "Membros podem assinar um plano mensal e ficam isentos de pagar individualmente por cada partida.",
   },
   {
     icon: ZapIcon,
@@ -46,7 +32,7 @@ const features = [
   {
     icon: BellIcon,
     title: "Notificações push",
-    desc: "Avise seus membros sobre novas partidas, pagamentos e atualizações em tempo real.",
+    desc: "Avise seus membros sobre novas partidas e atualizações em tempo real.",
   },
   {
     icon: SmartphoneIcon,
@@ -56,7 +42,7 @@ const features = [
   {
     icon: LayoutDashboardIcon,
     title: "Dashboard completo",
-    desc: "Acompanhe o histórico de partidas, pagamentos e a situação dos membros em um só lugar.",
+    desc: "Acompanhe o histórico de partidas e a situação dos membros em um só lugar.",
   },
 ];
 
@@ -69,12 +55,12 @@ const steps = [
   {
     step: "02",
     title: "Organize as partidas",
-    desc: "Crie uma partida com data, local, valor e vagas. Os membros confirmam presença e pagam diretamente pelo app.",
+    desc: "Crie uma partida com data, local e vagas. Os membros confirmam presença diretamente pelo app.",
   },
   {
     step: "03",
     title: "Jogue sem burocracia",
-    desc: "Com o pagamento resolvido e os times sorteados, é só aparecer e jogar.",
+    desc: "Com os times sorteados, é só aparecer e jogar.",
   },
 ];
 
@@ -138,7 +124,7 @@ export default function LandingPage() {
 
           <p className="text-muted-foreground mx-auto mb-10 max-w-2xl text-lg leading-relaxed md:text-xl">
             Arena Hub reúne tudo em um lugar: confirmações de presença,
-            pagamentos automáticos, sorteio de times e notificações para todos.
+            sorteio de times e notificações para todos.
           </p>
 
           <div className="flex flex-col justify-center gap-3 sm:flex-row">
@@ -230,94 +216,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Destaque de pagamentos ─────────────────────────────────────── */}
-      <section className="border-border/60 border-y bg-muted/30 px-4 py-24">
-        <div className="container mx-auto max-w-5xl">
-          <div className="grid items-center gap-12 md:grid-cols-2">
-            <div>
-              <div className="bg-primary/10 border-primary/20 text-primary mb-5 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-medium">
-                <ShieldCheckIcon className="size-3.5" />
-                Powered by Stripe
-              </div>
-              <h2 className="text-foreground mb-4 text-4xl font-bold leading-tight md:text-5xl">
-                Pagamentos sem dor de cabeça
-              </h2>
-              <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
-                Cada jogador paga a sua parte diretamente pelo app. Sem fiado,
-                sem transferência manual, sem confusão.
-              </p>
-
-              <ul className="space-y-3">
-                {[
-                  "Cobrança por partida via cartão de crédito",
-                  "Cartões salvos para pagamento com 1 clique",
-                  "Plano de assinatura mensal para isenção por partida",
-                  "Histórico completo de pagamentos",
-                  "Cancelamento e reembolso gerenciados automaticamente",
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-3">
-                    <div className="bg-primary/15 mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full">
-                      <CheckIcon className="text-primary size-3" />
-                    </div>
-                    <span className="text-muted-foreground text-sm">
-                      {item}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="bg-card border-border/60 rounded-3xl border p-8 shadow-sm">
-              <div className="mb-6 flex items-center justify-between">
-                <span className="text-foreground font-semibold">
-                  Resumo da partida
-                </span>
-                <span className="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium">
-                  Confirmada
-                </span>
-              </div>
-
-              <div className="space-y-3">
-                {[
-                  { label: "Data", value: "Sáb, 05 Abr · 20h" },
-                  { label: "Local", value: "Quadra Central" },
-                  { label: "Jogadores confirmados", value: "12 / 14" },
-                  { label: "Valor por jogador", value: "R$ 25,00" },
-                ].map((row) => (
-                  <div
-                    key={row.label}
-                    className="flex items-center justify-between"
-                  >
-                    <span className="text-muted-foreground text-sm">
-                      {row.label}
-                    </span>
-                    <span className="text-foreground text-sm font-medium">
-                      {row.value}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="border-border/60 mt-6 border-t pt-5">
-                <div className="mb-4 flex items-center justify-between">
-                  <span className="text-muted-foreground text-sm">
-                    Seu pagamento
-                  </span>
-                  <span className="text-primary font-semibold">
-                    R$ 25,00 — Pago
-                  </span>
-                </div>
-                <div className="bg-primary/10 border-primary/20 flex items-center gap-2 rounded-xl border px-4 py-3">
-                  <SparklesIcon className="text-primary size-4 shrink-0" />
-                  <span className="text-muted-foreground text-xs">
-                    Assinante mensal — isento de cobrança por partida
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Seção removida */}
 
       {/* ── Beta CTA ───────────────────────────────────────────────────── */}
       <section className="px-4 py-24">

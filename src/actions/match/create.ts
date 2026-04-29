@@ -20,7 +20,6 @@ export const createMatch = actionClient
   .inputSchema(
     createMatchSchema.extend({
       organizationCode: z.string().optional(),
-      totalPriceCents: z.number().optional(),
     }),
   )
   .action(async ({ parsedInput }) => {
@@ -34,7 +33,7 @@ export const createMatch = actionClient
       throw new Error("User not authenticated");
     }
 
-    const { organizationCode: code, totalPriceCents, totalPrice: _totalPrice, ...data } = parsedInput;
+    const { organizationCode: code, ...data } = parsedInput;
 
     if (!code) {
       throw new Error("Organization code is required");
@@ -62,10 +61,6 @@ export const createMatch = actionClient
         date: dateTimeUTC,
         time: dayjs(dateTimeUTC).format("HH:mm"),
         organizationId,
-        ...(totalPriceCents !== undefined && {
-          totalPriceCents,
-          isPaid: true,
-        }),
       })
       .onConflictDoNothing()
       .returning()
