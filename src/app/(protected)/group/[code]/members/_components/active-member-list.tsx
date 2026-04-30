@@ -156,7 +156,7 @@ export const ActiveMemberList = ({
           <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full @md:w-auto">
+                <Button variant="outline" className="flex-1 @md:w-auto">
                   <FilterIcon />
                   <span>
                     Filtros
@@ -199,7 +199,7 @@ export const ActiveMemberList = ({
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full @md:w-auto">
+                <Button variant="outline" className="flex-1 @md:w-auto">
                   <ArrowDownAZIcon />
                   <span>Ordenar</span>
                 </Button>
