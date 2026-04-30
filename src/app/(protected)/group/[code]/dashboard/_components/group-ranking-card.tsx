@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { getAvatarFallback } from "@/utils/avatar";
 import { CrownIcon, MedalIcon, TrophyIcon } from "lucide-react";
 
@@ -53,7 +54,14 @@ export function GroupRankingCard({ ranking }: { ranking: RankingItem[] }) {
                   <div className="flex min-w-0 items-center gap-2">
                     <div className="text-muted-foreground flex w-8 items-center justify-center text-sm font-semibold tabular-nums">
                       {TopIcon ? (
-                        <TopIcon className="text-primary h-4 w-4" />
+                        <TopIcon
+                          className={cn(
+                            "text-primary h-4 w-4",
+                            item.position === 1 && "text-gold",
+                            item.position === 2 && "text-silver",
+                            item.position === 3 && "text-bronze",
+                          )}
+                        />
                       ) : (
                         <span aria-label={`Posição ${item.position}`}>
                           {item.position}

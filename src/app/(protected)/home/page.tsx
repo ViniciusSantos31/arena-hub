@@ -38,7 +38,7 @@ export default async function HomePage() {
           </h2>
         </div>
 
-        <div className="grid gap-3 @md:grid-cols-2 @2xl:grid-cols-4">
+        <div className="grid gap-3 @md:grid-cols-2 @2xl:grid-cols-3">
           <ShortcutTile
             title="Criar grupo"
             description="Monte um novo grupo e convide a galera"
