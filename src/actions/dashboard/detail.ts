@@ -49,6 +49,7 @@ export const dashboardDetails = actionClient
       actualMonthMatchesCount,
       matchesCount,
       membersCount,
+      membersRequestedCount,
     ] = await Promise.all([
       await db.query.matchesTable
         .findMany({
@@ -81,6 +82,15 @@ export const dashboardDetails = actionClient
           where: (member, { eq }) => eq(member.organizationId, organizationId),
         })
         .then((members) => members.length),
+      await db.query.requestsTable
+        .findMany({
+          where: (requestsTable, { eq, and }) =>
+            and(
+              eq(requestsTable.organizationId, organizationId),
+              eq(requestsTable.status, "pending"),
+            ),
+        })
+        .then((requests) => requests.length),
     ]);
 
     const matchesCountDifference =
@@ -97,7 +107,8 @@ export const dashboardDetails = actionClient
       matchesCount,
       lastMonthMatchesCount,
       actualMonthMatchesCount,
-      matchesPercentageRate,
+      matchesPercentageRate: matchesPercentageRate.toFixed(2),
       membersCount,
+      membersRequestedCount,
     };
   });

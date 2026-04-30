@@ -8,12 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  ArrowRightIcon,
-  PlayIcon,
-  TrendingUpIcon,
-  UsersIcon,
-} from "lucide-react";
+import { ArrowRightIcon, PlayIcon, UsersIcon } from "lucide-react";
 import Link from "next/link";
 import { NextMatchCard } from "./_components/next-match-card";
 
@@ -75,7 +70,7 @@ export default async function GroupDashboardPage({
                 </div>
               </div>
             </div>
-            {!!details.data?.matchesPercentageRate && (
+            {/* {!!details.data?.matchesPercentageRate && (
               <div className="bg-primary/5 border-primary/10 mt-3 flex items-center gap-2 rounded-xl border p-3">
                 <TrendingUpIcon className="text-primary h-4 w-4 shrink-0" />
                 <span className="text-primary text-xs font-medium">
@@ -83,7 +78,7 @@ export default async function GroupDashboardPage({
                   anterior
                 </span>
               </div>
-            )}
+            )} */}
           </CardContent>
           <CardFooter className="border-t pt-3 @[26rem]/card:hidden">
             <Button
@@ -102,8 +97,6 @@ export default async function GroupDashboardPage({
       </section>
 
       <section className="flex h-fit w-full flex-1 flex-col gap-4">
-        {/* <MemberSubscriptionCard organizationCode={code} /> */}
-
         <Card className="border-border/60 @container/card w-full">
           <CardHeader className="border-b pb-4">
             <div className="flex items-center justify-between">
@@ -139,7 +132,9 @@ export default async function GroupDashboardPage({
                 </div>
               </div>
               <div className="bg-muted/40 rounded-xl p-4">
-                <div className="text-foreground text-2xl font-bold">0</div>
+                <div className="text-foreground text-2xl font-bold">
+                  {details.data?.membersRequestedCount ?? 0}
+                </div>
                 <div className="text-muted-foreground mt-0.5 text-xs">
                   Solicitações
                 </div>

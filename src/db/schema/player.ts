@@ -33,6 +33,7 @@ export const playersTable = pgTable("player", {
   removalReason: text("removal_reason"),
   bannedFromMatch: boolean("banned_from_match").notNull().default(false),
 
+  confirmedAt: timestamp("confirmed_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()

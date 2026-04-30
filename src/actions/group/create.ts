@@ -71,7 +71,7 @@ export const upsertGroup = actionClient
         logo: image,
         private: isPrivate ?? false,
         maxPlayers: maxPlayers ?? 10,
-        rules,
+        rules: rules ?? "",
         code: Math.random().toString(36).substring(2, 8).toUpperCase(),
         slug:
           name.toLowerCase().replace(/\s+/g, "-") + session.user.id.slice(0, 5),

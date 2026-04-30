@@ -11,13 +11,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { getAvatarFallback } from "@/utils/avatar";
+import { formatDate } from "@/utils/date";
+import { Status } from "@/utils/status";
 import {
   CheckIcon,
   LoaderIcon,
   MoreVerticalIcon,
   UserRoundXIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { RemovePlayerDialog } from "./remove-player-dialog";
 
 interface PlayerItemProps {
@@ -27,12 +29,14 @@ interface PlayerItemProps {
     image?: string | null;
     score?: number;
     confirmed?: boolean;
+    confirmedAt?: Date;
     userId?: string | null;
   };
   ref?: React.Ref<HTMLDivElement>;
   canModerate?: boolean;
   matchId?: string;
   organizationCode?: string;
+  matchStatus?: Status;
 }
 
 export const PlayerItem = ({
@@ -41,8 +45,20 @@ export const PlayerItem = ({
   canModerate,
   matchId,
   organizationCode,
+  matchStatus,
 }: PlayerItemProps) => {
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
+
+  const isAbleToRemovePlayer = useMemo(() => {
+    return (
+      canModerate &&
+      player.userId &&
+      matchId &&
+      organizationCode &&
+      (matchStatus === "open_registration" ||
+        matchStatus === "closed_registration")
+    );
+  }, [canModerate, player.userId, matchId, organizationCode, matchStatus]);
 
   return (
     <>
@@ -92,7 +108,13 @@ export const PlayerItem = ({
         </div>
 
         <div className="flex items-center gap-2">
-          {canModerate && player.userId && matchId && organizationCode && (
+          {player.confirmedAt && canModerate && (
+            <span className="text-muted-foreground text-xs font-medium">
+              Confirmou em{" "}
+              {formatDate(player.confirmedAt, "DD/MM/YYYY [às] HH:mm")}
+            </span>
+          )}
+          {isAbleToRemovePlayer && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button

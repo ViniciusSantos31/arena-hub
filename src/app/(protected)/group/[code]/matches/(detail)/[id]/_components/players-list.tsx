@@ -1,6 +1,7 @@
 import { CardContent } from "@/components/ui/card";
 import { useGuard } from "@/hooks/use-guard";
 import { useMatchPlayers } from "../_hooks";
+import { useMatch } from "../_hooks/useMatch";
 import { PlayerEmptyList } from "./player-empty-list";
 import { PlayerItem } from "./player-item";
 
@@ -11,6 +12,7 @@ interface PlayersListProps {
 
 export const PlayersList = ({ id, organizationCode }: PlayersListProps) => {
   const { data: players, isLoading } = useMatchPlayers(id);
+  const { data: match } = useMatch();
   const canModerate = useGuard({ action: ["match:update"] });
 
   if (isLoading) {
@@ -42,6 +44,7 @@ export const PlayersList = ({ id, organizationCode }: PlayersListProps) => {
           canModerate={canModerate}
           matchId={id}
           organizationCode={organizationCode}
+          matchStatus={match?.status}
         />
       ))}
     </CardContent>

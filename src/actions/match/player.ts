@@ -16,6 +16,7 @@ const buildReturnPlayer = (player: {
   matchId: string | null;
   createdAt: Date;
   updatedAt: Date;
+  confirmedAt: Date | null;
   teamId: number | null;
   memberId: string | null;
   user: {
@@ -34,6 +35,7 @@ const buildReturnPlayer = (player: {
     userId: player.userId,
     score: player.member?.score || 0,
     confirmed: player.confirmed,
+    confirmedAt: player.confirmedAt,
     waitingQueue: player.waitingQueue,
   };
 };
@@ -103,7 +105,7 @@ export const confirmMatchPresence = actionClient
 
     const player = await db
       .update(playersTable)
-      .set({ confirmed: true })
+      .set({ confirmed: true, confirmedAt: new Date() })
       .where(
         and(eq(playersTable.matchId, matchId), eq(playersTable.userId, userId)),
       )

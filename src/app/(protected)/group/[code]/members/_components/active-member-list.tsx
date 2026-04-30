@@ -14,6 +14,7 @@ export const ActiveMemberList = ({
   const { code } = useParams<{ code: string }>();
   const { data: members } = useQuery({
     queryKey: ["active-members", code],
+    enabled: !!code,
     initialData: serverMembers,
     placeholderData: keepPreviousData,
     queryFn: async () =>
