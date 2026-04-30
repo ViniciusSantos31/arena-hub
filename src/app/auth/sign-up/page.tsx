@@ -3,7 +3,7 @@ import { SignUpForm } from "./_components/sign-up-form";
 
 export default function SignUpPage() {
   return (
-    <AuthFormCard>
+    <AuthFormCard classNames={{ container: "items-center", card: "w-full" }}>
       <SignUpForm />
     </AuthFormCard>
   );

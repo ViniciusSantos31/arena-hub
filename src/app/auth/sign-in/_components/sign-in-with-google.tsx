@@ -40,21 +40,11 @@ export function SignInWithGoogle({
   return (
     <div className={cn("w-full p-6 md:p-8", className)} {...props}>
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col items-center space-y-2 text-center">
-          <h1 className="from-primary to-primary/70 bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent">
-            Arena Hub
-          </h1>
-          <p className="text-muted-foreground max-w-sm text-sm leading-relaxed text-balance">
-            Sua jornada no universo dos games começa aqui. Conecte-se e explore
-            um mundo de possibilidades.
-          </p>
-        </div>
-
         <Button
-          variant="outline"
+          variant="secondary"
           type="button"
           disabled={loading}
-          className="h-12 w-full transition-all duration-200 hover:scale-[1.02] hover:shadow-md"
+          className="hover:border-primary! hover:shadow-primary/10 h-12 w-full gap-2 border transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
           onClick={handleGoogleSignIn}
         >
           <svg

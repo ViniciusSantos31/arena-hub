@@ -219,4 +219,35 @@
     border-color: var(--color-border);
     scrollbar-color: var(--color-secondary-foreground) transparent;
   }
+
+  .landing-dots {
+    background-image: radial-gradient(
+      color-mix(in oklch, var(--foreground) 8%, transparent) 1px,
+      transparent 1px
+    );
+    background-size: 18px 18px;
+    background-position: 0 0;
+    mask-image: radial-gradient(circle at center, #000 55%, transparent 100%);
+  }
+
+  .landing-wash {
+    background-image:
+      radial-gradient(
+        600px circle at 20% 15%,
+        color-mix(in oklch, var(--primary) 22%, transparent),
+        transparent 60%
+      ),
+      radial-gradient(
+        700px circle at 80% 30%,
+        color-mix(in oklch, var(--primary) 14%, transparent),
+        transparent 55%
+      ),
+      radial-gradient(
+        800px circle at 55% 80%,
+        color-mix(in oklch, var(--accent) 18%, transparent),
+        transparent 60%
+      );
+    filter: blur(24px);
+    opacity: 0.9;
+  }
 }
