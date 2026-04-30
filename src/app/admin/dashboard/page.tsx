@@ -1,15 +1,25 @@
-import { adminResume } from "@/actions/admin/resume";
-import { getTutorialOverallStats } from "@/actions/admin/tutorial";
-import { RefreshDataButton } from "./_components/refresh-data-button";
-import { ResumeChart } from "./_components/resume-chart";
-import { TutorialProgressTable } from "./_components/tutorial-progress-table";
-import { UserTutorialChart } from "./_components/user-tutorial-chart";
+import { listAdminGroups } from "@/actions/admin/groups/list";
+import { adminOverview } from "@/actions/admin/overview";
+import { GroupAdminCard } from "@/app/admin/_componentes/groups/group-admin-card";
+import { MetricCard } from "@/app/admin/_components/metric-card";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  CheckCircleIcon,
+  LockIcon,
+  PlayIcon,
+  SwordsIcon,
+  UsersIcon,
+} from "lucide-react";
+import { OverviewActivityChart } from "./_components/overview-activity-chart";
+
+export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  const resume = await adminResume();
-  const tutorialStats = await getTutorialOverallStats();
+  const overview = await adminOverview();
+  const groups = await listAdminGroups();
 
-  if (resume.serverError && !resume.data) {
+  if (overview.serverError && !overview.data) {
     return (
       <div className="flex-1 items-center justify-center space-y-6 p-6">
         <h2 className="text-2xl font-semibold tracking-tight">
@@ -23,31 +33,93 @@ export default async function AdminDashboard() {
     );
   }
 
-  const data = resume.data?.resume.map((item) => ({
-    date: item.date,
-    users: item.users,
-    matches: item.matches,
-  }));
+  const data = overview.data;
+  const activeGroups = (groups.data?.groups ?? []).slice(0, 6);
 
   return (
     <div className="flex-1 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="ml-auto flex items-center space-x-2">
-          <RefreshDataButton />
+      <div className="grid gap-4 lg:grid-cols-5">
+        <div className="lg:col-span-3">
+          <OverviewActivityChart data={data?.activitySeries ?? []} />
         </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:col-span-2">
+          <MetricCard
+            title="Usuários"
+            value={data?.totals.users ?? 0}
+            description="Total cadastrados"
+            icon={UsersIcon}
+          />
+          <MetricCard
+            title="Grupos"
+            value={data?.totals.groups ?? 0}
+            description={`${data?.groups.public ?? 0} públicos · ${
+              data?.groups.private ?? 0
+            } privados`}
+            icon={LockIcon}
+          />
+          <MetricCard
+            title="Membros"
+            value={data?.totals.members ?? 0}
+            description="Vínculos em grupos"
+            icon={UsersIcon}
+          />
+          <MetricCard
+            title="Partidas"
+            value={data?.totals.matches ?? 0}
+            description="Total criadas"
+            icon={SwordsIcon}
+          />
+        </div>
+        <Card className="border-border/60 lg:col-span-full">
+          <CardHeader>
+            <CardTitle className="text-base">Status das partidas</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 pt-0">
+            <div className="flex flex-wrap gap-2 *:data-[slot=badge]:px-4 *:data-[slot=badge]:py-2">
+              <Badge className="gap-1" variant="secondary">
+                <PlayIcon className="h-3.5 w-3.5" />
+                Abertas {data?.matchesByStatus.open_registration ?? 0}
+              </Badge>
+              <Badge className="gap-1" variant="outline">
+                Agendadas {data?.matchesByStatus.scheduled ?? 0}
+              </Badge>
+              <Badge className="gap-1" variant="outline">
+                Inscrições fechadas{" "}
+                {data?.matchesByStatus.closed_registration ?? 0}
+              </Badge>
+              <Badge className="gap-1" variant="outline">
+                Times sorteados {data?.matchesByStatus.team_sorted ?? 0}
+              </Badge>
+              <Badge className="gap-1">
+                <CheckCircleIcon className="h-3.5 w-3.5" />
+                Concluídas {data?.matchesByStatus.completed ?? 0}
+              </Badge>
+              <Badge className="gap-1" variant="destructive">
+                Canceladas {data?.matchesByStatus.cancelled ?? 0}
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Status Overview */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-4 lg:grid-cols-5">
-        <div className="col-span-1 lg:col-span-3">
-          <ResumeChart data={data || []} />
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-semibold">Grupos mais ativos</h2>
+          <p className="text-muted-foreground text-xs">
+            Ordenado por última atividade
+          </p>
         </div>
-        <div className="col-span-1 md:col-span-2">
-          <UserTutorialChart data={tutorialStats.data} />
-        </div>
-        {/* <GroupsChart className="h-full md:col-span-2" /> */}
-        <TutorialProgressTable className="col-span-1 **:text-xs md:col-span-4 **:md:text-sm lg:col-span-full" />
+        {groups.serverError && !groups.data ? (
+          <div className="text-muted-foreground text-sm">
+            Não foi possível carregar os grupos.
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {activeGroups.map((g) => (
+              <GroupAdminCard key={g.id} group={g} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

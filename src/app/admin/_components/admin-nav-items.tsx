@@ -8,7 +8,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { LayoutDashboardIcon } from "lucide-react";
+import {
+  BookOpenIcon,
+  LayoutDashboardIcon,
+  UsersRoundIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -18,31 +22,21 @@ const adminNavItems = [
     href: "/admin/dashboard",
     icon: LayoutDashboardIcon,
   },
+  {
+    title: "Grupos",
+    href: "/admin/groups",
+    icon: UsersRoundIcon,
+  },
   // {
-  //   title: "Análise",
-  //   items: [
-  //     {
-  //       title: "Usuários",
-  //       href: "/admin/users",
-  //       icon: UsersIcon,
-  //     },
-  //     {
-  //       title: "Grupos",
-  //       href: "/admin/groups",
-  //       icon: UsersRoundIcon,
-  //     },
-  //     {
-  //       title: "Partidas",
-  //       href: "/admin/matches",
-  //       icon: SwordsIcon,
-  //     },
-  //     {
-  //       title: "Tutorial",
-  //       href: "/admin/tutorial-metrics",
-  //       icon: BookOpenIcon,
-  //     },
-  //   ],
+  //   title: "Partidas",
+  //   href: "/admin/matches",
+  //   icon: SwordsIcon,
   // },
+  {
+    title: "Tutorial",
+    href: "/admin/tutorial",
+    icon: BookOpenIcon,
+  },
 ];
 
 export function AdminNavItems() {
@@ -68,22 +62,7 @@ export function AdminNavItems() {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-              ) : null
-              // section.items?.map((item) => (
-              //   <SidebarMenuItem key={item.title}>
-              //     <SidebarMenuButton
-              //       asChild
-              //       isActive={pathname === item.href}
-              //       tooltip={item.title}
-              //     >
-              //       <Link href={item.href}>
-              //         <item.icon className="h-4 w-4" />
-              //         <span>{item.title}</span>
-              //       </Link>
-              //     </SidebarMenuButton>
-              //   </SidebarMenuItem>
-              // ))
-              }
+              ) : null}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
