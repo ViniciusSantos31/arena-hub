@@ -1,6 +1,7 @@
 "use client";
 
 import { listMembers } from "@/actions/member/list";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,6 +13,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Role, getRoleLabel } from "@/utils/role";
@@ -31,6 +39,44 @@ type SortBy = "matches" | "score";
 type SortDir = "desc" | "asc";
 
 const ROLE_OPTIONS: Role[] = ["owner", "admin", "member", "guest"];
+
+const EmptyMemberList = () => {
+  return (
+    <Empty className="h-full pb-0 md:pb-0">
+      <EmptyHeader>
+        <EmptyMedia>
+          <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:size-12 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:grayscale">
+            <Avatar>
+              <AvatarImage
+                src="https://github.com/gustavomenezesh.png"
+                alt="@gustavomenezesh"
+              />
+              <AvatarFallback>GM</AvatarFallback>
+            </Avatar>
+            <Avatar>
+              <AvatarImage
+                src="https://github.com/danhenriquex.png"
+                alt="@danhenriquex"
+              />
+              <AvatarFallback>DH</AvatarFallback>
+            </Avatar>
+            <Avatar>
+              <AvatarImage
+                src="https://github.com/viniciussantos31.png"
+                alt="@viniciussantos31"
+              />
+              <AvatarFallback>VS</AvatarFallback>
+            </Avatar>
+          </div>
+        </EmptyMedia>
+        <EmptyTitle>Não existem membros ativos com esses filtros</EmptyTitle>
+        <EmptyDescription>
+          Altere os filtros para encontrar membros ativos.
+        </EmptyDescription>
+      </EmptyHeader>
+    </Empty>
+  );
+};
 
 export const ActiveMemberList = ({
   members: serverMembers,
@@ -189,16 +235,16 @@ export const ActiveMemberList = ({
           </div>
         </div>
 
-        {hasActiveFilters && (
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-muted-foreground text-xs">
-              Mostrando {filteredAndSorted.length} de {members.length}
-            </p>
+        <div className="flex h-8 items-center justify-between gap-2">
+          <p className="text-muted-foreground text-xs">
+            Mostrando {filteredAndSorted.length} de {members.length}
+          </p>
+          {hasActiveFilters && (
             <Button variant="ghost" size="sm" onClick={clearFilters}>
               Limpar filtros
             </Button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {members.length === 0 ? (
@@ -207,7 +253,7 @@ export const ActiveMemberList = ({
         </div>
       ) : filteredAndSorted.length === 0 ? (
         <div className="text-muted-foreground flex flex-col items-center gap-3 py-8 text-center">
-          <span>Nenhum membro encontrado com os filtros atuais</span>
+          <EmptyMemberList />
           <Button variant="outline" onClick={clearFilters}>
             Limpar filtros
           </Button>
