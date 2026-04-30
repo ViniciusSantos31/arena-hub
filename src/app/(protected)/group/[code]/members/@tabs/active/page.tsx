@@ -11,7 +11,7 @@ export type Member = {
   image?: string | null;
   role?: Role;
   score?: number;
-  gamesPlayed?: number;
+  matches?: number;
 };
 
 export default async function MembersPage({
