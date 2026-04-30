@@ -1,15 +1,25 @@
 import { dashboardDetails } from "@/actions/dashboard/detail";
+import { dashboardRanking } from "@/actions/dashboard/ranking";
+import { getGroupDetails } from "@/actions/group/detail";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowRightIcon, PlayIcon, UsersIcon } from "lucide-react";
+import {
+  ArrowRightIcon,
+  GlobeIcon,
+  LockIcon,
+  PlayIcon,
+  UsersIcon,
+} from "lucide-react";
 import Link from "next/link";
+import { GroupRankingCard } from "./_components/group-ranking-card";
 import { NextMatchCard } from "./_components/next-match-card";
 
 export default async function GroupDashboardPage({
@@ -19,15 +29,79 @@ export default async function GroupDashboardPage({
 }) {
   const { code } = await params;
 
-  const details = await dashboardDetails({
-    organizationCode: code,
-  });
+  const [details, groupRes, rankingRes] = await Promise.all([
+    dashboardDetails({
+      organizationCode: code,
+    }),
+    getGroupDetails({ code }),
+    dashboardRanking({ organizationCode: code, limit: 10 }),
+  ]);
+
+  const group = groupRes.data;
+  const ranking = rankingRes.data ?? [];
   return (
     <main className="grid w-full gap-4 @2xl:grid-cols-2">
-      <section className="flex w-full flex-1 flex-col gap-4">
-        <NextMatchCard code={code} />
+      <NextMatchCard code={code} />
 
-        <Card className="border-border/60 @container/card w-full">
+      {group ? (
+        <section className="@2xl:col-span-2">
+          <Card className="border-border/60">
+            <CardHeader className="border-b pb-4">
+              <CardTitle className="flex items-center justify-between gap-2 text-sm font-semibold">
+                <span>Visão geral</span>
+                <span className="text-muted-foreground font-mono text-xs tracking-wide">
+                  {group.code}
+                </span>
+              </CardTitle>
+              <CardDescription className="mt-1">
+                {group.description ||
+                  "Resumo do grupo e atalhos para as principais áreas."}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="">
+              <div className="flex flex-wrap gap-2">
+                <span className="bg-muted/40 text-foreground inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium">
+                  {group.private ? (
+                    <LockIcon className="text-muted-foreground h-3.5 w-3.5" />
+                  ) : (
+                    <GlobeIcon className="text-muted-foreground h-3.5 w-3.5" />
+                  )}
+                  {group.private ? "Grupo privado" : "Grupo público"}
+                </span>
+                <span className="bg-muted/40 text-foreground inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium">
+                  <UsersIcon className="text-muted-foreground h-3.5 w-3.5" />
+                  Até {group.maxPlayers} jogadores
+                </span>
+              </div>
+            </CardContent>
+            <CardFooter className="border-t pt-3">
+              <div className="flex w-full flex-wrap gap-2">
+                <Button
+                  asChild
+                  size="sm"
+                  variant="outline"
+                  className="h-8 text-xs"
+                >
+                  <Link href={`/group/${code}/members`}>Ver membros</Link>
+                </Button>
+                <Button
+                  asChild
+                  size="sm"
+                  variant="outline"
+                  className="h-8 text-xs"
+                >
+                  <Link href={`/group/${code}/matches`}>Ver partidas</Link>
+                </Button>
+              </div>
+            </CardFooter>
+          </Card>
+        </section>
+      ) : null}
+
+      <GroupRankingCard ranking={ranking} />
+
+      <section className="flex min-h-[400px] w-full flex-1 flex-col gap-4">
+        <Card className="border-border/60 @container/card h-full w-full">
           <CardHeader className="border-b pb-4">
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2.5 text-sm font-semibold">
@@ -94,10 +168,7 @@ export default async function GroupDashboardPage({
             </Button>
           </CardFooter>
         </Card>
-      </section>
-
-      <section className="flex h-fit w-full flex-1 flex-col gap-4">
-        <Card className="border-border/60 @container/card w-full">
+        <Card className="border-border/60 @container/card h-full w-full">
           <CardHeader className="border-b pb-4">
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2.5 text-sm font-semibold">

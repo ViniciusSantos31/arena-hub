@@ -10,46 +10,40 @@ import { MatchCardLoading } from "../matches/_components/match-card";
 export default function GroupDashboardLoading() {
   return (
     <main className="grid w-full gap-4 @2xl:grid-cols-2">
-      <section className="flex w-full flex-wrap gap-4">
-        {/* Next Match Card Loading */}
+      {/* Next Match Card Loading */}
+      <div className="col-span-full animate-pulse">
         <MatchCardLoading />
+      </div>
 
-        {/* Matches Section Loading */}
-        <Card className="bg-card @container/card w-full border shadow-sm">
-          <CardHeader className="border-b pb-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Skeleton className="h-10 w-10 rounded-lg" />
-                <Skeleton className="h-5 w-40" />
-              </div>
-              <div className="hidden @[26rem]/card:flex">
-                <Skeleton className="h-10 w-28" />
-              </div>
+      {/* Matches Section Loading */}
+      <Card className="bg-card @container/card w-full border shadow-sm">
+        <CardHeader className="border-b pb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-10 w-10 rounded-lg" />
+              <Skeleton className="h-5 w-40" />
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-1">
-                <Skeleton className="h-9 w-12" />
-                <Skeleton className="h-4 w-28" />
-              </div>
-              <div className="space-y-1">
-                <Skeleton className="h-9 w-12" />
-                <Skeleton className="h-4 w-24" />
-              </div>
+            <div className="hidden @[26rem]/card:flex">
+              <Skeleton className="h-10 w-28" />
             </div>
-            <div className="bg-accent mt-6 rounded-lg p-3">
-              <div className="flex items-center gap-2">
-                <Skeleton className="h-4 w-4" />
-                <Skeleton className="h-4 w-64" />
-              </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-1">
+              <Skeleton className="h-9 w-12" />
+              <Skeleton className="h-4 w-28" />
             </div>
-          </CardContent>
-          <CardFooter className="flex border-t @[26rem]/card:hidden">
-            <Skeleton className="ml-auto h-10 w-28" />
-          </CardFooter>
-        </Card>
-      </section>
+            <div className="space-y-1">
+              <Skeleton className="h-9 w-12" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter className="flex border-t @[26rem]/card:hidden">
+          <Skeleton className="ml-auto h-10 w-28" />
+        </CardFooter>
+      </Card>
 
       <section className="flex h-fit w-full flex-1 flex-wrap gap-4">
         {/* Members Section Loading */}

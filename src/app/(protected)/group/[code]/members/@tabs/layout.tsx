@@ -9,7 +9,7 @@ const CustomTabsTrigger = (props: React.ComponentProps<typeof TabsTrigger>) => {
   return (
     <TabsTrigger
       {...props}
-      className="data-[state=active]:bg-background dark:data-[state=active]:bg-background data-[state=active]:border-primary data-[state=active]:text-primary border-b-primary data-[state=active]:border-b-primary dark:data-[state=active]:border-primary max-w-fit flex-1 rounded-none border-0 border-b-2 border-transparent px-8 text-center"
+      className="data-[state=active]:bg-background dark:data-[state=active]:bg-background data-[state=active]:border-primary data-[state=active]:text-primary border-b-primary data-[state=active]:border-b-primary dark:data-[state=active]:border-primary max-w-fit flex-1 rounded-none border-0 border-b-2 border-transparent px-5 text-center focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 sm:px-8"
     />
   );
 };
@@ -30,7 +30,10 @@ export default function GroupMembersParallelLayout({
       className="flex h-full gap-0 *:data-[slot=tabs-content]:px-4"
       defaultValue={segment}
     >
-      <TabsList className="bg-background sticky top-0 z-10 min-h-12 w-full justify-start rounded-none border-b p-0">
+      <TabsList
+        aria-label="Abas de membros"
+        className="bg-background sticky top-0 z-10 min-h-12 w-full justify-start overflow-x-auto rounded-none border-b p-0"
+      >
         <CustomTabsTrigger value="active" asChild>
           <Link href={"active"}>Ativos</Link>
         </CustomTabsTrigger>

@@ -1,6 +1,5 @@
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -45,9 +44,12 @@ export const MatchCard = ({ match }: MatchCardProps) => {
                 <SportIcon className="text-primary h-5 w-5" />
               </div>
               <div className="min-w-0 flex-1">
-                <CardTitle className="truncate text-base">{match.title}</CardTitle>
+                <CardTitle className="truncate text-base">
+                  {match.title}
+                </CardTitle>
                 <CardDescription className="mt-0.5 text-xs">
-                  {getSportLabelById(match.sport)} · {getCategoryLabelById(match.category)}
+                  {getSportLabelById(match.sport)} ·{" "}
+                  {getCategoryLabelById(match.category)}
                 </CardDescription>
               </div>
             </div>
@@ -55,7 +57,10 @@ export const MatchCard = ({ match }: MatchCardProps) => {
           </div>
           <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
             <span>
-              {formatDate(match.date, "dddd[,] DD [de] MMM [de] YYYY [•] HH[:]mm")}
+              {formatDate(
+                match.date,
+                "dddd[,] DD [de] MMM [de] YYYY [•] HH[:]mm",
+              )}
             </span>
           </div>
         </CardHeader>
