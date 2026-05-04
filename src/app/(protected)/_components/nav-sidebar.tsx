@@ -132,7 +132,7 @@ export function NavSidebar({
                       height={768}
                       className={cn(
                         "size-6 rounded-sm object-cover",
-                        !open && !isMobile && "size-8 rounded-full",
+                        !open && !isMobile && "size-8 rounded-lg",
                         currentPath.startsWith(item.url) &&
                           !open &&
                           !isMobile &&

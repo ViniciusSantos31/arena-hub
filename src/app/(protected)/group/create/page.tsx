@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { InputField } from "@/components/ui/input/field";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
+import { TextareaField } from "@/components/ui/textarea/field";
 import { UploadInput } from "@/components/upload-input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown, ChevronUp, Loader2Icon } from "lucide-react";
@@ -102,12 +102,24 @@ export default function CreateGroupPage() {
                     <div className="flex w-full flex-1">
                       <Input
                         {...field}
+                        id="maxPlayers"
                         type="number"
                         min="2"
                         max="100"
                         placeholder="10"
                         className="w-full rounded-r-none"
-                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        onChange={(e) => {
+                          const value = Number(e.target.value);
+                          if (value < 2) {
+                            e.target.value = "2";
+                            return;
+                          }
+                          if (value > 100) {
+                            e.target.value = "100";
+                            return;
+                          }
+                          field.onChange(value);
+                        }}
                       />
                       <div className="flex max-h-full flex-col">
                         <Button
@@ -161,35 +173,20 @@ export default function CreateGroupPage() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="description">Descrição</Label>
-              <Controller
-                name="description"
-                control={methods.control}
-                render={({ field }) => (
-                  <Textarea
-                    {...field}
-                    maxLength={500}
-                    placeholder="Descreva seu grupo..."
-                    className="min-h-[120px] resize-none"
-                  />
-                )}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="rules">Regras (opcional)</Label>
-              <Controller
-                name="rules"
-                control={methods.control}
-                render={({ field }) => (
-                  <Textarea
-                    {...field}
-                    placeholder="Descreva as regras do seu grupo..."
-                    className="min-h-[120px] resize-none"
-                  />
-                )}
-              />
-            </div>
+            <TextareaField
+              name="description"
+              label="Descrição"
+              maxLength={500}
+              placeholder="Descreva seu grupo..."
+              className="min-h-[120px] resize-none"
+            />
+            <TextareaField
+              name="rules"
+              label="Regras (opcional)"
+              maxLength={500}
+              placeholder="Descreva as regras do seu grupo..."
+              className="min-h-[120px] resize-none"
+            />
           </div>
           <GroupFeedCardPreview
             methods={methods}
@@ -200,7 +197,7 @@ export default function CreateGroupPage() {
           <footer className="mt-6">
             <Button
               type="submit"
-              disabled={!methods.formState.isValid || !image || isCreating}
+              // disabled={!methods.formState.isValid || !image || isCreating}
               className="w-full"
             >
               Criar grupo

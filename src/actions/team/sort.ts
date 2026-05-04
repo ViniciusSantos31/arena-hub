@@ -56,8 +56,6 @@ export const sortTeams = actionClient
       matchId,
     }).then((res) => res.data);
 
-    console.log("Players fetched for sorting:", players);
-
     const matchMaxPlayers = await db
       .select()
       .from(matchesTable)
@@ -75,18 +73,6 @@ export const sortTeams = actionClient
     }
 
     const finalPlayers = getFinalPlayerList(players).slice(0, matchMaxPlayers);
-
-    // if (finalPlayers.length % nTeams !== 0) {
-    //   return {
-    //     teams: [] as Team[],
-    //     reserves: finalPlayers.map((player) => ({
-    //       id: player.id,
-    //       name: player.name,
-    //       score: player.score ?? 0,
-    //       confirmed: player.confirmed,
-    //     })),
-    //   };
-    // }
 
     const playersPerTeam = Math.floor(finalPlayers.length / nTeams);
     const playersSortedByScore = [...finalPlayers].sort(
@@ -128,17 +114,6 @@ export const sortTeams = actionClient
 
       pickedTeam.score += player.score ?? 0;
     }
-
-    // await Promise.all([
-    //   ...teams.map(async (team) => {
-    //     for (const player of team.players) {
-    //       await db
-    //         .update(playersTable)
-    //         .set({ teamId: team.team })
-    //         .where(eq(playersTable.id, player.id));
-    //     }
-    //   }),
-    // ]);
 
     return {
       teams: teams.map((team) => ({

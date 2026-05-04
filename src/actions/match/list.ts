@@ -75,7 +75,7 @@ export const listMatches = actionClient
 
     const response = await db.query.matchesTable.findMany({
       where: (_, operators) => buildFilters(matchesTable, operators),
-      orderBy: (matchesTable, { desc }) => [desc(matchesTable.date)],
+      orderBy: (matchesTable, { asc }) => [asc(matchesTable.date)],
       with: {
         players: {
           with: {

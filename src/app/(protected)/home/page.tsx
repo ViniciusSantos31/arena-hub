@@ -48,7 +48,7 @@ export default async function HomePage() {
           />
           <ShortcutTile
             title="Explorar grupos"
-            description="Descubra grupos públicos e participe"
+            description="Descubra grupos públicos e participe de partidas"
             icon="search"
             href="/feed"
             accent="violet"
