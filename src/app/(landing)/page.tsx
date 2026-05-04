@@ -1,4 +1,3 @@
-import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
 import {
   BellIcon,
@@ -66,50 +65,14 @@ const steps = [
 
 export default function LandingPage() {
   return (
-    <div className="bg-background text-foreground relative h-full min-h-screen overflow-y-scroll scroll-smooth">
-      {/* Background decorativo */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="landing-wash absolute inset-0" />
-        <div className="landing-dots absolute inset-0 opacity-70" />
-        <div className="from-background via-background/60 to-background absolute inset-0 bg-linear-to-b" />
-      </div>
-      {/* ── Header ─────────────────────────────────────────────────────── */}
-      <header className="border-border/60 bg-background/80 sticky top-0 z-50 border-b backdrop-blur-md">
-        <nav className="container mx-auto flex items-center justify-between px-4 py-4">
-          <div className="from-primary to-primary/70 bg-linear-to-r bg-clip-text text-xl font-bold text-transparent">
-            Arena Hub
-          </div>
-
-          <div className="hidden items-center gap-8 md:flex">
-            <Link
-              href="#como-funciona"
-              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-            >
-              Como funciona
-            </Link>
-            <Link
-              href="#recursos"
-              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-            >
-              Recursos
-            </Link>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Button asChild size="sm">
-              <Link href="/auth/sign-in">Entrar</Link>
-            </Button>
-            <ModeToggle />
-          </div>
-        </nav>
-      </header>
-
-      {/* ── Hero ───────────────────────────────────────────────────────── */}
+    <>
       <section className="relative overflow-hidden px-4 py-28 md:py-36">
-        <div className="pointer-events-none absolute inset-0">
+        {/* <div className="pointer-events-none absolute inset-0">
           <div className="bg-primary/8 absolute top-0 left-1/3 h-[500px] w-[500px] -translate-x-1/2 rounded-full blur-3xl" />
           <div className="bg-primary/6 absolute right-1/4 bottom-0 h-[400px] w-[400px] rounded-full blur-3xl" />
-        </div>
+        </div> */}
+        <div className="from-background absolute inset-0 bg-linear-to-r bg-[radial-gradient(#dedede_1px,transparent_1px)] to-transparent bg-size-[16px_16px] dark:bg-[radial-gradient(#1c1c1c_1px,transparent_1px)]"></div>
+        <div className="from-background via-background/50 to-background/0 absolute inset-0 bg-radial blur-3xl"></div>
 
         <div className="relative container mx-auto max-w-4xl text-center">
           <div className="bg-primary/10 border-primary/20 text-primary mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium">
@@ -140,17 +103,12 @@ export default function LandingPage() {
               size="lg"
               className="h-12 px-8 text-base"
             >
-              <Link href="#como-funciona">Ver como funciona</Link>
+              <Link href="/#como-funciona">Ver como funciona</Link>
             </Button>
           </div>
-
-          <p className="text-muted-foreground mt-4 text-sm">
-            Tudo em um lugar: presenças, times e avisos.
-          </p>
         </div>
       </section>
 
-      {/* ── Como funciona ──────────────────────────────────────────────── */}
       <section
         id="como-funciona"
         className="border-border/60 bg-muted/20 border-y px-4 py-24"
@@ -171,7 +129,7 @@ export default function LandingPage() {
                 key={item.step}
                 className="border-border/60 bg-card/40 relative rounded-2xl border p-7 backdrop-blur-sm"
               >
-                <div className="text-primary/25 mb-4 text-6xl leading-none font-bold">
+                <div className="bg-primary/10 text-primary group-hover:bg-primary/15 mb-4 flex w-fit items-center justify-center rounded-xl p-4 text-4xl font-black transition-colors">
                   {item.step}
                 </div>
                 <h3 className="text-foreground mb-2 text-xl font-semibold">
@@ -186,7 +144,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Recursos ───────────────────────────────────────────────────── */}
       <section id="recursos" className="px-4 py-24">
         <div className="container mx-auto max-w-6xl">
           <div className="mb-14 text-center">
@@ -198,13 +155,14 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {/* <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"> */}
+          <div className="flex flex-wrap justify-center gap-5">
             {features.map((feature) => {
               const Icon = feature.icon;
               return (
                 <div
                   key={feature.title}
-                  className="bg-card/50 border-border/60 hover:border-primary/30 hover:bg-card/70 group hover:shadow-primary/5 rounded-2xl border p-6 backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+                  className="bg-card/50 border-border/60 hover:border-primary/30 hover:bg-card/70 group hover:shadow-primary/5 w-full rounded-2xl border p-6 backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg md:max-w-xs"
                 >
                   <div className="bg-primary/10 group-hover:bg-primary/15 mb-4 flex h-10 w-10 items-center justify-center rounded-xl transition-colors">
                     <Icon className="text-primary size-5" />
@@ -222,9 +180,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Seção removida */}
-
-      {/* ── Beta CTA ───────────────────────────────────────────────────── */}
       <section className="bg-muted/20 border-t px-4 py-24">
         <div className="container mx-auto max-w-3xl text-center">
           <div className="bg-primary/10 border-primary/20 mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium">
@@ -250,41 +205,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
-      {/* ── Footer ─────────────────────────────────────────────────────── */}
-      <footer className="border-border/60 border-t px-4 py-10">
-        <div className="container mx-auto flex flex-col items-center justify-between gap-6 md:flex-row">
-          <div className="from-primary to-primary/70 bg-linear-to-r bg-clip-text text-lg font-bold text-transparent">
-            Arena Hub
-          </div>
-
-          <div className="flex items-center gap-8">
-            <Link
-              href="#como-funciona"
-              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-            >
-              Como funciona
-            </Link>
-            <Link
-              href="#recursos"
-              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-            >
-              Recursos
-            </Link>
-            <Link
-              href="https://forms.gle/3fdBhX9aRTDskp4eA"
-              target="_blank"
-              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-            >
-              Suporte
-            </Link>
-          </div>
-
-          <p className="text-muted-foreground text-sm">
-            © 2026 Arena Hub. Todos os direitos reservados.
-          </p>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 }
