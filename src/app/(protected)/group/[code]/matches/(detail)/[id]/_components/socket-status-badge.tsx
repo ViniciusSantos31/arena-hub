@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { cn } from "@/lib/utils";
-import { RotateCwIcon, WifiIcon, WifiOffIcon } from "lucide-react";
+import { RotateCwIcon } from "lucide-react";
 
 export const SocketStatusBadge = () => {
   const { isConnected, isConnecting, reconnect } = useWebSocket();
@@ -11,18 +11,20 @@ export const SocketStatusBadge = () => {
         <>
           <div className="bg-primary size-1.5 rounded-full" />
           <span className="text-primary font-medium">Ao vivo</span>
-          <span className="text-muted-foreground">· atualizações em tempo real</span>
+          <span className="text-muted-foreground before:mr-1.5 before:content-['·']">
+            atualizações em tempo real
+          </span>
         </>
       ) : (
         <>
           <div
             className={cn(
-              "size-1.5 rounded-full bg-destructive",
+              "bg-destructive size-1.5 rounded-full",
               isConnecting && "animate-pulse bg-yellow-400",
             )}
           />
           {isConnecting ? (
-            <span className="text-yellow-500 font-medium">Conectando...</span>
+            <span className="font-medium text-yellow-500">Conectando...</span>
           ) : (
             <span className="text-destructive font-medium">Desconectado</span>
           )}
@@ -36,7 +38,9 @@ export const SocketStatusBadge = () => {
             disabled={isConnecting}
             className="ml-auto h-6 w-6"
           >
-            <RotateCwIcon className={cn("size-3", isConnecting && "animate-spin")} />
+            <RotateCwIcon
+              className={cn("size-3", isConnecting && "animate-spin")}
+            />
           </Button>
         </>
       )}

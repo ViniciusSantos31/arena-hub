@@ -214,6 +214,18 @@
       box-shadow: 0 0 5px var(--color-amber-300);
     }
   }
+
+  @keyframes spinner-glow {
+    0%,
+    100% {
+      opacity: 0.35;
+      transform: scale(0.9);
+    }
+    50% {
+      opacity: 0.65;
+      transform: scale(1.1);
+    }
+  }
 }
 
 @layer utilities {

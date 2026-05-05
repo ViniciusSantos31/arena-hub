@@ -1,9 +1,5 @@
-import { Loader2Icon } from "lucide-react";
+import { LoadingPage } from "@/components/loading-page";
 
 export default function CreateGroupLoading() {
-  return (
-    <main className="flex h-full w-full flex-col items-center justify-center">
-      <Loader2Icon className="size-18 animate-spin" />
-    </main>
-  );
+  return <LoadingPage />;
 }

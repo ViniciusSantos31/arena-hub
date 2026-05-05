@@ -2,6 +2,7 @@
 
 import { upsertGroup } from "@/actions/group/create";
 import { uploadImage } from "@/actions/image/upload";
+import { LoadingPage } from "@/components/loading-page";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -11,7 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { TextareaField } from "@/components/ui/textarea/field";
 import { UploadInput } from "@/components/upload-input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronDown, ChevronUp, Loader2Icon } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -63,12 +64,7 @@ export default function CreateGroupPage() {
   ]);
 
   if (isCreating && createGroupAction.hasSucceeded) {
-    return (
-      <main className="flex h-full w-full flex-col items-center justify-center">
-        <Loader2Icon className="size-11 animate-spin" />
-        <span>Criando grupo...</span>
-      </main>
-    );
+    return <LoadingPage label="Criando grupo..." />;
   }
 
   return (

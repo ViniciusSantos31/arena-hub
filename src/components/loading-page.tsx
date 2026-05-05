@@ -1,9 +1,18 @@
-import { Loader2Icon } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 
-export const LoadingPage = () => {
+type LoadingPageProps = {
+  label?: string;
+};
+
+export const LoadingPage = ({ label }: LoadingPageProps = {}) => {
   return (
-    <main className="flex h-full w-full flex-col items-center justify-center">
-      <Loader2Icon className="size-18 animate-spin" />
+    <main className="flex h-full w-full flex-col items-center justify-center gap-4 px-8">
+      <Spinner size="xl" label={label} />
+      {label ? (
+        <span className="text-muted-foreground animate-pulse text-center text-sm font-medium">
+          {label}
+        </span>
+      ) : null}
     </main>
   );
 };
