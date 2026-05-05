@@ -9,6 +9,9 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { NavAdmin } from "./nav-admin";
 import { NavGroups } from "./nav-groups";
 import { NavHome } from "./nav-home";
 import { NavLogout } from "./nav-logout";
@@ -18,6 +21,10 @@ import { NavSettings } from "./nav-settings";
 export async function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
   return (
     <Sidebar collapsible="icon" variant="inset" {...props}>
       <SidebarHeader>
@@ -30,6 +37,7 @@ export async function AppSidebar({
       </SidebarContent>
       <SidebarRail />
       <SidebarFooter className="p-0">
+        {session?.user?.email === process.env.ADMIN_EMAIL && <NavAdmin />}
         <NavSettings />
         <Separator />
         <NavLogout />
