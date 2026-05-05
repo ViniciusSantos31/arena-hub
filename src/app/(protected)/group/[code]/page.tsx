@@ -14,5 +14,5 @@ export default async function GroupPage({ params }: GroupPageProps) {
     return <LoadingGroupPage />;
   }
 
-  return redirect(`/group/${code}/dashboard`);
+  return redirect(`/group/${code}/overview`);
 }

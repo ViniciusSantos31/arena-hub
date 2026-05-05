@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/app/(protected)/_components/app-sidebar";
+import { FeedbackPopupGate } from "@/components/feedback/feedback-popup-gate";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { cookies } from "next/headers";
@@ -23,6 +24,7 @@ export default async function ProtectedLayout({
       <ReactQueryDevtools />
       <SidebarInset className="flex">{children}</SidebarInset>
       <PushNotificationRegister />
+      <FeedbackPopupGate />
     </SidebarProvider>
   );
 }

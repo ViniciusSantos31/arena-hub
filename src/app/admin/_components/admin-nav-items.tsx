@@ -11,6 +11,7 @@ import {
 import {
   BookOpenIcon,
   LayoutDashboardIcon,
+  MessageSquareIcon,
   UsersRoundIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -26,6 +27,11 @@ const adminNavItems = [
     title: "Grupos",
     href: "/admin/groups",
     icon: UsersRoundIcon,
+  },
+  {
+    title: "Feedbacks",
+    href: "/admin/feedbacks",
+    icon: MessageSquareIcon,
   },
   // {
   //   title: "Partidas",
