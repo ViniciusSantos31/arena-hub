@@ -104,12 +104,18 @@ export const PlayerItem = ({
                 {player.score} pts
               </span>
             )}
+            {player.confirmedAt && canModerate && (
+              <span className="text-muted-foreground text-xs font-medium @lg:hidden">
+                Confirmou em{" "}
+                {formatDate(player.confirmedAt, "DD/MM/YYYY [às] HH:mm")}
+              </span>
+            )}
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           {player.confirmedAt && canModerate && (
-            <span className="text-muted-foreground text-xs font-medium">
+            <span className="text-muted-foreground hidden text-xs font-medium @lg:block">
               Confirmou em{" "}
               {formatDate(player.confirmedAt, "DD/MM/YYYY [às] HH:mm")}
             </span>
