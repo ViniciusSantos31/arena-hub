@@ -90,6 +90,7 @@ export const createMatch = actionClient
     // Notifica todos os membros sobre a nova partida
     await notifyNewMatch({
       groupName: organization.name,
+      groupImageUrl: organization.logo ?? "",
       matchDate,
       groupCode: organization.code,
       matchId: match.id,

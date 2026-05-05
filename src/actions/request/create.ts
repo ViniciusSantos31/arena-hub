@@ -78,6 +78,7 @@ export const createJoinRequest = actionClient
 
     await notifyNewJoinRequest({
       groupName: organization.name,
+      groupImageUrl: organization.logo ?? "",
       requesterName: session.user.name ?? "Alguém",
       groupCode: organization.code,
       moderatorIds,

@@ -145,21 +145,22 @@ async function sendToUsers(userIds: string[], payload: NotificationPayload) {
 
 // 1. Nova solicitação de ingresso em grupo
 export async function notifyNewJoinRequest({
-  groupName,
+  groupImageUrl,
   requesterName,
   groupCode,
   moderatorIds,
 }: {
   groupName: string;
+  groupImageUrl: string;
   requesterName: string;
   groupCode: string;
   moderatorIds: string[];
 }) {
   await sendToUsers(moderatorIds, {
     title: "📋 Nova solicitação de ingresso",
-    body: `${requesterName} quer entrar no grupo "${groupName}"`,
+    body: `${requesterName} quer fazer parte do grupo.`,
+    badge: groupImageUrl ?? "/icons/icon-192x192.png",
     icon: "/icons/icon-192x192.png",
-    badge: "/icons/icon-192x192.png",
     url: `/group/${groupCode}/members/request`,
     tag: `join-request-${groupCode}`,
   });
@@ -168,12 +169,14 @@ export async function notifyNewJoinRequest({
 // 2. Nova partida criada no grupo
 export async function notifyNewMatch({
   groupName,
-  matchDate,
+  groupImageUrl,
   groupCode,
   matchId,
   memberIds,
 }: {
   groupName: string;
+  groupImageUrl: string;
+
   matchDate: string;
   groupCode: string;
   matchId: string;
@@ -181,9 +184,9 @@ export async function notifyNewMatch({
 }) {
   await sendToUsers(memberIds, {
     title: "⚽ Nova partida criada!",
-    body: `${groupName} tem uma nova partida: ${matchDate}`,
+    body: `${groupName} criou uma nova partida`,
     icon: "/icons/icon-192x192.png",
-    badge: "/icons/icon-192x192.png",
+    badge: groupImageUrl ?? "/icons/icon-192x192.png",
     url: `/group/${groupCode}/matches/${matchId}`,
     tag: `new-match-${matchId}`,
   });
@@ -191,14 +194,15 @@ export async function notifyNewMatch({
 
 // 3. Atualização de status da partida
 export async function notifyMatchStatusUpdate({
-  groupName,
-  matchDate,
+  groupImageUrl,
   newStatus,
   groupCode,
   matchId,
   participantIds,
 }: {
   groupName: string;
+  groupImageUrl: string;
+
   matchDate: string;
   newStatus: "team_sorted" | "cancelled" | "closed_registration" | "completed";
   groupCode: string;
@@ -206,19 +210,19 @@ export async function notifyMatchStatusUpdate({
   participantIds: string[];
 }) {
   const statusMessages = {
-    cancelled: { emoji: "❌", text: "foi cancelada" },
-    closed_registration: { emoji: "🔒", text: "teve as inscrições fechadas" },
-    team_sorted: { emoji: "🎲", text: "teve os times sorteados" },
-    completed: { emoji: "✅", text: "foi concluída" },
+    cancelled: { emoji: "❌", text: "cancelada" },
+    closed_registration: { emoji: "🔒", text: "com inscrições fechadas" },
+    team_sorted: { emoji: "🎲", text: "com times sorteados" },
+    completed: { emoji: "✅", text: "concluída" },
   };
 
   const { emoji, text } = statusMessages[newStatus];
 
   await sendToUsers(participantIds, {
     title: `${emoji} Partida ${text}`,
-    body: `A partida de ${matchDate} no ${groupName} ${text}`,
+    body: `Clique para ver mais detalhes`,
     icon: "/icons/icon-192x192.png",
-    badge: "/icons/icon-192x192.png",
+    badge: groupImageUrl ?? "/icons/icon-192x192.png",
     url: `/group/${groupCode}/matches/${matchId}`,
     tag: `match-status-${matchId}`,
   });
@@ -226,13 +230,13 @@ export async function notifyMatchStatusUpdate({
 
 // 4. Sorteio de times realizado
 export async function notifyTeamDraw({
-  groupName,
-  matchDate,
+  groupImageUrl,
   groupCode,
   matchId,
   participantIds,
 }: {
   groupName: string;
+  groupImageUrl: string;
   matchDate: string;
   groupCode: string;
   matchId: string;
@@ -240,9 +244,9 @@ export async function notifyTeamDraw({
 }) {
   await sendToUsers(participantIds, {
     title: "🎲 Times sorteados!",
-    body: `Os times da partida de ${matchDate} no ${groupName} foram sorteados`,
+    body: `Clique para ver mais detalhes`,
     icon: "/icons/icon-192x192.png",
-    badge: "/icons/icon-192x192.png",
+    badge: groupImageUrl ?? "/icons/icon-192x192.png",
     url: `/group/${groupCode}/matches/${matchId}`,
     tag: `team-draw-${matchId}`,
   });

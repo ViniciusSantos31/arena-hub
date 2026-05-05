@@ -101,6 +101,7 @@ export const updateMatch = actionClient
 
     await notifyMatchStatusUpdate({
       groupName: organization.name,
+      groupImageUrl: organization.logo ?? "",
       matchDate,
       newStatus,
       groupCode: organization.code,

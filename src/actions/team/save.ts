@@ -85,6 +85,7 @@ export const saveTeamsConfig = actionClient
 
     await notifyTeamDraw({
       groupName: organization.name,
+      groupImageUrl: organization.logo ?? "",
       matchDate,
       groupCode: organization.code,
       matchId,
