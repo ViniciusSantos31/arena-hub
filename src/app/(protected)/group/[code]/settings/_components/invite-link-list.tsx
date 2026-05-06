@@ -136,7 +136,7 @@ export const InviteLinkList = () => {
         return (
           <div
             key={l.id}
-            className="border-border/60 flex h-16 flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center sm:justify-between"
+            className="border-border/60 flex min-h-16 flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
@@ -163,7 +163,7 @@ export const InviteLinkList = () => {
               ) : null}
             </div>
 
-            <div className="flex gap-2 sm:shrink-0">
+            <div className="flex flex-wrap gap-2 sm:shrink-0">
               <Button
                 type="button"
                 size="sm"
