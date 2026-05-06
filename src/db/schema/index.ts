@@ -7,6 +7,7 @@ import * as requests from "./request";
 import * as subscription from "./subscription";
 import * as tutorial from "./tutorial";
 import * as users from "./user";
+import * as inviteLinks from "./invite-link";
 
 export const schema = {
   ...users,
@@ -18,4 +19,5 @@ export const schema = {
   ...tutorial,
   ...requests,
   ...subscription,
+  ...inviteLinks,
 };

@@ -93,7 +93,7 @@ export function GroupRankingCard(props: DashboardRankingOutput) {
                 </div>
                 <li
                   key={me.id}
-                  className="bg-card border-primary/60 dark:shadow-primary/20 sticky bottom-8 z-10 flex items-center justify-between gap-3 overflow-clip rounded-xl border px-3 py-2 shadow-2xl transition-colors dark:shadow-xl"
+                  className="bg-card border-primary/60 dark:shadow-primary/20 sticky bottom-10 z-10 flex items-center justify-between gap-3 overflow-clip rounded-xl border px-3 py-2 shadow-2xl transition-colors dark:shadow-xl"
                 >
                   <div className="z-10 flex min-w-0 items-center gap-2">
                     <div className="text-muted-foreground flex w-8 items-center justify-center text-sm font-semibold tabular-nums">

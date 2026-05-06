@@ -2,12 +2,6 @@
 
 import { createFeedback } from "@/actions/feedback/create";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { TextareaField } from "@/components/ui/textarea/field";
 import { cn } from "@/lib/utils";
@@ -18,6 +12,7 @@ import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
+import { ResponsiveDialog } from "../responsive-dialog";
 
 const feedbackSchema = z.object({
   rating: z.number().int().min(1).max(5),
@@ -70,12 +65,12 @@ export function FeedbackDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Como está sendo sua experiência?</DialogTitle>
-        </DialogHeader>
-
+    <ResponsiveDialog
+      title="Como está sendo sua experiência?"
+      description="Ajude-nos a melhorar o nosso aplicativo avaliando a sua experiência."
+      open={open}
+      onOpenChange={onOpenChange}
+      content={
         <Form {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
@@ -145,7 +140,7 @@ export function FeedbackDialog({
             </div>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      }
+    />
   );
 }

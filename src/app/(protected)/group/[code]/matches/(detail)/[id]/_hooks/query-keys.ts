@@ -1,4 +1,3 @@
-// Query Keys para página Match Detail
 export const matchDetailQueryKeys = {
   all: ["match-detail"] as const,
   match: (matchId: string) =>

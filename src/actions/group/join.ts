@@ -34,6 +34,12 @@ export const joinGroupByCode = actionClient
       throw new Error("Organização não encontrada");
     }
 
+    if (org.data.private) {
+      throw new Error(
+        "Este grupo é privado. Solicite acesso ou use um link de convite.",
+      );
+    }
+
     await auth.api.addMember({
       headers: await headers(),
       body: {
@@ -71,6 +77,12 @@ export const joinGroup = actionClient
 
     if (!org.data) {
       throw new Error("Organização não encontrada");
+    }
+
+    if (org.data.private) {
+      throw new Error(
+        "Este grupo é privado. Solicite acesso ou use um link de convite.",
+      );
     }
 
     await auth.api.addMember({

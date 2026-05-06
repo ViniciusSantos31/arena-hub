@@ -10,6 +10,7 @@ import { matchesTable } from "./match";
 import { member } from "./member";
 import { requestsTable } from "./request";
 import { usersTable } from "./user";
+import { organizationInviteLink } from "./invite-link";
 
 export const sessionsTable = pgTable("session", {
   id: text("id").primaryKey(),
@@ -76,6 +77,7 @@ export const organizationsRelations = relations(organization, ({ many }) => ({
   matches: many(matchesTable),
   members: many(member),
   requests: many(requestsTable),
+  inviteLinks: many(organizationInviteLink),
 }));
 
 export const invitationsTable = pgTable("invitation", {

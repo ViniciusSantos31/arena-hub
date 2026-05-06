@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -16,6 +17,7 @@ interface SettingsSectionProps {
   description?: string;
   children: ReactNode;
   className?: string;
+  action?: ReactNode;
   variant?: "default" | "destructive";
 }
 
@@ -24,6 +26,7 @@ export function SettingsSection({
   description,
   children,
   className,
+  action,
   variant = "default",
 }: SettingsSectionProps) {
   return (
@@ -37,7 +40,10 @@ export function SettingsSection({
     >
       <CardHeader className="border-b pb-4">
         <CardTitle className="text-base font-semibold">{title}</CardTitle>
-        {description && <CardDescription className="text-sm">{description}</CardDescription>}
+        {description && (
+          <CardDescription className="text-sm">{description}</CardDescription>
+        )}
+        {action && <CardAction>{action}</CardAction>}
       </CardHeader>
       <CardContent className="space-y-4 pt-4">{children}</CardContent>
     </Card>
