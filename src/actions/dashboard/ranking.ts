@@ -91,6 +91,7 @@ export const dashboardRanking = actionClient
           joinedAt: m.createdAt,
         };
       })
+      .filter((m) => m.matches > 0)
       .sort((a, b) => {
         if (b.score !== a.score) return b.score - a.score;
         if (b.matches !== a.matches) return b.matches - a.matches;
@@ -102,4 +103,3 @@ export const dashboardRanking = actionClient
       position: index + 1,
     }));
   });
-
