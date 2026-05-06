@@ -38,7 +38,8 @@ export default async function GroupDashboardPage({
   ]);
 
   const group = groupRes.data;
-  const ranking = rankingRes.data ?? [];
+  const ranking = rankingRes.data?.ranking ?? [];
+
   return (
     <main className="grid w-full gap-4 @2xl:grid-cols-2">
       <NextMatchCard code={code} />
@@ -98,7 +99,11 @@ export default async function GroupDashboardPage({
         </section>
       ) : null}
 
-      <GroupRankingCard ranking={ranking} />
+      <GroupRankingCard
+        me={rankingRes.data?.me}
+        outOfRanking={rankingRes.data?.outOfRanking ?? false}
+        ranking={ranking}
+      />
 
       <section className="flex min-h-[400px] w-full flex-1 flex-col gap-4">
         <Card className="border-border/60 @container/card h-full w-full">

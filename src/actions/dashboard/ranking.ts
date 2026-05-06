@@ -10,6 +10,36 @@ import { headers } from "next/headers";
 import z from "zod/v4";
 import { getOrgIdByCode } from "../group/get-org-by-code";
 
+export type DashboardRankingOutput = {
+  ranking: {
+    position: number;
+    id: string;
+    userId: string;
+    name: string;
+    email: string;
+    image: string | null;
+    role: Role;
+    score: number;
+    matches: number;
+    joinedAt: Date;
+  }[];
+  me:
+    | {
+        position: number;
+        id?: string | undefined;
+        userId?: string | undefined;
+        name?: string | undefined;
+        email?: string | undefined;
+        image?: string | null | undefined;
+        role?: "member" | "admin" | "guest" | "owner" | undefined;
+        score?: number | undefined;
+        matches?: number | undefined;
+        joinedAt?: Date | undefined;
+      }
+    | undefined;
+  outOfRanking: boolean;
+};
+
 export const dashboardRanking = actionClient
   .inputSchema(
     z.object({
@@ -98,8 +128,26 @@ export const dashboardRanking = actionClient
         return a.joinedAt.getTime() - b.joinedAt.getTime();
       });
 
-    return (limit ? ranked.slice(0, limit) : ranked).map((item, index) => ({
-      ...item,
-      position: index + 1,
-    }));
+    const me = ranked.find((m) => m.userId === session.session.userId);
+    const position = me
+      ? ranked.findIndex((m) => m.userId === session.session.userId) + 1
+      : 0;
+
+    const outOfRanking = position && limit ? position > limit : false;
+
+    const output = (limit ? ranked.slice(0, limit) : ranked).map(
+      (item, index) => ({
+        ...item,
+        position: index + 1,
+      }),
+    );
+
+    return {
+      ranking: output,
+      me: {
+        ...me,
+        position,
+      },
+      outOfRanking,
+    };
   });
