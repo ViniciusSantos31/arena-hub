@@ -30,7 +30,7 @@ export default async function GroupSettingsPage({
   const canAccessSetting = can(membership, ["group:settings"]);
 
   if (!canAccessSetting) {
-    return redirect(`/group/${code}/dashboard`);
+    return redirect(`/group/${code}/overview`);
   }
 
   return <GroupSettingsForm group={group} userRole={membership.role as Role} />;

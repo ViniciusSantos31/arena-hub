@@ -16,7 +16,7 @@ export function GroupTile({
   isPrivate?: boolean;
 }) {
   return (
-    <Link href={`/group/${code}`} className="group outline-none">
+    <Link href={`/group/${code}/overview`} className="group outline-none">
       <Card className="border-border/60 hover:border-primary/50 hover:bg-primary/5 gap-0 py-0 transition-colors">
         <div className="flex items-center gap-3 p-4">
           <div

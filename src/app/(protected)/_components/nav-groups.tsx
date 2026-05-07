@@ -13,7 +13,7 @@ export async function NavGroups() {
       items={
         groups.map((group) => ({
           title: group?.name ?? "Grupo sem nome",
-          url: `/group/${group?.code}`,
+          url: `/group/${group?.code}/overview`,
           logo: group?.logo ?? undefined,
         })) ?? []
       }
