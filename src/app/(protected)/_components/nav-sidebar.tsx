@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { useSelectedLayoutSegments } from "next/navigation";
-import { ComponentProps } from "react";
+import { ComponentProps, useCallback } from "react";
 
 export function NavSidebar({
   title,
@@ -49,6 +49,22 @@ export function NavSidebar({
   const segments = useSelectedLayoutSegments();
 
   const currentPath = `/${segments.join("/")}`;
+
+  const isActive = useCallback(
+    (url: string) => {
+      const urlSegments = url.split("/").slice(1);
+      const isGroup = urlSegments[0] === "group";
+
+      if (isGroup) {
+        const currentSegments = segments.slice(0, 2).join("/");
+        const currentURL = urlSegments.slice(0, 2).join("/");
+
+        return currentSegments === currentURL;
+      }
+      return currentPath.startsWith(url);
+    },
+    [currentPath, segments],
+  );
 
   if (items.length === 0) return null;
 
@@ -110,7 +126,7 @@ export function NavSidebar({
               <SidebarMenuButton
                 asChild
                 tooltip={item.title}
-                isActive={currentPath.startsWith(item.url)}
+                isActive={isActive(item.url)}
                 className={cn(
                   item.logo &&
                     !open &&
@@ -133,7 +149,7 @@ export function NavSidebar({
                       className={cn(
                         "size-6 rounded-sm object-cover",
                         !open && !isMobile && "size-8 rounded-lg",
-                        currentPath.startsWith(item.url) &&
+                        isActive(item.url) &&
                           !open &&
                           !isMobile &&
                           "ring-primary ring-offset-sidebar ring-2 ring-offset-2",
