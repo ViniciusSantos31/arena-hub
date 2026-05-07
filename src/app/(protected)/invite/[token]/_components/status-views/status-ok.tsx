@@ -1,6 +1,5 @@
 import { consumeInviteLink } from "@/actions/invite-links/consume";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { getRoleLabel } from "@/utils/role";
 import { CheckCircle2Icon, SparklesIcon, UserCheckIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
@@ -47,23 +46,20 @@ export function InviteStatusOk({
           disabled={consumeAction.isExecuting}
           onClick={() => consumeAction.executeAsync({ token })}
           type="button"
-          className="ml-auto"
         >
           <CheckCircle2Icon />
           {consumeAction.isExecuting ? "Entrando..." : "Entrar no grupo"}
         </Button>
       }
     >
-      <div className="grid gap-3">
-        <Card className="border-border/60 bg-muted/20 gap-2 px-4 py-4 shadow-none">
-          <div className="text-muted-foreground flex items-center gap-2 text-xs">
-            <UserCheckIcon className="h-4 w-4" />
-            Você vai entrar como
-          </div>
-          <div className="text-sm font-semibold">
-            {getRoleLabel(invite.defaultRole)}
-          </div>
-        </Card>
+      <div className="border-primary/50 bg-muted/25 ring-border/40 shadow-primary/25 rounded-xl border px-4 py-3 text-left shadow-lg ring-1">
+        <div className="text-muted-foreground flex items-center gap-2 text-xs">
+          <UserCheckIcon className="h-4 w-4 shrink-0" />
+          Você vai entrar como
+        </div>
+        <div className="text-foreground mt-1 text-sm font-semibold">
+          {getRoleLabel(invite.defaultRole)}
+        </div>
       </div>
     </InviteCenteredShell>
   );

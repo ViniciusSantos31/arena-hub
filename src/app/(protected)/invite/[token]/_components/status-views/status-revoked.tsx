@@ -23,13 +23,9 @@ export function InviteStatusRevoked({
       title="Convite cancelado"
       description={`Esse link pra entrar em ${groupName} foi desativado. Se precisar, pede um convite novo pra quem organiza o grupo.`}
       footer={
-        <Button
-          className="ml-auto"
-          variant="secondary"
-          onClick={() => router.replace("/home")}
-        >
+        <Button variant="secondary" onClick={() => router.replace("/home")}>
           <HomeIcon />
-          Voltar
+          Ir para o início
         </Button>
       }
     >

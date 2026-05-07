@@ -24,15 +24,11 @@ export function InviteStatusExpired({
       icon={ClockIcon}
       iconClassName="text-muted-foreground"
       title="Convite expirou"
-      description={`Esse link pra entrar em "${groupName}" já passou da validade (expirou em ${formatDateTime(expiresAt)}). Pede um convite novo e cola com a galera.`}
+      description={`Esse link pra entrar no grupo "${groupName}" já passou da validade (expirou em ${formatDateTime(expiresAt)}). Pede um convite novo e cola com a galera.`}
       footer={
-        <Button
-          className="ml-auto"
-          variant="secondary"
-          onClick={() => router.replace("/home")}
-        >
+        <Button variant="secondary" onClick={() => router.replace("/home")}>
           <HomeIcon />
-          Voltar
+          Ir para o início
         </Button>
       }
     />

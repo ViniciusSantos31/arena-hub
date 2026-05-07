@@ -166,7 +166,6 @@ export const InviteLinkList = () => {
             <div className="flex flex-wrap gap-2 sm:shrink-0">
               <Button
                 type="button"
-                size="sm"
                 variant="ghost"
                 disabled={l.status === "revoked"}
                 onClick={() =>
@@ -179,7 +178,6 @@ export const InviteLinkList = () => {
 
               <Button
                 type="button"
-                size="sm"
                 variant="outline"
                 disabled={l.status === "revoked" || revokeAction.isExecuting}
                 onClick={() => handleRevoke(l.id)}

@@ -13,13 +13,9 @@ export function InviteStatusInvalid() {
       title="Opa… esse convite não rolou"
       description="Esse link tá inválido (ou foi digitado/copidado errado). Pede um novo link pra galera do grupo e tenta de novo."
       footer={
-        <Button
-          className="ml-auto"
-          variant="secondary"
-          onClick={() => router.replace("/home")}
-        >
+        <Button variant="secondary" onClick={() => router.replace("/home")}>
           <HomeIcon />
-          Voltar
+          Ir para o início
         </Button>
       }
     />

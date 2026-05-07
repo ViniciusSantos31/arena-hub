@@ -18,15 +18,11 @@ export function InviteStatusMaxUsesReached({
       icon={GaugeIcon}
       iconClassName="text-muted-foreground"
       title="Convite já foi usado demais"
-      description={`Esse link pra entrar em "${groupName}" já bateu no limite de usos. Pede pra galera gerar outro e bora.`}
+      description={`Esse link pra entrar no grupo "${groupName}" já bateu no limite de usos. Pede pra galera gerar outro e bora.`}
       footer={
-        <Button
-          className="ml-auto"
-          variant="secondary"
-          onClick={() => router.replace("/home")}
-        >
+        <Button variant="secondary" onClick={() => router.replace("/home")}>
           <HomeIcon />
-          Voltar
+          Ir para o início
         </Button>
       }
     />

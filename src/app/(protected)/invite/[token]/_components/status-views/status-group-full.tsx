@@ -20,13 +20,9 @@ export function InviteStatusGroupFull({
       title="Grupo lotado por enquanto"
       description={`"${groupName}" já tá no limite de membros. Fala com a galera pra liberarem vaga ou aumentarem o limite e tenta de novo.`}
       footer={
-        <Button
-          className="ml-auto"
-          variant="secondary"
-          onClick={() => router.replace("/home")}
-        >
+        <Button variant="secondary" onClick={() => router.replace("/home")}>
           <HomeIcon />
-          Voltar
+          Ir para o início
         </Button>
       }
     />

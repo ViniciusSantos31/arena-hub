@@ -20,12 +20,9 @@ export function InviteStatusAlreadyMember({
       icon={LogInIcon}
       iconClassName="text-primary"
       title="Você já tá no grupo"
-      description={`Você já é membro de "${groupName}". Só entrar e partir pro jogo.`}
+      description={`Você já é membro do grupo "${groupName}". Só entrar e partir pro jogo.`}
       footer={
-        <Button
-          className="ml-auto"
-          onClick={() => router.replace(`/group/${groupCode}/members`)}
-        >
+        <Button onClick={() => router.replace(`/group/${groupCode}/members`)}>
           Ir para o grupo
         </Button>
       }
