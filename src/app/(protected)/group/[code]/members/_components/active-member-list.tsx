@@ -237,7 +237,7 @@ export const ActiveMemberList = ({
             <Button variant="outline" asChild className="w-fit">
               <Link href={`/group/${code}/settings#invite-links`}>
                 <LinkIcon />
-                Convidar
+                <span className="hidden @md:block">Convidar</span>
               </Link>
             </Button>
           </div>
