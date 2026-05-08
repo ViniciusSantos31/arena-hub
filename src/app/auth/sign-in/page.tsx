@@ -1,6 +1,8 @@
-import { CheckIcon } from "lucide-react";
+import Image from "next/image";
 import { AuthFormCard } from "../_components/auth-form-card";
 import { SignInWithGoogle } from "./_components/sign-in-with-google";
+
+import ArenaHubIcon from "../../../../public/icon.png";
 
 export const dynamic = "force-dynamic";
 
@@ -8,47 +10,40 @@ export default function LoginPage() {
   return (
     <AuthFormCard
       classNames={{
-        container: "items-center",
+        container: "items-center relative z-10 overflow-clip ",
         cardContent: "h-full",
-        card: "w-full h-full md:max-w-xl",
+        card: "w-full  h-full border-0 shadow-none backdrop-blur-none",
       }}
     >
-      <div className="flex h-full items-center p-7 md:p-10">
-        <div className="mx-auto flex max-w-md flex-col items-start text-left">
-          <div className="bg-primary/10 border-primary/20 text-primary mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium">
-            <span className="bg-primary size-1.5 rounded-full" />
-            Fase beta — acesso gratuito completo
+      <div className="z-20 flex h-full items-center justify-center bg-linear-to-r! bg-[radial-gradient(#dedede_1px,transparent_1px)]! to-transparent! bg-size-[16px_16px]! dark:bg-[radial-gradient(#111111_1px,transparent_1px)]!">
+        <div className="flex w-full max-w-sm flex-col items-center gap-10 text-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="bg-primary/10 border-primary/20 flex size-14 items-center justify-center rounded-2xl border">
+              <span className="from-primary to-primary/70 bg-linear-to-r bg-clip-text text-lg font-black text-transparent">
+                <Image
+                  src={ArenaHubIcon}
+                  alt="Arena Hub"
+                  width={60}
+                  height={60}
+                  className="size-full object-contain"
+                />
+              </span>
+            </div>
+            <div className="space-y-1">
+              <h1 className="text-2xl font-black tracking-tight">Arena Hub</h1>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                Chega de WhatsApp para organizar peladas.
+              </p>
+            </div>
           </div>
 
-          <div className="from-primary to-primary/70 bg-linear-to-r bg-clip-text text-4xl font-bold text-transparent">
-            Arena Hub
+          <div className="w-full">
+            <SignInWithGoogle className="z-20 p-0 md:p-0" />
           </div>
-          <h1 className="mt-3 text-2xl font-semibold tracking-tight">
-            Entre para organizar suas peladas
-          </h1>
-          <p className="text-muted-foreground mt-2 text-sm leading-relaxed text-balance">
-            Um login rápido com Google e você já pode criar partidas, confirmar
-            presenças e sortear times.
+
+          <p className="text-muted-foreground/70 text-xs">
+            Um clique. Sem senha. Sem cadastro longo.
           </p>
-
-          <div className="mt-7 w-full">
-            <SignInWithGoogle className="p-0 md:p-0" />
-          </div>
-
-          <div className="text-muted-foreground mt-6 grid w-full gap-2 text-left text-sm">
-            <div className="flex items-start gap-2">
-              <CheckIcon className="text-primary mt-0.5 size-4" />
-              <span>Sem senha, sem fricção — só entrar e usar.</span>
-            </div>
-            <div className="flex items-start gap-2">
-              <CheckIcon className="text-primary mt-0.5 size-4" />
-              <span>Notificações e confirmações em tempo real.</span>
-            </div>
-            <div className="flex items-start gap-2">
-              <CheckIcon className="text-primary mt-0.5 size-4" />
-              <span>Sorteio de times equilibrados em segundos.</span>
-            </div>
-          </div>
         </div>
       </div>
     </AuthFormCard>

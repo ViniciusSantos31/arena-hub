@@ -20,19 +20,21 @@ export function AuthFormCard({
     >
       <Card
         className={cn(
-          "border-border/60 bg-card/55 shadow-primary/5 overflow-hidden p-0 shadow-xl backdrop-blur-sm",
+          "border-border/60 shadow-primary/5 overflow-hidden p-0 shadow-xl backdrop-blur-sm",
           classNames?.card,
         )}
       >
-        <CardContent className={cn("p-0", classNames?.cardContent)}>
+        <CardContent
+          className={cn("bg-background p-0 px-6", classNames?.cardContent)}
+        >
           {children}
         </CardContent>
       </Card>
-      <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
+      {/* <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
         Ao clicar em continuar, você concorda com nossos{" "}
         <a href="#">Termos de Serviço</a> e{" "}
         <a href="#">Política de Privacidade</a>.
-      </div>
+      </div> */}
     </div>
   );
 }

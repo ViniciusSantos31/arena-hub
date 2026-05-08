@@ -44,7 +44,7 @@ export function SignInWithGoogle({
           variant="secondary"
           type="button"
           disabled={loading}
-          className="hover:border-primary! hover:shadow-primary/10 h-12 w-full gap-2 border transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
+          className="hover:border-primary hover:bg-primary/10 hover:shadow-primary/10 h-12 w-full gap-2 border transition-all duration-200 hover:shadow-lg"
           onClick={handleGoogleSignIn}
         >
           <svg
