@@ -38,7 +38,7 @@ export default function CreateGroupPage() {
 
   const createGroupAction = useAction(upsertGroup, {
     onSuccess({ data }) {
-      router.push(`/group/${data?.code}`);
+      router.push(`/group/${data?.code}/overview`);
     },
   });
 

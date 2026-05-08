@@ -3,7 +3,9 @@
 import { Role } from "@/utils/role";
 import { BasicInfoForm } from "./basic-info-form";
 import { ConfigAccessForm } from "./config-access-form";
+import { DeleteGroupButton } from "./delete-group-button";
 import { InviteLinksSection } from "./invite-links-section";
+import { SettingsSection } from "./settings-section";
 
 interface GroupSettingsFormProps {
   group: {
@@ -27,6 +29,17 @@ export function GroupSettingsForm({ group, userRole }: GroupSettingsFormProps) {
       <InviteLinksSection
         group={{ code: group.code, private: group.private }}
       />
+      {userRole === "owner" && (
+        <SettingsSection
+          variant="destructive"
+          title="Zona de perigo"
+          description="Ações irreversíveis que afetam todo o grupo."
+        >
+          <DeleteGroupButton
+            group={{ name: group.name, code: group.code }}
+          />
+        </SettingsSection>
+      )}
     </div>
   );
 }

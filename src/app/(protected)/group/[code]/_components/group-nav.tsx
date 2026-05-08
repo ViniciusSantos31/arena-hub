@@ -64,7 +64,7 @@ export const GroupNav = ({ code }: { code: string }) => {
   return (
     <nav
       aria-label="Navegação do grupo"
-      className="sticky bottom-0 mt-auto flex h-fit items-center justify-center lg:bottom-0"
+      className="sticky bottom-0 z-30 mt-auto flex h-fit items-center justify-center lg:bottom-0"
     >
       <ul className="bg-background/50 **:data-[active=true]:text-primary **:data-[active=true]:bg-primary/10 flex w-full max-w-[calc(100vw-2rem)] justify-center gap-0.5 overflow-x-auto rounded-2xl border border-t border-b p-1 backdrop-blur-md **:data-[active=true]:pointer-events-none sm:max-w-[calc(100vw-8rem)] sm:justify-around md:w-fit md:p-2">
         <NavLink
