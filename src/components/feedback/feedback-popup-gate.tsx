@@ -6,7 +6,7 @@ import { useAction } from "next-safe-action/hooks";
 import { useEffect, useMemo, useState } from "react";
 import { FeedbackDialog } from "./feedback-dialog";
 
-const DISMISS_DAYS = 30;
+const DISMISS_DAYS = 2;
 
 function getDismissKey(userId: string) {
   return `feedback-popup-dismissed:${userId}`;
@@ -19,7 +19,7 @@ function canShowFromLocalStorage(userId: string) {
   const dismissedAt = Number(raw);
   if (!Number.isFinite(dismissedAt)) return true;
 
-  const ms = DISMISS_DAYS * 24 * 60 * 60 * 1000;
+  const ms = DISMISS_DAYS * 24 * 60 * 60 * 1000; // DISMISS_DAYS in milliseconds;
   return Date.now() - dismissedAt > ms;
 }
 

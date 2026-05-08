@@ -15,8 +15,16 @@ import z from "zod";
 import { ResponsiveDialog } from "../responsive-dialog";
 
 const feedbackSchema = z.object({
-  rating: z.number().int().min(1).max(5),
-  message: z.string().trim().min(10).max(1000),
+  rating: z
+    .number()
+    .int()
+    .min(1, "A avaliação deve ser entre 1 e 5")
+    .max(5, "A avaliação deve ser entre 1 e 5"),
+  message: z
+    .string()
+    .trim()
+    .min(10, "O feedback deve ter pelo menos 10 caracteres")
+    .max(1000, "O feedback deve ter no máximo 1000 caracteres"),
 });
 
 type FeedbackFormData = z.infer<typeof feedbackSchema>;
