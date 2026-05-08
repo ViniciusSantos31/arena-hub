@@ -3,6 +3,8 @@
 import { deleteGroup } from "@/actions/group/delete";
 import { ResponsiveDialog } from "@/components/responsive-dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Trash2Icon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -14,12 +16,14 @@ export const DeleteGroupButton = ({
   group: { name: string; code: string };
 }) => {
   const [open, setOpen] = useState(false);
+  const [confirmName, setConfirmName] = useState("");
   const router = useRouter();
 
   const deleteAction = useAction(deleteGroup, {
     onSuccess: () => {
       toast.success("Grupo excluído com sucesso.", { id: "delete-group" });
       setOpen(false);
+      setConfirmName("");
       router.push("/home");
     },
     onError({ error }) {
@@ -32,6 +36,8 @@ export const DeleteGroupButton = ({
   const handleConfirm = async () => {
     await deleteAction.executeAsync({ code: group.code });
   };
+
+  const canDelete = confirmName === group.name && !deleteAction.isExecuting;
 
   const content = (
     <div className="space-y-4">
@@ -49,6 +55,26 @@ export const DeleteGroupButton = ({
           <li>Links de convite ativos</li>
         </ul>
       </div>
+      <div className="space-y-2 border-t px-4 pt-4">
+        <p className="text-sm font-medium">
+          Para confirmar, digite o nome do grupo:
+          <span className="font-semibold">{` ${group.name}`}</span>
+        </p>
+        <Input
+          value={confirmName}
+          onChange={(e) => setConfirmName(e.target.value)}
+          placeholder={group.name}
+          autoComplete="off"
+          spellCheck={false}
+          onPaste={(e) => e.preventDefault()}
+          onCopy={(e) => e.preventDefault()}
+          onCut={(e) => e.preventDefault()}
+          onDrop={(e) => e.preventDefault()}
+        />
+        <p className="text-muted-foreground text-xs">
+          Por segurança, colar não é permitido.
+        </p>
+      </div>
       <div className="flex flex-col gap-2 border-t p-4 sm:flex-row sm:justify-end">
         <Button
           type="button"
@@ -62,9 +88,11 @@ export const DeleteGroupButton = ({
           type="button"
           variant="destructive"
           onClick={handleConfirm}
-          disabled={deleteAction.isExecuting}
+          disabled={!canDelete}
         >
-          {deleteAction.isExecuting ? "Excluindo..." : "Sim, excluir grupo"}
+          {deleteAction.isExecuting
+            ? "Excluindo..."
+            : `Excluir grupo "${group.name}"`}
         </Button>
       </div>
     </div>
@@ -75,7 +103,9 @@ export const DeleteGroupButton = ({
       open={open}
       onOpenChange={setOpen}
       title="Excluir grupo permanentemente?"
+      variant="destructive"
       description="Esta ação é irreversível. Não será possível recuperar membros, partidas nem histórico."
+      icon={Trash2Icon}
       contentClassName="p-0"
       content={content}
     >

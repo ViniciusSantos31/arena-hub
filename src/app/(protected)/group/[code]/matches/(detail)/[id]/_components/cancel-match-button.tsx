@@ -3,7 +3,7 @@ import { ResponsiveDialog } from "@/components/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import { useGuard } from "@/hooks/use-guard";
 import { queryClient } from "@/lib/react-query";
-import { XCircleIcon } from "lucide-react";
+import { AlertTriangleIcon, XCircleIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -60,6 +60,8 @@ export const CancelMatchButton = () => {
       <ResponsiveDialog
         title="Tem certeza que deseja cancelar esta partida?"
         description="Ao cancelar a partida, ela não poderá ser reativada e todos os dados relacionados serão perdidos."
+        variant="warning"
+        icon={AlertTriangleIcon}
         open={modalIsOpen}
         onOpenChange={setModalIsOpen}
         content={

@@ -6,7 +6,7 @@ import { Form } from "@/components/ui/form";
 import { TextareaField } from "@/components/ui/textarea/field";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Star } from "lucide-react";
+import { MessageSquareHeart, Star } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -68,6 +68,7 @@ export function FeedbackDialog({
     <ResponsiveDialog
       title="Como está sendo sua experiência?"
       description="Ajude-nos a melhorar o nosso aplicativo avaliando a sua experiência."
+      icon={MessageSquareHeart}
       open={open}
       onOpenChange={onOpenChange}
       content={

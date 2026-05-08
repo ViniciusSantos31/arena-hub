@@ -24,20 +24,20 @@ interface GroupSettingsFormProps {
 export function GroupSettingsForm({ group, userRole }: GroupSettingsFormProps) {
   return (
     <div className="space-y-4">
-      <BasicInfoForm group={group} userRole={userRole} />
-      <ConfigAccessForm group={group} userRole={userRole} />
+      <BasicInfoForm group={group} userRole={userRole} id="basic-info" />
+      <ConfigAccessForm group={group} userRole={userRole} id="config-access" />
       <InviteLinksSection
         group={{ code: group.code, private: group.private }}
+        id="invite-links"
       />
       {userRole === "owner" && (
         <SettingsSection
+          id="danger-zone"
           variant="destructive"
           title="Zona de perigo"
           description="Ações irreversíveis que afetam todo o grupo."
         >
-          <DeleteGroupButton
-            group={{ name: group.name, code: group.code }}
-          />
+          <DeleteGroupButton group={{ name: group.name, code: group.code }} />
         </SettingsSection>
       )}
     </div>

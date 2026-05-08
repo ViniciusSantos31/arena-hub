@@ -23,7 +23,9 @@ import {
 export const ConfigAccessForm = ({
   group,
   userRole,
+  id,
 }: {
+  id: string;
   group: {
     id: string;
     name: string;
@@ -83,6 +85,7 @@ export const ConfigAccessForm = ({
     <Form {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)}>
         <SettingsSection
+          id={id}
           title="Configurações de Acesso"
           description="Configure quem pode acessar e participar do grupo"
         >

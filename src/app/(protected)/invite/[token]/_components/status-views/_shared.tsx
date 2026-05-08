@@ -24,7 +24,7 @@ export function InviteCenteredShell({
   footer?: React.ReactNode;
 }) {
   return (
-    <main className="relative mx-auto flex min-h-[calc(100dvh-4rem)] w-full max-w-lg flex-col justify-center overflow-hidden px-4 py-10">
+    <main className="relative mx-auto flex min-h-dvh w-full max-w-lg flex-col justify-center overflow-hidden px-4 py-10">
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="landing-wash absolute inset-0 opacity-70" />
         <div className="landing-dots absolute inset-0 opacity-50" />

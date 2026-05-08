@@ -3,6 +3,7 @@ import {
   ResponsiveDialogBaseProps,
 } from "@/components/responsive-dialog";
 import { Button } from "@/components/ui/button";
+import { ZapIcon } from "lucide-react";
 
 type FeatureKey = "unlimited_groups" | "join_groups";
 
@@ -41,6 +42,7 @@ export const UpgradePlanDialog = ({
   return (
     <ResponsiveDialog
       title={featureData.name}
+      icon={ZapIcon}
       open={open}
       onOpenChange={onOpenChange}
       description={featureData.description}
@@ -48,7 +50,7 @@ export const UpgradePlanDialog = ({
       content={
         <div className="space-y-4">
           <p className="text-sm">{featureData.message}</p>
-          <div className="space-y-3 rounded-lg border border-amber-200/50 bg-gradient-to-r from-amber-500/10 to-orange-500/10 p-4">
+          <div className="space-y-3 rounded-lg border border-amber-200/50 bg-linear-to-r from-amber-500/10 to-orange-500/10 p-4">
             <div className="flex items-center gap-3">
               <div className="text-2xl">⚠️</div>
               <div className="space-y-0">

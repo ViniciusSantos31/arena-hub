@@ -7,7 +7,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { Label } from "@/components/ui/label";
 import { matchStatusEnum } from "@/db/schema/match";
 import { getStatusLabel } from "@/utils/status";
-import { CalendarIcon, LoaderIcon } from "lucide-react";
+import { CalendarIcon, LoaderIcon, SlidersHorizontalIcon } from "lucide-react";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
 import { useMatchesFilter } from "../_contexts/matches-filter";
@@ -41,6 +41,7 @@ export const MatchFilterDropdown = () => {
     <ResponsiveDialog
       title="Filtros de partidas"
       description="Ajuste os filtros para encontrar partidas específicas."
+      icon={SlidersHorizontalIcon}
       className="sm:max-w-full md:max-w-lg"
       open={openDialog}
       onOpenChange={setOpenDialog}

@@ -21,7 +21,7 @@ import { TextareaField } from "@/components/ui/textarea/field";
 import type { GroupAction } from "@/lib/group-permissions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAction } from "next-safe-action/hooks";
-import { PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
+import { MegaphoneIcon, PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -208,6 +208,7 @@ export function FeatureAnnouncementsAdmin({
       <ResponsiveDialog
         title={editing ? "Editar novidade" : "Criar novidade"}
         description="Exibido uma vez para usuários elegíveis. Só há o botão de fechar."
+        icon={MegaphoneIcon}
         open={dialogOpen}
         onOpenChange={(open) => {
           setDialogOpen(open);

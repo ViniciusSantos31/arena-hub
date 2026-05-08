@@ -25,7 +25,9 @@ import {
 export const BasicInfoForm = ({
   group,
   userRole,
+  id,
 }: {
+  id: string;
   group: {
     id: string;
     name: string;
@@ -120,6 +122,7 @@ export const BasicInfoForm = ({
 
   return (
     <SettingsSection
+      id={id}
       title="Informações Básicas"
       description="Configure as informações principais do grupo"
     >

@@ -29,7 +29,9 @@ import {
   ArrowDownIcon,
   ArrowUpIcon,
   FilterIcon,
+  LinkIcon,
 } from "lucide-react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { Member } from "../@tabs/active/page";
@@ -232,6 +234,12 @@ export const ActiveMemberList = ({
                 </Button>
               </DropdownMenuContent>
             </DropdownMenu>
+            <Button variant="outline" asChild className="w-fit">
+              <Link href={`/group/${code}/settings#invite-links`}>
+                <LinkIcon />
+                Convidar
+              </Link>
+            </Button>
           </div>
         </div>
 

@@ -4,7 +4,7 @@ import { ResponsiveDialog } from "@/components/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import { useGuard } from "@/hooks/use-guard";
 import { queryClient } from "@/lib/react-query";
-import { PlusIcon } from "lucide-react";
+import { LinkIcon, PlusIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { inviteLinksQueryKeys } from "../_hooks/query-keys";
@@ -15,7 +15,9 @@ import { SettingsSection } from "./settings-section";
 
 export function InviteLinksSection({
   group,
+  id,
 }: {
+  id: string;
   group: { code: string; private: boolean };
 }) {
   const canManageGroupLinks = useGuard({
@@ -52,6 +54,7 @@ export function InviteLinksSection({
 
   return (
     <SettingsSection
+      id={id}
       title="Links de convite"
       description="Crie links que permitem entrar direto no grupo (sem solicitação)."
       action={
@@ -60,6 +63,7 @@ export function InviteLinksSection({
           onOpenChange={setOpen}
           title="Criar link de convite"
           description="Configure permissões e limites do link. Você pode revogá-lo a qualquer momento."
+          icon={LinkIcon}
           content={
             <CreateInviteLinkForm
               onSuccess={(link) => onCreateInviteLinkSuccess(link)}

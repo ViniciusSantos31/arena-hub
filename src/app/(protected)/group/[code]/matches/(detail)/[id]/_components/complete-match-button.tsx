@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { queryClient } from "@/lib/react-query";
 import { WebSocketMessageType } from "@/lib/websocket/types";
-import { CheckCircle2Icon } from "lucide-react";
+import { CheckCircle2Icon, TrophyIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -67,6 +67,7 @@ export const CompleteMatchButton = () => {
         description={
           "Ao concluir a partida, os resultados finais serão registrados e os jogadores não poderão mais ser adicionados ou removidos. Tem certeza que deseja prosseguir?"
         }
+        icon={TrophyIcon}
         open={modalIsOpen}
         onOpenChange={(open) => setModalIsOpen(open)}
         content={

@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
 
 interface SettingsSectionProps {
+  id?: string;
   title: string;
   description?: string;
   children: ReactNode;
@@ -22,6 +23,7 @@ interface SettingsSectionProps {
 }
 
 export function SettingsSection({
+  id,
   title,
   description,
   children,
@@ -31,6 +33,7 @@ export function SettingsSection({
 }: SettingsSectionProps) {
   return (
     <Card
+      id={id}
       className={cn(
         "border-border/60 w-full",
         variant === "destructive" &&

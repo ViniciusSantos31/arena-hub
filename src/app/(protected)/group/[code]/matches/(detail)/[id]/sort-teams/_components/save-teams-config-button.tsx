@@ -6,7 +6,7 @@ import { useWebSocket } from "@/hooks/use-websocket";
 import { queryClient } from "@/lib/react-query";
 import { WebSocketMessageType } from "@/lib/websocket/types";
 import { useMutation } from "@tanstack/react-query";
-import { SaveIcon, ShuffleIcon } from "lucide-react";
+import { SaveIcon, ShieldCheckIcon, ShuffleIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -63,6 +63,7 @@ export const SaveTeamsConfigButton = ({
     <ResponsiveDialog
       title="Salvar configuração de equipes"
       description="Tem certeza que deseja salvar a configuração atual de equipes? Após salvar, não será possível modificar a configuração."
+      icon={ShieldCheckIcon}
       open={dialogOpen}
       onOpenChange={setDialogOpen}
       content={

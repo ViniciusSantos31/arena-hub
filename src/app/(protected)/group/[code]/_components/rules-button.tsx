@@ -1,6 +1,6 @@
 import { ResponsiveDialog } from "@/components/responsive-dialog";
 import { Button } from "@/components/ui/button";
-import { BookOpenTextIcon, HeartHandshakeIcon } from "lucide-react";
+import { BookOpenTextIcon, HeartHandshakeIcon, ScrollTextIcon } from "lucide-react";
 import { useState } from "react";
 
 export const RulesButton = ({ rules }: { rules?: string | null }) => {
@@ -12,11 +12,12 @@ export const RulesButton = ({ rules }: { rules?: string | null }) => {
     <ResponsiveDialog
       title="Regras do grupo"
       description="Confira as regras estabelecidas para este grupo."
+      icon={ScrollTextIcon}
       contentClassName="p-0"
       open={open}
       onOpenChange={setOpen}
       content={
-        <section className="border-t">
+        <section>
           <p className="max-h-[60vh] overflow-y-auto px-4 py-4 text-sm leading-relaxed whitespace-pre-wrap">
             {rules}
           </p>
