@@ -2,13 +2,20 @@ import { Button } from "@/components/ui/button";
 import {
   BellIcon,
   CalendarIcon,
+  CompassIcon,
   GroupIcon,
   LayoutDashboardIcon,
+  LinkIcon,
+  ListOrderedIcon,
+  RadioIcon,
+  ShieldCheckIcon,
   SmartphoneIcon,
+  TrophyIcon,
   UsersIcon,
   ZapIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { TutorialTabs } from "./_components/tutorial-tabs";
 
 export const dynamic = "force-dynamic";
 
@@ -16,32 +23,62 @@ const features = [
   {
     icon: CalendarIcon,
     title: "Partidas organizadas",
-    desc: "Crie partidas, defina limite de vagas, data e local. Os membros se inscrevem com um clique.",
+    desc: "Crie partidas com data, local e vagas. Os membros se inscrevem com um clique.",
   },
   {
     icon: UsersIcon,
     title: "Gestão de membros",
-    desc: "Aprove solicitações de entrada, gerencie funções e controle quem faz parte do seu grupo.",
+    desc: "Aprove solicitações de entrada, gerencie papéis e controle quem faz parte do grupo.",
   },
   {
     icon: ZapIcon,
     title: "Sorteio de times",
-    desc: "Divida os jogadores confirmados em times equilibrados de forma automática e justa.",
+    desc: "Divida os confirmados em times equilibrados, com suporte a potes de nível.",
+  },
+  {
+    icon: TrophyIcon,
+    title: "Ranking do grupo",
+    desc: "Acompanhe quem mais participa com o ranking de presença do grupo.",
+  },
+  {
+    icon: ListOrderedIcon,
+    title: "Fila de espera",
+    desc: "Partidas lotadas? O sistema coloca os membros na fila automaticamente.",
+  },
+  {
+    icon: LinkIcon,
+    title: "Links de convite",
+    desc: "Gere links com limite de uso e validade para controlar quem entra no grupo.",
+  },
+  {
+    icon: CompassIcon,
+    title: "Feed de grupos",
+    desc: "Descubra e entre em grupos públicos da plataforma pelo feed de comunidades.",
+  },
+  {
+    icon: ShieldCheckIcon,
+    title: "Papéis e permissões",
+    desc: "Defina quem pode criar partidas, aprovar membros e gerenciar o grupo.",
+  },
+  {
+    icon: RadioIcon,
+    title: "Atualizações em tempo real",
+    desc: "Inscrições e mudanças nas partidas aparecem na hora para todos os membros.",
   },
   {
     icon: BellIcon,
     title: "Notificações push",
-    desc: "Avise seus membros sobre novas partidas e atualizações em tempo real.",
+    desc: "Avise seus membros sobre novas partidas e atualizações automaticamente.",
   },
   {
     icon: SmartphoneIcon,
     title: "App instalável",
-    desc: "Instale o Arena Hub no celular como um aplicativo nativo, sem precisar de loja de apps.",
+    desc: "Instale no celular como um app nativo, sem precisar de loja de aplicativos.",
   },
   {
     icon: LayoutDashboardIcon,
     title: "Dashboard completo",
-    desc: "Acompanhe o histórico de partidas e a situação dos membros em um só lugar.",
+    desc: "Visão geral do grupo com próximas partidas, histórico e checklist de configuração.",
   },
 ];
 
@@ -144,7 +181,22 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="recursos" className="px-4 py-24">
+      <section id="tutorial" className="px-4 py-24">
+        <div className="container mx-auto max-w-6xl">
+          <div className="mb-14 text-center">
+            <h2 className="text-foreground mb-3 text-4xl font-bold md:text-5xl">
+              Veja como funciona na prática
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              Do primeiro grupo à pelada organizada — passo a passo
+            </p>
+          </div>
+
+          <TutorialTabs />
+        </div>
+      </section>
+
+      <section id="recursos" className="border-border/60 border-t px-4 py-24">
         <div className="container mx-auto max-w-6xl">
           <div className="mb-14 text-center">
             <h2 className="text-foreground mb-3 text-4xl font-bold md:text-5xl">
@@ -155,14 +207,13 @@ export default function LandingPage() {
             </p>
           </div>
 
-          {/* <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"> */}
-          <div className="flex flex-wrap justify-center gap-5">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((feature) => {
               const Icon = feature.icon;
               return (
                 <div
                   key={feature.title}
-                  className="bg-card/50 border-border/60 hover:border-primary/30 hover:bg-card/70 group hover:shadow-primary/5 w-full rounded-2xl border p-6 backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg md:max-w-xs"
+                  className="bg-card/50 border-border/60 hover:border-primary/30 hover:bg-card/70 group hover:shadow-primary/5 rounded-2xl border p-6 backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
                 >
                   <div className="bg-primary/10 group-hover:bg-primary/15 mb-4 flex h-10 w-10 items-center justify-center rounded-xl transition-colors">
                     <Icon className="text-primary size-5" />

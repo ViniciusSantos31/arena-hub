@@ -1,6 +1,5 @@
-import { ModeToggle } from "@/components/mode-toggle";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { LandingHeader } from "./_components/landing-header";
 
 export default function LandingLayout({
   children,
@@ -8,51 +7,14 @@ export default function LandingLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="bg-background text-foreground relative h-full min-h-screen overflow-y-scroll scroll-smooth">
+    <div className="bg-background text-foreground relative h-full min-h-screen overflow-x-hidden overflow-y-scroll scroll-smooth">
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="landing-wash absolute inset-0" />
         <div className="landing-dots absolute inset-0 opacity-70" />
         <div className="from-background via-background/60 to-background absolute inset-0 bg-linear-to-b" />
       </div>
 
-      <header className="border-border/60 bg-background/80 sticky top-0 z-50 border-b backdrop-blur-md">
-        <nav className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link
-            href="/"
-            className="from-primary to-primary/70 bg-linear-to-r bg-clip-text text-xl font-bold text-transparent"
-          >
-            Arena Hub
-          </Link>
-
-          <div className="hidden items-center gap-8 md:flex">
-            <Link
-              href="/#como-funciona"
-              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-            >
-              Como funciona
-            </Link>
-            <Link
-              href="/#recursos"
-              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-            >
-              Recursos
-            </Link>
-            <Link
-              href="/sobre"
-              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-            >
-              Sobre nós
-            </Link>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Button asChild size="sm">
-              <Link href="/auth/sign-in">Entrar</Link>
-            </Button>
-            <ModeToggle />
-          </div>
-        </nav>
-      </header>
+      <LandingHeader />
 
       {children}
 
@@ -71,6 +33,12 @@ export default function LandingLayout({
               className="text-muted-foreground hover:text-foreground text-sm transition-colors"
             >
               Como funciona
+            </Link>
+            <Link
+              href="/#tutorial"
+              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+            >
+              Tutorial
             </Link>
             <Link
               href="/#recursos"
