@@ -1,6 +1,7 @@
 import { dashboardDetails } from "@/actions/dashboard/detail";
 import { dashboardRanking } from "@/actions/dashboard/ranking";
 import { getGroupDetails } from "@/actions/group/detail";
+import { NewGroupChecklist } from "@/app/(protected)/group/[code]/overview/_components/new-group-checklist";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -39,9 +40,19 @@ export default async function GroupDashboardPage({
 
   const group = groupRes.data;
   const ranking = rankingRes.data?.ranking ?? [];
+  const matchesCount = details.data?.matchesCount ?? 0;
+  const membersCount = details.data?.membersCount ?? 0;
+  const isNewGroup = matchesCount === 0 && membersCount <= 1;
 
   return (
     <main className="grid w-full gap-4 @2xl:grid-cols-2">
+      {isNewGroup && (
+        <NewGroupChecklist
+          code={code}
+          matchesCount={matchesCount}
+          membersCount={membersCount}
+        />
+      )}
       <NextMatchCard code={code} />
 
       {group ? (
