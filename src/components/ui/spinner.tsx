@@ -90,15 +90,21 @@ function Spinner({ className, size = "md", label, ...props }: SpinnerProps) {
 
       <span
         aria-hidden
-        className="animation-duration-[1s] absolute inset-0 animate-spin delay-75 [animation-timing-function:linear] motion-reduce:animate-none"
+        className="animation-duration-[1.25s] absolute inset-0 animate-spin delay-75 [animation-timing-function:linear] motion-reduce:animate-none"
       >
         <Dot size={resolvedSize} className="bg-primary/50" />
       </span>
       <span
         aria-hidden
-        className="animation-duration-[0.75s] absolute inset-0 animate-spin delay-150 [animation-timing-function:linear] motion-reduce:animate-none"
+        className="animation-duration-[1s] absolute inset-0 animate-spin delay-150 [animation-timing-function:linear] motion-reduce:animate-none"
       >
         <Dot size={resolvedSize} className="bg-primary/80" />
+      </span>
+      <span
+        aria-hidden
+        className="animation-duration-[0.75s] absolute inset-0 animate-spin delay-300 [animation-timing-function:linear] motion-reduce:animate-none"
+      >
+        <Dot size={resolvedSize} className="bg-primary" />
       </span>
       <span
         aria-hidden

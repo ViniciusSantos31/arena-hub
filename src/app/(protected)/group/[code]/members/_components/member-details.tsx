@@ -4,6 +4,7 @@ import { getUserMembership } from "@/actions/group/membership";
 import { kickMember as kickMemberAction } from "@/actions/member/kick";
 import { updateMemberScore } from "@/actions/member/update-score";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +14,7 @@ import { queryClient } from "@/lib/react-query";
 import { getAvatarFallback } from "@/utils/avatar";
 import { Role } from "@/utils/role";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { UserX2Icon } from "lucide-react";
+import { ShieldIcon, StarIcon, UserX2Icon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
@@ -125,55 +126,83 @@ export const MemberDetails = ({ member }: { member: Member }) => {
   }
 
   return (
-    <div className="@container/card flex h-fit flex-col">
-      <div className="flex items-center justify-between gap-2 px-4">
-        <div className="flex w-full items-center gap-3">
-          <Avatar className="size-20 @lg/card:size-24">
-            <AvatarImage src={member.image ?? undefined} alt={member.name} />
-            <AvatarFallback className="bg-primary/10 text-primary text-2xl font-medium">
-              {getAvatarFallback(member.name ?? "")}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col items-start">
-            <h3 className="text-foreground truncate font-medium">
-              {member.name}
-            </h3>
-            <span className="text-muted-foreground truncate text-sm">
-              {member.email}
-            </span>
-            <MemberRoleBadge
-              memberRole={member.role as Role}
-              memberId={member.id ?? ""}
-            />
-          </div>
+    <div className="@container/card flex h-fit flex-col gap-4">
+      <div className="flex flex-col items-center gap-3 px-4 pt-2 text-center">
+        <Avatar className="ring-primary/10 size-20 ring-2 ring-offset-2">
+          <AvatarImage src={member.image ?? undefined} alt={member.name} />
+          <AvatarFallback className="bg-primary/10 text-primary text-2xl font-medium">
+            {getAvatarFallback(member.name ?? "")}
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex flex-col items-center gap-1">
+          <h3 className="text-foreground font-semibold">{member.name}</h3>
+          <span className="text-muted-foreground text-sm">{member.email}</span>
+          <MemberRoleBadge
+            memberRole={member.role as Role}
+            memberId={member.id ?? ""}
+          />
         </div>
-        {canUpdateMember && (
-          <div className="space-y-2">
-            <Label>Nota</Label>
-            <Input
-              placeholder="Nota"
-              type="number"
-              min={0}
-              max={50}
-              value={score}
-              autoComplete="off"
-              aria-autocomplete="none"
-              onFocus={(e) => e.target.select()}
-              onChange={(e) => handleChangeScore(Number(e.target.value))}
-              onBlur={saveScoreOnBlur}
-            />
-          </div>
-        )}
       </div>
+
+      <div className="mx-12 flex items-center justify-center gap-4">
+        <Badge
+          variant="secondary"
+          className="shadow-primary/20 border-primary/50 bg-primary/10 flex flex-col items-center gap-1 border-b-3 py-2 shadow-lg"
+        >
+          <div className="flex items-center gap-1.5 text-amber-500">
+            <StarIcon className="h-4 w-4" />
+            <span className="text-foreground text-lg font-bold tabular-nums">
+              {score ?? 0}
+            </span>
+          </div>
+          <span className="text-muted-foreground text-[10px] tracking-wide uppercase">
+            Nota
+          </span>
+        </Badge>
+        <Badge
+          variant="secondary"
+          className="shadow-primary/20 border-primary/50 bg-primary/10 flex flex-col items-center gap-1 border-b-3 py-2 shadow-lg"
+        >
+          <div className="flex items-center gap-1.5">
+            <ShieldIcon className="text-primary/60 h-4 w-4" />
+            <span className="text-foreground text-lg font-bold tabular-nums">
+              {member.matches ?? 0}
+            </span>
+          </div>
+          <span className="text-muted-foreground text-[10px] tracking-wide uppercase">
+            Partidas
+          </span>
+        </Badge>
+      </div>
+
+      {canUpdateMember && (
+        <div className="space-y-2 px-4">
+          <Label htmlFor="member-score">Ajustar nota</Label>
+          <Input
+            id="member-score"
+            placeholder="0 – 50"
+            type="number"
+            min={0}
+            max={50}
+            value={score}
+            autoComplete="off"
+            aria-autocomplete="none"
+            onFocus={(e) => e.target.select()}
+            onChange={(e) => handleChangeScore(Number(e.target.value))}
+            onBlur={saveScoreOnBlur}
+          />
+        </div>
+      )}
+
       {canUpdateMember &&
         canKickMember(membership.data.role) &&
         !isCurrentUser && (
           <>
-            <div className="bg-muted my-4 h-px w-full" />
-            <section className="flex w-full px-4">
-              <div className="ml-auto space-x-2">
+            <div className="bg-border h-px w-full" />
+            <section className="flex w-full px-4 pb-1">
+              <div className="ml-auto">
                 <Button
-                  variant={"destructive"}
+                  variant="destructive"
                   disabled={!member.id || kickMemberIsPending}
                   onClick={() => handleKickMember(member.id)}
                 >

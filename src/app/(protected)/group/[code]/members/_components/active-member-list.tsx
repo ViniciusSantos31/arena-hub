@@ -267,7 +267,7 @@ export const ActiveMemberList = ({
           </Button>
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
           {filteredAndSorted.map((member) => (
             <MemberCard key={member.id} member={member} />
           ))}
