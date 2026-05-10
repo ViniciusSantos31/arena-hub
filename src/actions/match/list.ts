@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { matchesTable, matchStatusEnum } from "@/db/schema/match";
 import { actionClient } from "@/lib/next-safe-action";
 import dayjs from "dayjs";
-import { gte, ne, Operators } from "drizzle-orm";
+import { gte, ne, Operators, sql } from "drizzle-orm";
 import z from "zod/v4";
 import { getOrgIdByCode } from "../group/get-org-by-code";
 
@@ -75,7 +75,10 @@ export const listMatches = actionClient
 
     const response = await db.query.matchesTable.findMany({
       where: (_, operators) => buildFilters(matchesTable, operators),
-      orderBy: (matchesTable, { asc }) => [asc(matchesTable.date)],
+      orderBy: [
+        sql`CASE WHEN ${matchesTable.date} >= NOW() AND ${matchesTable.status} NOT IN ('completed', 'cancelled') THEN 0 ELSE 1 END ASC`,
+        sql`CASE WHEN ${matchesTable.date} >= NOW() AND ${matchesTable.status} NOT IN ('completed', 'cancelled') THEN EXTRACT(EPOCH FROM ${matchesTable.date}) ELSE -EXTRACT(EPOCH FROM ${matchesTable.date}) END ASC`,
+      ],
       with: {
         players: {
           with: {
