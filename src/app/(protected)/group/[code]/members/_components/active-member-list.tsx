@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useGuard } from "@/hooks/use-guard";
 import { Role, getRoleLabel } from "@/utils/role";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
@@ -134,6 +135,10 @@ export const ActiveMemberList = ({
     sortBy !== "matches" ||
     sortDir !== "desc";
 
+  const canInvite = useGuard({
+    action: ["group:links"],
+  });
+
   const clearFilters = () => {
     setSearch("");
     setSelectedRoles([]);
@@ -234,12 +239,14 @@ export const ActiveMemberList = ({
                 </Button>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button variant="outline" asChild className="w-fit">
-              <Link href={`/group/${code}/settings#invite-links`}>
-                <LinkIcon />
-                <span className="hidden @md:block">Convidar</span>
-              </Link>
-            </Button>
+            {canInvite && (
+              <Button variant="outline" asChild className="w-fit">
+                <Link href={`/group/${code}/settings#invite-links`}>
+                  <LinkIcon />
+                  <span className="hidden @md:block">Convidar</span>
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
 

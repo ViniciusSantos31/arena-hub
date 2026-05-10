@@ -16,6 +16,8 @@ import {
   InfoIcon,
   LogOutIcon,
   ScrollTextIcon,
+  Settings2Icon,
+  SlidersHorizontalIcon,
 } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import Image from "next/image";
@@ -81,8 +83,8 @@ export function GroupDetailsDrawer({
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetTrigger asChild>
         <Button variant="outline" size="sm" className="h-9">
-          <InfoIcon />
-          Detalhes
+          <Settings2Icon />
+          <span className="text-xs md:text-base">Preferências</span>
         </Button>
       </SheetTrigger>
 
@@ -155,6 +157,17 @@ export function GroupDetailsDrawer({
               </p>
             </section>
           )}
+
+          <section className="border-border/60 border-b px-5 py-5">
+            <div className="flex items-center gap-2">
+              <SlidersHorizontalIcon className="text-muted-foreground size-4 shrink-0" />
+              <h2 className="text-sm font-semibold">Preferências</h2>
+            </div>
+            <p className="text-muted-foreground mt-2 text-sm">
+              Em breve você poderá configurar notificações, seu nome no grupo e
+              outras preferências por aqui.
+            </p>
+          </section>
 
           {showDangerZone && (
             <section className="px-5 py-5">
