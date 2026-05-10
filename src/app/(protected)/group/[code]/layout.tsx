@@ -16,9 +16,9 @@ import {
   PageHeader,
   PageHeaderContent,
 } from "../../_components/page-structure";
+import { GroupDetailsDrawer } from "./_components/group-details-drawer";
 import { GroupNav } from "./_components/group-nav";
 import { LoadingGroupPage } from "./_components/loading-page";
-import { RulesButton } from "./_components/rules-button";
 import { useMemberStore } from "./_store/group";
 
 export default function GroupDetailsLayout({
@@ -69,7 +69,20 @@ export default function GroupDetailsLayout({
     <PageContainer>
       <PageHeader>
         <PageHeaderContent title={name} />
-        <RulesButton rules={group?.rules} />
+        <GroupDetailsDrawer
+          group={{
+            name: group?.name ?? name,
+            code,
+            description: group?.description,
+            logo: group?.logo,
+            rules: group?.rules,
+          }}
+          memberRole={
+            membership && typeof membership !== "boolean"
+              ? (membership.role ?? "member")
+              : "member"
+          }
+        />
       </PageHeader>
       <PageContent
         className={cn(

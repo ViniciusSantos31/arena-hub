@@ -19,7 +19,7 @@ export default function FeedPage() {
 
   return (
     <main className="relative flex h-fit w-full flex-col gap-4">
-      <div className="sticky top-0 z-10 flex w-full items-center justify-center">
+      <div className="sticky top-8 z-10 flex w-full items-center justify-center">
         <SearchInput />
       </div>
       <section className="grid w-full grid-cols-1 gap-3 @xl:grid-cols-2 @4xl:grid-cols-3">
