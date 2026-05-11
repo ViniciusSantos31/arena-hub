@@ -1,6 +1,6 @@
 "use client";
 
-import { InviteStatusAlreadyMember } from "./status-views/status-already-member";
+import { redirect } from "next/navigation";
 import { InviteStatusExpired } from "./status-views/status-expired";
 import { InviteStatusGroupFull } from "./status-views/status-group-full";
 import { InviteStatusInvalid } from "./status-views/status-invalid";
@@ -75,13 +75,8 @@ export function InviteGate({
         />
       );
     case "already-member":
-      return (
-        <InviteStatusAlreadyMember
-          groupCode={preview.group.code}
-          groupName={preview.group.name}
-          groupLogo={preview.group.logo}
-        />
-      );
+      return redirect(`/group/${preview.group.code}/members/active`);
+
     case "revoked":
       return (
         <InviteStatusRevoked
