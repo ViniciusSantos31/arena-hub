@@ -2,6 +2,7 @@
 
 import { db } from "@/db";
 import { organization } from "@/db/schema/auth";
+import { directInvitesTable } from "@/db/schema/direct-invite";
 import {
   organizationInviteLink,
   organizationInviteLinkUse,
@@ -10,8 +11,8 @@ import { member } from "@/db/schema/member";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
 import { and, eq, sql } from "drizzle-orm";
-import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import z from "zod/v4";
 import { hashInviteToken } from "./_utils";
 
@@ -110,6 +111,13 @@ export const consumeInviteLink = actionClient
       inviteLinkId: link.id,
       usedByUserId: session.user.id,
     });
+
+    await db
+      .update(directInvitesTable)
+      .set({
+        status: "accepted",
+      })
+      .where(eq(directInvitesTable.inviteLinkId, link.id));
 
     revalidatePath("/", "layout");
 

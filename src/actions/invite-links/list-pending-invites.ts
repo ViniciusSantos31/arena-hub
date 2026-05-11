@@ -44,10 +44,7 @@ export const listMyPendingInvites = actionClient.action(async () => {
       organization,
       eq(directInvitesTable.organizationId, organization.id),
     )
-    .innerJoin(
-      usersTable,
-      eq(directInvitesTable.sentByUserId, usersTable.id),
-    )
+    .innerJoin(usersTable, eq(directInvitesTable.sentByUserId, usersTable.id))
     .leftJoin(
       organizationInviteLink,
       eq(directInvitesTable.inviteLinkId, organizationInviteLink.id),
@@ -139,7 +136,11 @@ export const listMyPendingInvites = actionClient.action(async () => {
       },
       sentBy: invite.sentByName,
       invitePath,
-      inviteUrl: invitePath ? (baseUrl ? `${baseUrl}${invitePath}` : null) : null,
+      inviteUrl: invitePath
+        ? baseUrl
+          ? `${baseUrl}${invitePath}`
+          : null
+        : null,
       isLinkValid: !!invitePath,
     };
   });
