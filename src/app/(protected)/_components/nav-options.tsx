@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe2Icon, PlusCircleIcon } from "lucide-react";
+import { PlusCircleIcon, UsersRoundIcon } from "lucide-react";
 import { NavSidebar } from "./nav-sidebar";
 
 const options = {
@@ -18,9 +18,9 @@ const options = {
       icon: PlusCircleIcon,
     },
     {
-      title: "Encontre sua turma",
-      url: "/feed",
-      icon: Globe2Icon,
+      title: "Vitrine",
+      url: "/discover",
+      icon: UsersRoundIcon,
     },
   ],
 };

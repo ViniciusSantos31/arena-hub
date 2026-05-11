@@ -2,7 +2,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import { GlobeIcon, LockIcon, UsersIcon } from "lucide-react";
+import { UsersIcon } from "lucide-react";
 import Image from "next/image";
 
 export function GroupHeaderContent({
@@ -10,7 +10,6 @@ export function GroupHeaderContent({
   logo,
   description,
   code,
-  isPrivate,
   maxPlayers,
   className,
 }: {
@@ -18,7 +17,6 @@ export function GroupHeaderContent({
   logo?: string | null;
   description?: string | null;
   code: string;
-  isPrivate: boolean;
   maxPlayers: number;
   className?: string;
 }) {
@@ -46,21 +44,12 @@ export function GroupHeaderContent({
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <h1 className="text-foreground truncate text-base font-semibold tracking-tight">
               {name}
             </h1>
 
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="secondary" className="gap-1.5">
-                {isPrivate ? (
-                  <LockIcon className="h-3.5 w-3.5" />
-                ) : (
-                  <GlobeIcon className="h-3.5 w-3.5" />
-                )}
-                {isPrivate ? "Privado" : "Público"}
-              </Badge>
-
               <Badge variant="outline" className="font-mono tracking-wide">
                 {code}
               </Badge>

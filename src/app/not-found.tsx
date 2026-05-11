@@ -1,9 +1,13 @@
+"use client";
+
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { HomeIcon, SearchXIcon, Undo2Icon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function NotFound() {
+  const router = useRouter();
   return (
     <main className="relative flex min-h-dvh w-full flex-col justify-center overflow-hidden px-4 py-10">
       <div className="pointer-events-none absolute inset-0 -z-10">
@@ -39,11 +43,9 @@ export default function NotFound() {
             </Link>
           </Button>
 
-          <Button asChild className="w-full sm:w-auto">
-            <Link href=".." replace>
-              <Undo2Icon />
-              Voltar
-            </Link>
+          <Button onClick={() => router.back()} className="w-full sm:w-auto">
+            <Undo2Icon />
+            Voltar
           </Button>
         </div>
       </div>

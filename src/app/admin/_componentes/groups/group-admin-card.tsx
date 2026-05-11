@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { getAvatarFallback } from "@/utils/avatar";
-import { ClockIcon, LockIcon, UnlockIcon, UsersRoundIcon } from "lucide-react";
+import { ClockIcon, LockIcon, UsersRoundIcon } from "lucide-react";
 import Link from "next/link";
 import { GroupOwnerChip } from "./group-owner-chip";
 
@@ -66,17 +66,8 @@ export function GroupAdminCard({ group }: { group: AdminGroupListItem }) {
               </div>
 
               <CardDescription className="mt-1 flex items-center gap-2 text-xs">
-                {group.private ? (
-                  <>
-                    <LockIcon className="h-3.5 w-3.5 text-yellow-600" />
-                    Privado
-                  </>
-                ) : (
-                  <>
-                    <UnlockIcon className="h-3.5 w-3.5 text-green-600" />
-                    Público
-                  </>
-                )}
+                <LockIcon className="h-3.5 w-3.5 text-yellow-600" />
+                Privado
               </CardDescription>
             </div>
           </div>

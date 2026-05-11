@@ -15,7 +15,6 @@ export const createGroupSchema = z.object({
     .number()
     .min(2, "O número mínimo de jogadores é 2")
     .max(100, "O número máximo de jogadores é 100"),
-  isPrivate: z.boolean().optional(),
   rules: z.string().trim().optional(),
 });
 

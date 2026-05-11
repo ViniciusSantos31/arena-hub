@@ -1,4 +1,5 @@
 import * as auth from "./auth";
+import * as directInvites from "./direct-invite";
 import * as feedback from "./feedback";
 import * as match from "./match";
 import * as member from "./member";
@@ -22,4 +23,5 @@ export const schema = {
   ...subscription,
   ...inviteLinks,
   ...featureAnnouncements,
+  ...directInvites,
 };

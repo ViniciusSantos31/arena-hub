@@ -14,8 +14,6 @@ import {
 } from "@/components/ui/card";
 import {
   ArrowRightIcon,
-  GlobeIcon,
-  LockIcon,
   PlayIcon,
   UsersIcon,
 } from "lucide-react";
@@ -72,14 +70,6 @@ export default async function GroupDashboardPage({
             </CardHeader>
             <CardContent className="">
               <div className="flex flex-wrap gap-2">
-                <span className="bg-muted/40 text-foreground inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium">
-                  {group.private ? (
-                    <LockIcon className="text-muted-foreground h-3.5 w-3.5" />
-                  ) : (
-                    <GlobeIcon className="text-muted-foreground h-3.5 w-3.5" />
-                  )}
-                  {group.private ? "Grupo privado" : "Grupo público"}
-                </span>
                 <span className="bg-muted/40 text-foreground inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium">
                   <UsersIcon className="text-muted-foreground h-3.5 w-3.5" />
                   Até {group.maxPlayers} jogadores
@@ -209,21 +199,13 @@ export default async function GroupDashboardPage({
             </div>
           </CardHeader>
           <CardContent className="pt-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <div className="bg-muted/40 rounded-xl p-4">
                 <div className="text-foreground text-2xl font-bold">
                   {details.data?.membersCount ?? 0}
                 </div>
                 <div className="text-muted-foreground mt-0.5 text-xs">
                   Membros ativos
-                </div>
-              </div>
-              <div className="bg-muted/40 rounded-xl p-4">
-                <div className="text-foreground text-2xl font-bold">
-                  {details.data?.membersRequestedCount ?? 0}
-                </div>
-                <div className="text-muted-foreground mt-0.5 text-xs">
-                  Solicitações
                 </div>
               </div>
             </div>

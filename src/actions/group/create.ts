@@ -24,7 +24,6 @@ export const upsertGroup = actionClient
         .min(10, "A descrição do grupo deve conter pelo menos 10 caracteres")
         .max(500, "A descrição do grupo deve conter no máximo 500 caracteres"),
       image: z.string(),
-      isPrivate: z.boolean().optional(),
       maxPlayers: z.number().optional(),
       rules: z.string().optional(),
     }),
@@ -38,8 +37,7 @@ export const upsertGroup = actionClient
       throw new Error("Usuário não autenticado");
     }
 
-    const { id, name, description, image, isPrivate, maxPlayers, rules } =
-      parsedInput;
+    const { id, name, description, image, maxPlayers, rules } = parsedInput;
 
     if (id) {
       const orgUpdate = await db
@@ -47,7 +45,7 @@ export const upsertGroup = actionClient
         .set({
           name,
           logo: image,
-          private: isPrivate ?? false,
+          private: true,
           maxPlayers: maxPlayers ?? 10,
           rules,
           metadata: JSON.stringify({ description }),
@@ -69,7 +67,7 @@ export const upsertGroup = actionClient
         name,
         userId: session.user.id,
         logo: image,
-        private: isPrivate ?? false,
+        private: true,
         maxPlayers: maxPlayers ?? 10,
         rules: rules ?? "",
         code: Math.random().toString(36).substring(2, 8).toUpperCase(),

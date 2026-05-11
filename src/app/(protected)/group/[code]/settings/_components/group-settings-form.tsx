@@ -27,7 +27,7 @@ export function GroupSettingsForm({ group, userRole }: GroupSettingsFormProps) {
       <BasicInfoForm group={group} userRole={userRole} id="basic-info" />
       <ConfigAccessForm group={group} userRole={userRole} id="config-access" />
       <InviteLinksSection
-        group={{ code: group.code, private: group.private }}
+        group={{ code: group.code }}
         id="invite-links"
       />
       {userRole === "owner" && (

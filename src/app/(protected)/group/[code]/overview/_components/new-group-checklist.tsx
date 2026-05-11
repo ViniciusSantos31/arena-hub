@@ -92,7 +92,7 @@ export function NewGroupChecklist({
   const hasMatch = matchesCount > 0;
 
   return (
-    <Card className="border-border/60 bg-muted/20">
+    <Card className="border-border/60 bg-muted/20 col-span-full">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-sm font-semibold">
           <span className="bg-primary/10 flex size-8 items-center justify-center rounded-lg">

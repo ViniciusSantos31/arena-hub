@@ -2,7 +2,6 @@ import { upsertGroup } from "@/actions/group/create";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { InputField } from "@/components/ui/input/field";
-import { SwitchField } from "@/components/ui/switch/field";
 import { Role } from "@/utils/role";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SaveIcon } from "lucide-react";
@@ -44,7 +43,6 @@ export const ConfigAccessForm = ({
   const methods = useForm({
     resolver: zodResolver(configAccessSchema),
     defaultValues: {
-      isPrivate: group.private,
       maxPlayers: group.maxPlayers,
     },
   });
@@ -53,7 +51,6 @@ export const ConfigAccessForm = ({
     onSuccess({ input }) {
       methods.reset(
         {
-          isPrivate: input.isPrivate,
           maxPlayers: input.maxPlayers,
         },
         { keepDirty: false },
@@ -76,7 +73,6 @@ export const ConfigAccessForm = ({
       image: group.logo,
       name: group.name,
       description: group.description || "",
-      isPrivate: data.isPrivate,
       maxPlayers: data.maxPlayers,
     });
   };
@@ -89,20 +85,6 @@ export const ConfigAccessForm = ({
           title="Configurações de Acesso"
           description="Configure quem pode acessar e participar do grupo"
         >
-          <PermissionWrapper hasPermission={isOwner}>
-            <SettingsField
-              label="Grupo Privado"
-              description="Quando ativado, apenas membros convidados podem participar"
-            >
-              <div className="flex items-center space-x-2">
-                <SwitchField
-                  name="isPrivate"
-                  label={methods.watch("isPrivate") ? "Privado" : "Público"}
-                />
-              </div>
-            </SettingsField>
-          </PermissionWrapper>
-
           <PermissionWrapper hasPermission={isOwner}>
             <SettingsField
               label="Máximo de Jogadores"

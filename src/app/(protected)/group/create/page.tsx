@@ -8,11 +8,10 @@ import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { InputField } from "@/components/ui/input/field";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { TextareaField } from "@/components/ui/textarea/field";
 import { UploadInput } from "@/components/upload-input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, LockIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -26,7 +25,6 @@ export default function CreateGroupPage() {
     defaultValues: {
       name: "",
       description: "",
-      isPrivate: false,
       maxPlayers: 10,
       rules: "",
     },
@@ -68,11 +66,11 @@ export default function CreateGroupPage() {
   }
 
   return (
-    <main className="relative flex h-full w-full flex-col items-start justify-start gap-4 overflow-y-hidden lg:flex-row">
+    <main className="relative flex w-full flex-col items-start justify-start gap-4 lg:flex-row">
       <Form {...methods}>
         <form
           onSubmit={methods.handleSubmit(onSubmit)}
-          className="scrollbar-none flex max-h-full w-full max-w-2xl flex-1 flex-col space-y-2 overflow-y-scroll rounded-lg p-2 md:p-4 lg:p-8"
+          className="scrollbar-none flex w-full max-w-2xl flex-1 flex-col space-y-2 rounded-lg"
         >
           <UploadInput
             label="Imagem do grupo"
@@ -88,7 +86,7 @@ export default function CreateGroupPage() {
               label="Nome do grupo"
               placeholder="Nome do grupo"
             />
-            <div className="flex w-full items-center space-x-4">
+            <div className="flex w-full items-end space-x-4">
               <div className="flex-1 space-y-2">
                 <Label htmlFor="maxPlayers">Máximo de jogadores</Label>
                 <Controller
@@ -153,19 +151,12 @@ export default function CreateGroupPage() {
                   )}
                 />
               </div>
-              <div className="mt-5 flex items-center space-x-2">
-                <Controller
-                  name="isPrivate"
-                  control={methods.control}
-                  render={({ field }) => (
-                    <Switch
-                      id="isPrivate"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  )}
-                />
-                <Label htmlFor="isPrivate">Grupo privado</Label>
+              <div className="flex min-h-9 flex-1 items-center gap-2 rounded-lg border border-dashed px-3 py-2">
+                <LockIcon className="text-muted-foreground h-4 w-4 shrink-0" />
+                <p className="text-muted-foreground text-xs">
+                  Seu grupo será <span className="font-semibold">privado</span>.
+                  Convide membros pelo link de acesso.
+                </p>
               </div>
             </div>
 

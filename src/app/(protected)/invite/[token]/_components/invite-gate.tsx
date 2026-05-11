@@ -38,7 +38,14 @@ export type PreviewData =
     }
   | {
       status: "ok";
-      group: { code: string; name: string; logo: string | null };
+      group: {
+        code: string;
+        name: string;
+        logo: string | null;
+        membersCount: number;
+        maxPlayers: number;
+        lastActivity: string | null;
+      };
       invite: {
         defaultRole: "guest" | "member";
         expiresAt: Date | null;
@@ -62,6 +69,9 @@ export function InviteGate({
           groupName={preview.group.name}
           invite={preview.invite}
           groupLogo={preview.group.logo}
+          membersCount={preview.group.membersCount}
+          maxPlayers={preview.group.maxPlayers}
+          lastActivity={preview.group.lastActivity}
         />
       );
     case "already-member":

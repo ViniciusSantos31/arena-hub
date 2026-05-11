@@ -12,6 +12,8 @@ export const usersTable = pgTable("user", {
     .notNull(),
   image: text("image"),
   bio: text("bio"),
+  location: text("location"),
+  lookingForGroup: boolean("looking_for_group").notNull().default(false),
   createdAt: timestamp("created_at")
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),

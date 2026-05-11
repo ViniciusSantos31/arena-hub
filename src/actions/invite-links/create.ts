@@ -47,12 +47,6 @@ export const createInviteLink = actionClient
       throw new Error("Grupo não encontrado");
     }
 
-    if (!org.private) {
-      throw new Error(
-        "Links de convite só podem ser criados em grupos privados",
-      );
-    }
-
     const myMembership = await db.query.member.findFirst({
       where: and(
         eq(member.organizationId, org.id),

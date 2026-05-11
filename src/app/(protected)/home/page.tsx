@@ -1,21 +1,24 @@
+import { listMyPendingInvites } from "@/actions/invite-links/list-pending-invites";
 import { listMyGroups } from "@/actions/group/list-my-groups";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import Link from "next/link";
 import { PiLightning } from "react-icons/pi";
 import { GroupTile } from "./_components/group-tile";
+import { PendingInvitesBanner } from "./_components/pending-invites-banner";
 import { ShortcutTile } from "./_components/shortcut-tile";
 
 export default async function HomePage() {
-  const [session, groupsRes] = await Promise.all([
+  const [session, groupsRes, pendingInvitesRes] = await Promise.all([
     auth.api.getSession({
       headers: await headers(),
     }),
     listMyGroups(),
+    listMyPendingInvites(),
   ]);
 
   const user = session?.user;
   const groups = (groupsRes?.data ?? []).filter((group) => !!group);
+  const pendingInvites = pendingInvitesRes?.data ?? [];
 
   return (
     <div className="flex flex-col gap-6">
@@ -30,6 +33,8 @@ export default async function HomePage() {
           </p>
         </div>
       </section>
+      <PendingInvitesBanner invites={pendingInvites} />
+
       <section className="space-y-3">
         <div className="space-y-1">
           <h2 className="flex items-center gap-1 text-sm font-medium">
@@ -47,10 +52,10 @@ export default async function HomePage() {
             accent="primary"
           />
           <ShortcutTile
-            title="Explorar grupos"
-            description="Descubra grupos públicos e participe de partidas"
+            title="Encontre jogadores"
+            description="Descubra jogadores procurando grupo para jogar"
             icon="search"
-            href="/feed"
+            href="/discover"
             accent="violet"
           />
           <ShortcutTile
@@ -71,12 +76,6 @@ export default async function HomePage() {
                 Acesse rapidamente seus grupos mais usados.
               </p>
             </div>
-            <Link
-              href="/feed"
-              className="text-muted-foreground hover:text-foreground text-xs font-medium underline-offset-4 hover:underline"
-            >
-              Ver mais
-            </Link>
           </div>
 
           <div className="grid gap-3 @md:grid-cols-2 @2xl:grid-cols-3">
@@ -86,7 +85,6 @@ export default async function HomePage() {
                 name={group.name ?? "Grupo sem nome"}
                 code={group.code}
                 logo={group.logo ?? undefined}
-                isPrivate={group.private ?? false}
               />
             ))}
           </div>

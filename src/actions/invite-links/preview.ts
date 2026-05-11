@@ -2,6 +2,7 @@
 
 import { db } from "@/db";
 import { organization } from "@/db/schema/auth";
+import { matchesTable } from "@/db/schema/match";
 import {
   organizationInviteLink,
   organizationInviteLinkUse,
@@ -9,7 +10,7 @@ import {
 import { member } from "@/db/schema/member";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
-import { and, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { headers } from "next/headers";
 import z from "zod/v4";
 import { hashInviteToken } from "./_utils";
@@ -52,7 +53,7 @@ export const previewInviteLink = actionClient
       where: eq(organization.id, link.organizationId),
     });
 
-    if (!org || !org.private) {
+    if (!org) {
       return { status: "invalid" as const };
     }
 
@@ -118,9 +119,32 @@ export const previewInviteLink = actionClient
       };
     }
 
+    const lastMatch = await db.query.matchesTable.findFirst({
+      where: eq(matchesTable.organizationId, link.organizationId),
+      columns: { date: true },
+      orderBy: [desc(matchesTable.date)],
+    });
+
+    const lastActivity = lastMatch?.date
+      ? new Intl.DateTimeFormat("pt-BR", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        })
+          .format(lastMatch.date)
+          .replace(".", "")
+      : null;
+
     return {
       status: "ok" as const,
-      group: { code: org.code, name: org.name, logo: org.logo },
+      group: {
+        code: org.code,
+        name: org.name,
+        logo: org.logo,
+        membersCount,
+        maxPlayers: org.maxPlayers,
+        lastActivity,
+      },
       invite: {
         defaultRole: link.defaultRole,
         expiresAt: link.expiresAt ?? null,

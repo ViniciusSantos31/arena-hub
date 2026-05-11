@@ -22,6 +22,12 @@ export const updateProfile = actionClient
         .trim()
         .max(300, "A bio deve conter no máximo 300 caracteres")
         .optional(),
+      location: z
+        .string()
+        .trim()
+        .max(100, "A localização deve conter no máximo 100 caracteres")
+        .optional(),
+      lookingForGroup: z.boolean().optional(),
       image: z.string().optional(),
     }),
   )
@@ -34,7 +40,7 @@ export const updateProfile = actionClient
       throw new Error("Usuário não autenticado");
     }
 
-    const { name, bio, image } = parsedInput;
+    const { name, bio, location, lookingForGroup, image } = parsedInput;
 
     const updated = await db
       .update(usersTable)
@@ -42,6 +48,8 @@ export const updateProfile = actionClient
         name,
         updatedAt: new Date(),
         ...(bio !== undefined && { bio: bio || null }),
+        ...(location !== undefined && { location: location || null }),
+        ...(lookingForGroup !== undefined && { lookingForGroup }),
         ...(image && { image }),
       })
       .where(eq(usersTable.id, session.user.id))
@@ -51,7 +59,7 @@ export const updateProfile = actionClient
       throw new Error("Falha ao atualizar perfil");
     }
 
-    revalidatePath("/profile");
+    revalidatePath("/profile", "layout");
 
     return updated[0];
   });

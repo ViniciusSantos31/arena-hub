@@ -11,6 +11,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { getAvatarFallback } from "@/utils/avatar";
+import Link from "next/link";
 
 const NavUserLoading = () => {
   return (
@@ -54,21 +55,26 @@ export function NavUser() {
       <SidebarMenuItem>
         <SidebarMenuButton
           size="lg"
+          asChild
           className={cn(
             "data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground",
             !open && !isMobile && "group-data-[collapsible=icon]:p-0!",
           )}
         >
-          <Avatar className="h-8 w-8 rounded-lg">
-            {user.image && <AvatarImage src={user.image} alt={user.name} />}
-            <AvatarFallback className="rounded-lg">
-              {getAvatarFallback(user.name)}
-            </AvatarFallback>
-          </Avatar>
-          <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-medium">{user.name}</span>
-            <span className="text-muted-foreground truncate">{user.email}</span>
-          </div>
+          <Link href="/profile">
+            <Avatar className="h-8 w-8 rounded-lg">
+              {user.image && <AvatarImage src={user.image} alt={user.name} />}
+              <AvatarFallback className="rounded-lg">
+                {getAvatarFallback(user.name)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-medium">{user.name}</span>
+              <span className="text-muted-foreground truncate">
+                {user.email}
+              </span>
+            </div>
+          </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>

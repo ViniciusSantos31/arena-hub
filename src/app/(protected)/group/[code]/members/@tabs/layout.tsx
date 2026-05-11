@@ -1,7 +1,6 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useGuard } from "@/hooks/use-guard";
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
 
@@ -21,10 +20,6 @@ export default function GroupMembersParallelLayout({
 }) {
   const segment = useSelectedLayoutSegment() || "active";
 
-  const canHandleRequests = useGuard({
-    action: ["membership:approve"],
-  });
-
   return (
     <Tabs
       className="flex h-full gap-0 *:data-[slot=tabs-content]:px-4"
@@ -37,11 +32,6 @@ export default function GroupMembersParallelLayout({
         <CustomTabsTrigger value="active" asChild>
           <Link href={"active"}>Ativos</Link>
         </CustomTabsTrigger>
-        {canHandleRequests && (
-          <CustomTabsTrigger value="request" asChild>
-            <Link href={"request"}>Solicitações</Link>
-          </CustomTabsTrigger>
-        )}
       </TabsList>
       <TabsContent value={segment} className="overflow-y-auto">
         {children}

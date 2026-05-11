@@ -18,7 +18,7 @@ export function InviteLinksSection({
   id,
 }: {
   id: string;
-  group: { code: string; private: boolean };
+  group: { code: string };
 }) {
   const canManageGroupLinks = useGuard({
     action: ["group:links"],
@@ -28,9 +28,8 @@ export function InviteLinksSection({
     link: "",
     open: false,
   });
-  const isPrivate = group.private;
 
-  const canViewSection = isPrivate && canManageGroupLinks;
+  const canViewSection = canManageGroupLinks;
 
   const refetchInviteLinks = useCallback(() => {
     queryClient.invalidateQueries({
