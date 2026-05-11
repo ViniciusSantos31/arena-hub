@@ -11,6 +11,7 @@ import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
 import { and, eq, sql } from "drizzle-orm";
 import { headers } from "next/headers";
+import { revalidatePath } from "next/cache";
 import z from "zod/v4";
 import { hashInviteToken } from "./_utils";
 
@@ -109,6 +110,8 @@ export const consumeInviteLink = actionClient
       inviteLinkId: link.id,
       usedByUserId: session.user.id,
     });
+
+    revalidatePath("/", "layout");
 
     return { organizationCode: org.code, alreadyMember: false };
   });
