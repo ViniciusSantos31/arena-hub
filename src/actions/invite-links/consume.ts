@@ -112,12 +112,18 @@ export const consumeInviteLink = actionClient
       usedByUserId: session.user.id,
     });
 
-    await db
-      .update(directInvitesTable)
-      .set({
-        status: "accepted",
-      })
-      .where(eq(directInvitesTable.inviteLinkId, link.id));
+    const directInvite = await db.query.directInvitesTable.findFirst({
+      where: eq(directInvitesTable.inviteLinkId, link.id),
+    });
+
+    if (directInvite) {
+      await db
+        .update(directInvitesTable)
+        .set({
+          status: "accepted",
+        })
+        .where(eq(directInvitesTable.id, directInvite.id));
+    }
 
     revalidatePath("/", "layout");
 
