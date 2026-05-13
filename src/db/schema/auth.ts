@@ -71,6 +71,8 @@ export const organization = pgTable("organization", {
     .$defaultFn(() => Math.random().toString(36).substring(2, 8).toUpperCase()),
   createdAt: timestamp("created_at").notNull(),
   metadata: text("metadata"),
+  punishmentsToSuspend: integer("punishments_to_suspend").notNull().default(3),
+  suspensionMatchCount: integer("suspension_match_count").notNull().default(3),
 });
 
 export const organizationsRelations = relations(organization, ({ many }) => ({

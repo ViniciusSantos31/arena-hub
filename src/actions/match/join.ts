@@ -2,6 +2,7 @@
 
 import { db } from "@/db";
 import { matchesTable } from "@/db/schema/match";
+import { member } from "@/db/schema/member";
 import { playersTable } from "@/db/schema/player";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
@@ -55,6 +56,39 @@ export const joinMatch = actionClient
       throw new Error(
         "Você foi banido desta partida e não pode se inscrever novamente.",
       );
+    }
+
+    // Verify suspension
+    if (membershipInfo.suspendedUntilMatchCount > 0) {
+      const match = await db.query.matchesTable.findFirst({
+        where: eq(matchesTable.id, matchId),
+        columns: { organizationId: true },
+      });
+
+      if (match?.organizationId) {
+        const [completedResult] = await db
+          .select({ value: count() })
+          .from(matchesTable)
+          .where(
+            and(
+              eq(matchesTable.organizationId, match.organizationId),
+              eq(matchesTable.status, "completed"),
+            ),
+          );
+
+        const completedMatchesCount = completedResult?.value ?? 0;
+
+        if (completedMatchesCount < membershipInfo.suspendedUntilMatchCount) {
+          throw new Error(
+            "Você está suspenso e não pode participar de partidas no momento.",
+          );
+        }
+
+        await db
+          .update(member)
+          .set({ suspendedUntilMatchCount: 0 })
+          .where(eq(member.id, membershipInfo.id));
+      }
     }
 
     const player = {

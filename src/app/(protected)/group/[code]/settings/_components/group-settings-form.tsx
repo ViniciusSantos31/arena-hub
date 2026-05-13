@@ -5,6 +5,7 @@ import { BasicInfoForm } from "./basic-info-form";
 import { ConfigAccessForm } from "./config-access-form";
 import { DeleteGroupButton } from "./delete-group-button";
 import { InviteLinksSection } from "./invite-links-section";
+import { PunishmentConfigForm } from "./punishment-config-form";
 import { SettingsSection } from "./settings-section";
 
 interface GroupSettingsFormProps {
@@ -17,6 +18,8 @@ interface GroupSettingsFormProps {
     private: boolean;
     maxPlayers: number;
     description?: string | null;
+    punishmentsToSuspend: number;
+    suspensionMatchCount: number;
   };
   userRole: Role;
 }
@@ -26,10 +29,12 @@ export function GroupSettingsForm({ group, userRole }: GroupSettingsFormProps) {
     <div className="space-y-4">
       <BasicInfoForm group={group} userRole={userRole} id="basic-info" />
       <ConfigAccessForm group={group} userRole={userRole} id="config-access" />
-      <InviteLinksSection
-        group={{ code: group.code }}
-        id="invite-links"
+      <PunishmentConfigForm
+        group={group}
+        userRole={userRole}
+        id="punishment-config"
       />
+      <InviteLinksSection group={{ code: group.code }} id="invite-links" />
       {userRole === "owner" && (
         <SettingsSection
           id="danger-zone"

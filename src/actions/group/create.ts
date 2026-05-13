@@ -26,6 +26,8 @@ export const upsertGroup = actionClient
       image: z.string(),
       maxPlayers: z.number().optional(),
       rules: z.string().optional(),
+      punishmentsToSuspend: z.number().min(1).optional(),
+      suspensionMatchCount: z.number().min(1).optional(),
     }),
   )
   .action(async ({ parsedInput }) => {
@@ -37,7 +39,16 @@ export const upsertGroup = actionClient
       throw new Error("Usuário não autenticado");
     }
 
-    const { id, name, description, image, maxPlayers, rules } = parsedInput;
+    const {
+      id,
+      name,
+      description,
+      image,
+      maxPlayers,
+      rules,
+      punishmentsToSuspend,
+      suspensionMatchCount,
+    } = parsedInput;
 
     if (id) {
       const orgUpdate = await db
@@ -49,6 +60,8 @@ export const upsertGroup = actionClient
           maxPlayers: maxPlayers ?? 10,
           rules,
           metadata: JSON.stringify({ description }),
+          ...(punishmentsToSuspend !== undefined && { punishmentsToSuspend }),
+          ...(suspensionMatchCount !== undefined && { suspensionMatchCount }),
         })
         .where(eq(organization.id, id))
         .returning();

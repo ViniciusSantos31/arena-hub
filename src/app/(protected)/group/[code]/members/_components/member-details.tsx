@@ -2,6 +2,7 @@
 
 import { getUserMembership } from "@/actions/group/membership";
 import { kickMember as kickMemberAction } from "@/actions/member/kick";
+import { removePunishment as removePunishmentAction } from "@/actions/member/remove-punishment";
 import { updateMemberScore } from "@/actions/member/update-score";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -14,15 +15,24 @@ import { queryClient } from "@/lib/react-query";
 import { getAvatarFallback } from "@/utils/avatar";
 import { Role } from "@/utils/role";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ShieldIcon, StarIcon, UserX2Icon } from "lucide-react";
+import {
+  AlertTriangleIcon,
+  BanIcon,
+  ShieldIcon,
+  ShieldOffIcon,
+  StarIcon,
+  UserX2Icon,
+} from "lucide-react";
 import { useParams } from "next/navigation";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { Member } from "../@tabs/active/page";
 import { MemberRoleBadge } from "./member-role-badge";
+import { PunishMemberDialog } from "./punish-member-dialog";
 
 export const MemberDetails = ({ member }: { member: Member }) => {
   const [score, setScore] = useState<number>(member.score as number);
+  const [isPunishDialogOpen, setIsPunishDialogOpen] = useState(false);
   const { code } = useParams<{ code: string }>();
   const session = authClient.useSession();
 
@@ -41,6 +51,34 @@ export const MemberDetails = ({ member }: { member: Member }) => {
         });
       },
     });
+
+  const {
+    mutateAsync: removePunishment,
+    isPending: removePunishmentIsPending,
+  } = useMutation({
+    mutationFn: async (memberId: string) => {
+      await removePunishmentAction({
+        memberId,
+        organizationCode: code,
+      });
+    },
+    onSuccess: () => {
+      toast.success("Punição removida com sucesso");
+      queryClient.invalidateQueries({
+        queryKey: ["active-members", code],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["member-details", member.id],
+      });
+    },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível remover a punição",
+      );
+    },
+  });
 
   const handleKickMember = (memberId?: string) => {
     if (!memberId) return;
@@ -125,6 +163,11 @@ export const MemberDetails = ({ member }: { member: Member }) => {
     return null;
   }
 
+  const showMemberActions =
+    canUpdateMember &&
+    canKickMember(membership.data.role) &&
+    !isCurrentUser;
+
   return (
     <div className="@container/card flex h-fit flex-col gap-4">
       <div className="flex flex-col items-center gap-3 px-4 pt-2 text-center">
@@ -137,10 +180,21 @@ export const MemberDetails = ({ member }: { member: Member }) => {
         <div className="flex flex-col items-center gap-1">
           <h3 className="text-foreground font-semibold">{member.name}</h3>
           <span className="text-muted-foreground text-sm">{member.email}</span>
-          <MemberRoleBadge
-            memberRole={member.role as Role}
-            memberId={member.id ?? ""}
-          />
+          <div className="flex flex-wrap items-center justify-center gap-1.5">
+            <MemberRoleBadge
+              memberRole={member.role as Role}
+              memberId={member.id ?? ""}
+            />
+            {member.isSuspended && (
+              <Badge
+                variant="destructive"
+                className="flex items-center gap-1 text-xs"
+              >
+                <BanIcon className="h-3 w-3" />
+                Suspenso
+              </Badge>
+            )}
+          </div>
         </div>
       </div>
 
@@ -173,6 +227,22 @@ export const MemberDetails = ({ member }: { member: Member }) => {
             Partidas
           </span>
         </Badge>
+        {showMemberActions && (
+          <Badge
+            variant="secondary"
+            className="shadow-primary/20 border-primary/50 bg-primary/10 flex flex-col items-center gap-1 border-b-3 py-2 shadow-lg"
+          >
+            <div className="flex items-center gap-1.5 text-orange-500">
+              <AlertTriangleIcon className="h-4 w-4" />
+              <span className="text-foreground text-lg font-bold tabular-nums">
+                {member.punishmentCount ?? 0}
+              </span>
+            </div>
+            <span className="text-muted-foreground text-[10px] tracking-wide uppercase">
+              Punições
+            </span>
+          </Badge>
+        )}
       </div>
 
       {canUpdateMember && (
@@ -194,26 +264,55 @@ export const MemberDetails = ({ member }: { member: Member }) => {
         </div>
       )}
 
-      {canUpdateMember &&
-        canKickMember(membership.data.role) &&
-        !isCurrentUser && (
-          <>
-            <div className="bg-border h-px w-full" />
-            <section className="flex w-full px-4 pb-1">
-              <div className="ml-auto">
-                <Button
-                  variant="destructive"
-                  disabled={!member.id || kickMemberIsPending}
-                  onClick={() => handleKickMember(member.id)}
-                >
-                  <UserX2Icon />
-                  <span className="hidden @md/card:block">Expulsar Membro</span>
-                  <span className="@md/card:hidden">Expulsar</span>
-                </Button>
-              </div>
-            </section>
-          </>
-        )}
+      {showMemberActions && (
+        <>
+          <div className="bg-border h-px w-full" />
+          <section className="flex w-full flex-wrap gap-2 px-4 pb-1">
+            <Button
+              variant="outline"
+              className="border-orange-500/50 text-orange-600 hover:bg-orange-50 hover:text-orange-700 dark:hover:bg-orange-950/20"
+              disabled={!member.id}
+              onClick={() => setIsPunishDialogOpen(true)}
+            >
+              <AlertTriangleIcon className="h-4 w-4" />
+              <span className="hidden @md/card:block">Punir Membro</span>
+              <span className="@md/card:hidden">Punir</span>
+            </Button>
+
+            {((member.punishmentCount ?? 0) > 0 || member.isSuspended) && (
+              <Button
+                variant="outline"
+                className="border-green-500/50 text-green-600 hover:bg-green-50 hover:text-green-700 dark:hover:bg-green-950/20"
+                disabled={!member.id || removePunishmentIsPending}
+                onClick={() => removePunishment(member.id!)}
+              >
+                <ShieldOffIcon className="h-4 w-4" />
+                <span className="hidden @md/card:block">Remover Punição</span>
+                <span className="@md/card:hidden">Remover</span>
+              </Button>
+            )}
+
+            <div className="ml-auto">
+              <Button
+                variant="destructive"
+                disabled={!member.id || kickMemberIsPending}
+                onClick={() => handleKickMember(member.id)}
+              >
+                <UserX2Icon />
+                <span className="hidden @md/card:block">Expulsar Membro</span>
+                <span className="@md/card:hidden">Expulsar</span>
+              </Button>
+            </div>
+          </section>
+
+          <PunishMemberDialog
+            open={isPunishDialogOpen}
+            onOpenChange={setIsPunishDialogOpen}
+            member={{ id: member.id, name: member.name }}
+            organizationCode={code}
+          />
+        </>
+      )}
     </div>
   );
 };

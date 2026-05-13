@@ -1,11 +1,12 @@
 "use server";
 
 import { db } from "@/db";
+import { matchesTable } from "@/db/schema/match";
 import { member } from "@/db/schema/member";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
 import { Role } from "@/utils/role";
-import { eq } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { cache } from "react";
 import z from "zod";
@@ -71,9 +72,23 @@ export const listMembers = cache(
           score: true,
           role: true,
           userId: true,
+          punishmentCount: true,
+          suspendedUntilMatchCount: true,
         },
         orderBy: (member, { desc }) => [desc(member.createdAt)],
       });
+
+      const [completedResult] = await db
+        .select({ value: count() })
+        .from(matchesTable)
+        .where(
+          and(
+            eq(matchesTable.organizationId, organization.data),
+            eq(matchesTable.status, "completed"),
+          ),
+        );
+
+      const completedMatchesCount = completedResult?.value ?? 0;
 
       return members.map((member) => ({
         id: member.id,
@@ -83,6 +98,11 @@ export const listMembers = cache(
         score: member.score,
         role: member.role as Role,
         userId: member.userId,
+        punishmentCount: member.punishmentCount,
+        suspendedUntilMatchCount: member.suspendedUntilMatchCount,
+        isSuspended:
+          member.suspendedUntilMatchCount > 0 &&
+          completedMatchesCount < member.suspendedUntilMatchCount,
         matches: member.players.reduce(
           (acc, player) =>
             acc +

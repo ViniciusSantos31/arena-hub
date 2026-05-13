@@ -4,6 +4,7 @@ import * as feedback from "./feedback";
 import * as match from "./match";
 import * as member from "./member";
 import * as player from "./player";
+import * as punishment from "./punishment";
 import * as requests from "./request";
 import * as subscription from "./subscription";
 import * as tutorial from "./tutorial";
@@ -18,6 +19,7 @@ export const schema = {
   ...member,
   ...player,
   ...match,
+  ...punishment,
   ...tutorial,
   ...requests,
   ...subscription,

@@ -12,6 +12,9 @@ export type Member = {
   role?: Role;
   score?: number;
   matches?: number;
+  punishmentCount?: number;
+  suspendedUntilMatchCount?: number;
+  isSuspended?: boolean;
 };
 
 export default async function MembersPage({

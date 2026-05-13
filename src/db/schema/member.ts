@@ -22,6 +22,10 @@ export const member = pgTable("member", {
   score: integer().notNull().default(25),
   role: roleEnum().default("member"),
   createdAt: timestamp("created_at").notNull(),
+  punishmentCount: integer("punishment_count").notNull().default(0),
+  suspendedUntilMatchCount: integer("suspended_until_match_count")
+    .notNull()
+    .default(0),
 });
 
 export const memberRelation = relations(member, ({ one, many }) => ({

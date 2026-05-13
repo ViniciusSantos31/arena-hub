@@ -1,6 +1,7 @@
 "use client";
 
 import { getUserMatchPlayer, joinMatch } from "@/actions/match/join";
+import { getUserSuspensionStatus } from "@/actions/match/suspension-status";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useWebSocket } from "@/hooks/use-websocket";
@@ -10,6 +11,7 @@ import { Status } from "@/utils/status";
 import { useQuery } from "@tanstack/react-query";
 import {
   AlertCircle,
+  BanIcon,
   Loader2Icon,
   PlayIcon,
   UserRoundMinusIcon,
@@ -34,6 +36,16 @@ export const JoinMatchButton = ({
     enabled: !!match.id,
     queryFn: async () =>
       getUserMatchPlayer({ matchId: match.id }).then((res) => res.data),
+  });
+
+  const { data: suspensionStatus } = useQuery({
+    queryKey: ["suspension-status", match.id, organizationCode],
+    enabled: !!match.id && !player,
+    queryFn: async () =>
+      getUserSuspensionStatus({
+        matchId: match.id,
+        organizationCode,
+      }).then((res) => res?.data),
   });
 
   const { sendEvent } = useWebSocket();
@@ -117,6 +129,32 @@ export const JoinMatchButton = ({
   }
 
   // ── Jogador não está na partida — mostra botão de entrada ───────────────
+  if (suspensionStatus?.isSuspended) {
+    const remaining = suspensionStatus.remainingMatches ?? 0;
+    return (
+      <Alert
+        variant="destructive"
+        className="bg-destructive/10 border-destructive flex-1"
+      >
+        <BanIcon />
+        <AlertTitle className="font-bold">Você está suspenso</AlertTitle>
+        <AlertDescription>
+          Você não pode participar de partidas no momento.
+          {remaining > 0 && (
+            <span className="block text-sm">
+              Sua suspensão se encerra após{" "}
+              <strong>
+                {remaining}{" "}
+                {remaining === 1 ? "partida concluída" : "partidas concluídas"}
+              </strong>{" "}
+              no grupo.
+            </span>
+          )}
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
   const handleJoin = async () => {
     joinMatchAction
       .executeAsync({ matchId: match.id, organizationCode })

@@ -20,6 +20,7 @@ export interface MatchPlayer {
   name?: string;
   image?: string | null;
   userId?: string | null;
+  memberId?: string | null;
   score: number;
   confirmed: boolean;
   waitingQueue?: boolean;

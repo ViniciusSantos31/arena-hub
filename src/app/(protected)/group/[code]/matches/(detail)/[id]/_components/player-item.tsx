@@ -7,6 +7,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
@@ -17,9 +18,11 @@ import {
   CheckIcon,
   LoaderIcon,
   MoreVerticalIcon,
+  UserRoundIcon,
   UserRoundXIcon,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { PlayerMemberDetailsDialog } from "./player-member-details-dialog";
 import { RemovePlayerDialog } from "./remove-player-dialog";
 
 interface PlayerItemProps {
@@ -31,6 +34,7 @@ interface PlayerItemProps {
     confirmed?: boolean;
     confirmedAt?: Date;
     userId?: string | null;
+    memberId?: string | null;
   };
   ref?: React.Ref<HTMLDivElement>;
   canModerate?: boolean;
@@ -48,6 +52,7 @@ export const PlayerItem = ({
   matchStatus,
 }: PlayerItemProps) => {
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
+  const [memberDetailsOpen, setMemberDetailsOpen] = useState(false);
 
   const isAbleToRemovePlayer = useMemo(() => {
     return (
@@ -120,7 +125,7 @@ export const PlayerItem = ({
               {formatDate(player.confirmedAt, "DD/MM/YYYY [às] HH:mm")}
             </span>
           )}
-          {isAbleToRemovePlayer && (
+          {canModerate && player.memberId && organizationCode && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -134,12 +139,24 @@ export const PlayerItem = ({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
-                  className="text-destructive focus:text-destructive gap-2"
-                  onSelect={() => setRemoveDialogOpen(true)}
+                  className="gap-2"
+                  onSelect={() => setMemberDetailsOpen(true)}
                 >
-                  <UserRoundXIcon className="text-destructive size-4" />
-                  Remover da partida
+                  <UserRoundIcon className="size-4" />
+                  Ver detalhes / Punir
                 </DropdownMenuItem>
+                {isAbleToRemovePlayer && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      className="text-destructive focus:text-destructive gap-2"
+                      onSelect={() => setRemoveDialogOpen(true)}
+                    >
+                      <UserRoundXIcon className="text-destructive size-4" />
+                      Remover da partida
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           )}
@@ -156,6 +173,15 @@ export const PlayerItem = ({
             image: player.image,
           }}
           matchId={matchId}
+          organizationCode={organizationCode}
+        />
+      )}
+
+      {canModerate && player.memberId && organizationCode && (
+        <PlayerMemberDetailsDialog
+          open={memberDetailsOpen}
+          onOpenChange={setMemberDetailsOpen}
+          memberId={player.memberId}
           organizationCode={organizationCode}
         />
       )}

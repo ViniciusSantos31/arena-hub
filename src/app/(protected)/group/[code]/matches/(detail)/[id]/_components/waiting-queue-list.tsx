@@ -45,7 +45,10 @@ export const WaitingQueueList = ({
         {players?.map((player) => (
           <PlayerItem
             key={player.id}
-            player={player}
+            player={{
+              ...player,
+              memberId: player.memberId ?? null,
+            }}
             canModerate={canModerate}
             matchId={id}
             organizationCode={organizationCode}
