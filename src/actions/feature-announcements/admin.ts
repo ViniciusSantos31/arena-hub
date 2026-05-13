@@ -1,10 +1,12 @@
 "use server";
 
 import { db } from "@/db";
-import { featureAnnouncement } from "@/db/schema/feature-announcement";
+import { featureAnnouncement, userFeatureAnnouncementState } from "@/db/schema/feature-announcement";
+import { organization } from "@/db/schema/auth";
+import { member } from "@/db/schema/member";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
-import { desc, eq } from "drizzle-orm";
+import { count, desc, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { z } from "zod/v4";
 import { adminUpsertFeatureAnnouncementSchema } from "./_schema";
@@ -113,5 +115,33 @@ export const adminDeleteFeatureAnnouncement = actionClient
     await db.delete(featureAnnouncement).where(eq(featureAnnouncement.id, parsedInput.id));
 
     return { success: true };
+  });
+
+export const adminGetAnnouncementStats = actionClient
+  .inputSchema(z.object({ announcementId: z.string().min(1) }))
+  .action(async ({ parsedInput }) => {
+    await assertAdmin();
+
+    const viewsByGroup = await db
+      .select({
+        organizationId: organization.id,
+        organizationName: organization.name,
+        organizationCode: organization.code,
+        viewCount: count(userFeatureAnnouncementState.userId),
+      })
+      .from(userFeatureAnnouncementState)
+      .innerJoin(member, eq(member.userId, userFeatureAnnouncementState.userId))
+      .innerJoin(organization, eq(organization.id, member.organizationId))
+      .where(eq(userFeatureAnnouncementState.announcementId, parsedInput.announcementId))
+      .groupBy(organization.id, organization.name, organization.code)
+      .orderBy(desc(count(userFeatureAnnouncementState.userId)));
+
+    const totalViews = await db
+      .select({ total: count() })
+      .from(userFeatureAnnouncementState)
+      .where(eq(userFeatureAnnouncementState.announcementId, parsedInput.announcementId))
+      .then((rows) => rows[0]?.total ?? 0);
+
+    return { totalViews, viewsByGroup };
   });
 

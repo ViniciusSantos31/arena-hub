@@ -13,7 +13,7 @@ import {
 import { ResponsiveDialog } from "@/components/responsive-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { InputField } from "@/components/ui/input/field";
@@ -21,12 +21,36 @@ import { TextareaField } from "@/components/ui/textarea/field";
 import type { GroupAction } from "@/lib/group-permissions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAction } from "next-safe-action/hooks";
-import { MegaphoneIcon, PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
+import {
+  BarChart3Icon,
+  BookOpenIcon,
+  CalendarIcon,
+  EyeIcon,
+  MegaphoneIcon,
+  PencilIcon,
+  PlusIcon,
+  SparklesIcon,
+  TrashIcon,
+  UsersIcon,
+  type LucideIcon,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { z } from "zod/v4";
+import { AnnouncementPreviewDialog } from "./announcement-preview-dialog";
+import { AnnouncementStatsDialog } from "./announcement-stats-dialog";
+
+const ICONS: Record<string, LucideIcon> = {
+  Sparkles: SparklesIcon,
+  Users: UsersIcon,
+  BookOpen: BookOpenIcon,
+};
+
+function resolveIcon(name: string | null | undefined): LucideIcon {
+  return (name && ICONS[name]) || SparklesIcon;
+}
 
 type Announcement = {
   id: string;
@@ -73,6 +97,16 @@ function toDatetimeLocalValue(date: Date | null | undefined) {
   return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
 }
 
+function formatDate(date: Date | null) {
+  if (!date) return null;
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
 export function FeatureAnnouncementsAdmin({
   announcements,
 }: {
@@ -81,6 +115,8 @@ export function FeatureAnnouncementsAdmin({
   const router = useRouter();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Announcement | null>(null);
+  const [previewAnnouncement, setPreviewAnnouncement] = useState<Announcement | null>(null);
+  const [statsAnnouncement, setStatsAnnouncement] = useState<Announcement | null>(null);
 
   const createAction = useAction(adminCreateFeatureAnnouncement, {
     onSuccess: () => {
@@ -367,72 +403,143 @@ export function FeatureAnnouncementsAdmin({
         }
       />
 
+      {previewAnnouncement && (
+        <AnnouncementPreviewDialog
+          open={Boolean(previewAnnouncement)}
+          onOpenChange={(open) => { if (!open) setPreviewAnnouncement(null); }}
+          title={previewAnnouncement.title}
+          description={previewAnnouncement.description}
+          icon={previewAnnouncement.icon}
+          dismissButtonLabel={previewAnnouncement.dismissButtonLabel}
+        />
+      )}
+
+      {statsAnnouncement && (
+        <AnnouncementStatsDialog
+          open={Boolean(statsAnnouncement)}
+          onOpenChange={(open) => { if (!open) setStatsAnnouncement(null); }}
+          announcementId={statsAnnouncement.id}
+          announcementTitle={statsAnnouncement.title}
+        />
+      )}
+
       <div className="grid gap-4 md:grid-cols-2">
-        {announcements.map((a) => (
-          <Card key={a.id} className="border-border/60">
-            <CardHeader className="space-y-2">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <CardTitle className="truncate text-base">{a.title}</CardTitle>
-                  <div className="text-muted-foreground mt-1 text-xs">
-                    <span className="font-mono">{a.slug}</span>
+        {announcements.map((a) => {
+          const Icon = resolveIcon(a.icon);
+          const startStr = formatDate(a.startsAt);
+          const endStr = formatDate(a.endsAt);
+
+          return (
+            <Card key={a.id} className="group overflow-hidden transition-shadow hover:shadow-md">
+              <CardHeader className="pb-3">
+                <div className="flex items-start gap-3">
+                  <div className="bg-primary/10 mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-lg">
+                    <Icon className="text-primary size-5" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="truncate font-semibold leading-tight">{a.title}</h3>
+                      <Badge
+                        variant={a.isActive ? "default" : "secondary"}
+                        className="shrink-0 text-xs"
+                      >
+                        <span
+                          className={`mr-1.5 inline-block size-1.5 rounded-full ${a.isActive ? "bg-green-300" : "bg-muted-foreground/40"}`}
+                        />
+                        {a.isActive ? "Ativo" : "Inativo"}
+                      </Badge>
+                    </div>
+                    <div className="text-muted-foreground mt-0.5 font-mono text-xs">{a.slug}</div>
                   </div>
                 </div>
-                <Badge variant={a.isActive ? "default" : "secondary"}>
-                  {a.isActive ? "Ativo" : "Inativo"}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3 pt-0">
-              <div className="text-muted-foreground text-sm">{a.description}</div>
-              <div className="text-muted-foreground space-y-1 text-xs">
-                <div>
-                  <span className="font-medium">Permissão:</span>{" "}
-                  <span className="font-mono">{a.requiredAction}</span>
-                </div>
-                <div>
-                  <span className="font-medium">Botão fechar:</span>{" "}
-                  <span>{a.dismissButtonLabel}</span>
-                </div>
-              </div>
+              </CardHeader>
 
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => openEdit(a)}
-                >
-                  <PencilIcon className="h-4 w-4" />
-                  Editar
-                </Button>
-                <Button
-                  variant={a.isActive ? "secondary" : "default"}
-                  size="sm"
-                  onClick={() =>
-                    toggleAction.execute({
-                      id: a.id,
-                      isActive: !a.isActive,
-                    })
-                  }
-                  disabled={toggleAction.isPending || toggleAction.isExecuting}
-                >
-                  {a.isActive ? "Desativar" : "Ativar"}
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => deleteAction.execute({ id: a.id })}
-                  disabled={deleteAction.isPending || deleteAction.isExecuting}
-                >
-                  <TrashIcon className="h-4 w-4" />
-                  Remover
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              <CardContent className="space-y-4 pt-0">
+                <p className="text-muted-foreground line-clamp-2 text-sm">{a.description}</p>
+
+                <div className="text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 text-xs">
+                  <span>
+                    <span className="font-medium">Permissão:</span>{" "}
+                    <code className="bg-muted rounded px-1 py-0.5">{a.requiredAction}</code>
+                  </span>
+                  <span>
+                    <span className="font-medium">Prioridade:</span> {a.priority}
+                  </span>
+                </div>
+
+                {(startStr || endStr) && (
+                  <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
+                    <CalendarIcon className="size-3.5 shrink-0" />
+                    {startStr && endStr ? (
+                      <span>{startStr} → {endStr}</span>
+                    ) : startStr ? (
+                      <span>A partir de {startStr}</span>
+                    ) : (
+                      <span>Até {endStr}</span>
+                    )}
+                  </div>
+                )}
+
+                <div className="border-border/50 border-t pt-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => openEdit(a)}
+                    >
+                      <PencilIcon className="h-3.5 w-3.5" />
+                      Editar
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPreviewAnnouncement(a)}
+                    >
+                      <EyeIcon className="h-3.5 w-3.5" />
+                      Preview
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setStatsAnnouncement(a)}
+                    >
+                      <BarChart3Icon className="h-3.5 w-3.5" />
+                      Estatísticas
+                    </Button>
+
+                    <div className="ml-auto flex items-center gap-2">
+                      <Button
+                        variant={a.isActive ? "secondary" : "default"}
+                        size="sm"
+                        onClick={() =>
+                          toggleAction.execute({
+                            id: a.id,
+                            isActive: !a.isActive,
+                          })
+                        }
+                        disabled={toggleAction.isPending || toggleAction.isExecuting}
+                      >
+                        {a.isActive ? "Desativar" : "Ativar"}
+                      </Button>
+
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => deleteAction.execute({ id: a.id })}
+                        disabled={deleteAction.isPending || deleteAction.isExecuting}
+                      >
+                        <TrashIcon className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
 }
-
