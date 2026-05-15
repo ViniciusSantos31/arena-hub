@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 import { relations } from "drizzle-orm";
 import {
+  boolean,
   integer,
   pgEnum,
   pgTable,
@@ -36,6 +37,8 @@ export const matchesTable = pgTable("match", {
   status: matchStatusEnum("status").notNull().default("open_registration"),
   minPlayers: integer("min_players").notNull(),
   maxPlayers: integer("max_players").notNull(),
+  isPaid: boolean("is_paid").notNull().default(false),
+  price: integer("price"),
   scheduledTo: timestamp("scheduled_to"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")

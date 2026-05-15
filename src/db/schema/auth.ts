@@ -73,6 +73,7 @@ export const organization = pgTable("organization", {
   metadata: text("metadata"),
   punishmentsToSuspend: integer("punishments_to_suspend").notNull().default(3),
   suspensionMatchCount: integer("suspension_match_count").notNull().default(3),
+  stripeAccountId: text("stripe_account_id"),
 });
 
 export const organizationsRelations = relations(organization, ({ many }) => ({

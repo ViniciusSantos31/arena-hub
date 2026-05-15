@@ -3,6 +3,7 @@ import * as directInvites from "./direct-invite";
 import * as feedback from "./feedback";
 import * as match from "./match";
 import * as member from "./member";
+import * as paymentExemptions from "./payment-exemption";
 import * as player from "./player";
 import * as punishment from "./punishment";
 import * as requests from "./request";
@@ -26,4 +27,5 @@ export const schema = {
   ...inviteLinks,
   ...featureAnnouncements,
   ...directInvites,
+  ...paymentExemptions,
 };

@@ -3,10 +3,18 @@ import { relations } from "drizzle-orm";
 import {
   boolean,
   integer,
+  pgEnum,
   pgTable,
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
+
+export const paymentStatusEnum = pgEnum("payment_status", [
+  "pending",
+  "paid",
+  "refunded",
+  "exempt",
+]);
 import { matchesTable } from "./match";
 import { member } from "./member";
 import { usersTable } from "./user";
@@ -33,6 +41,8 @@ export const playersTable = pgTable("player", {
   removalReason: text("removal_reason"),
   bannedFromMatch: boolean("banned_from_match").notNull().default(false),
 
+  paymentStatus: paymentStatusEnum("payment_status").notNull().default("pending"),
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
   confirmedAt: timestamp("confirmed_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
