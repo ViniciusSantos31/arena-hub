@@ -37,7 +37,7 @@ export function GroupSettingsForm({ group, userRole }: GroupSettingsFormProps) {
         id="punishment-config"
       />
       <InviteLinksSection group={{ code: group.code }} id="invite-links" />
-      {(userRole === "owner" || userRole === "admin") && (
+      {userRole === "owner" && (
         <StripeConnectSection
           group={{
             id: group.id,

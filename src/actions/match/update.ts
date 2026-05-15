@@ -10,6 +10,7 @@ import {
   NotifiableStatus,
   notifyMatchStatusUpdate,
 } from "@/lib/push-notification";
+import { settleStripeOnMatchCancel } from "@/lib/stripe-settle-on-match-cancel";
 import dayjs from "dayjs";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
@@ -61,6 +62,20 @@ export const updateMatch = actionClient
     const currentMatch = await db.query.matchesTable.findFirst({
       where: (m, { eq }) => eq(m.id, parsedInput.match.id),
     });
+
+    const isCancellingPaidMatch =
+      parsedInput.match.status === "cancelled" &&
+      currentMatch?.status !== "cancelled" &&
+      currentMatch?.isPaid === true;
+
+    if (isCancellingPaidMatch) {
+      const stripeResult = await settleStripeOnMatchCancel(parsedInput.match.id);
+      if (stripeResult.refundFailures.length > 0) {
+        throw new Error(
+          `Não foi possível concluir todos os estornos. ${stripeResult.refundFailures.slice(0, 3).join(" ")}`,
+        );
+      }
+    }
 
     await db
       .update(matchesTable)

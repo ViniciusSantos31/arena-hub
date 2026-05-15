@@ -13,10 +13,11 @@ import { getSportIconById, Sport } from "@/utils/sports";
 import { Status } from "@/utils/status";
 import { MatchStatusBadge } from "../../../_components/match-status-badge";
 import { MatchStatusBadgeRealtime } from "../../../_components/match-status-badge-realtime";
-import { JoinMatchButton } from "../_components/join-match-button";
 import { useMatchPlayers } from "../_hooks";
 import { useMatch } from "../_hooks/useMatch";
 import { ConfirmPresenceButton } from "./confirm-presence-button";
+import { JoinMatchButton } from "../_components/join-match-button";
+import { PayWithCheckoutLinkButton } from "./pay-with-checkout-link-button";
 
 export const MatchDetailCard = ({ code }: { code: string }) => {
   const { data: match, isLoading } = useMatch();
@@ -62,11 +63,15 @@ export const MatchDetailCard = ({ code }: { code: string }) => {
           <span className="text-muted-foreground text-sm">
             {filledPlayers} / {maxPlayers} vagas
           </span>
-          <span className="text-primary font-semibold">Grátis</span>
+          <span className="text-primary font-semibold">
+            {match.isPaid && match.price != null
+              ? `${new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(match.price / 100)} / jogador`
+              : "Grátis"}
+          </span>
         </div>
         <Progress value={progressValue} className="h-1.5" />
       </CardContent>
-      <CardFooter className="gap-2 border-t pt-4">
+      <CardFooter className="flex flex-wrap gap-2 border-t pt-4">
         <JoinMatchButton
           match={{
             id: match.id,
@@ -75,7 +80,17 @@ export const MatchDetailCard = ({ code }: { code: string }) => {
           }}
           organizationCode={code}
         />
-        <ConfirmPresenceButton matchId={match.id} matchStatus={match.status} />
+        <PayWithCheckoutLinkButton
+          matchId={match.id}
+          matchStatus={match.status as Status}
+          organizationCode={code}
+          isPaid={!!match.isPaid}
+        />
+        <ConfirmPresenceButton
+          matchId={match.id}
+          matchStatus={match.status as Status}
+          isPaid={!!match.isPaid}
+        />
       </CardFooter>
     </Card>
   );

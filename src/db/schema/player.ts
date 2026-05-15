@@ -8,6 +8,9 @@ import {
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
+import { matchesTable } from "./match";
+import { member } from "./member";
+import { usersTable } from "./user";
 
 export const paymentStatusEnum = pgEnum("payment_status", [
   "pending",
@@ -15,9 +18,6 @@ export const paymentStatusEnum = pgEnum("payment_status", [
   "refunded",
   "exempt",
 ]);
-import { matchesTable } from "./match";
-import { member } from "./member";
-import { usersTable } from "./user";
 
 export const playersTable = pgTable("player", {
   id: text("id")
@@ -43,6 +43,7 @@ export const playersTable = pgTable("player", {
 
   paymentStatus: paymentStatusEnum("payment_status").notNull().default("pending"),
   stripePaymentIntentId: text("stripe_payment_intent_id"),
+  stripeCheckoutSessionId: text("stripe_checkout_session_id"),
   confirmedAt: timestamp("confirmed_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")

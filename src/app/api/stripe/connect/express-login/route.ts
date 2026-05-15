@@ -4,20 +4,22 @@ import { stripe } from "@/lib/stripe";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+/**
+ * Link mágico para o painel Stripe Express (contas conectadas), sem URL genérica do dashboard.
+ */
+export async function POST(req: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session?.user) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
 
-  const { searchParams } = new URL(req.url);
-  const organizationId = searchParams.get("organizationId");
-  const accountId = searchParams.get("accountId");
+  const body = (await req.json()) as { organizationId?: string };
+  const organizationId = body.organizationId;
 
-  if (!organizationId || !accountId) {
+  if (!organizationId) {
     return NextResponse.json(
-      { error: "organizationId e accountId são obrigatórios" },
+      { error: "organizationId é obrigatório" },
       { status: 400 },
     );
   }
@@ -26,15 +28,18 @@ export async function GET(req: NextRequest) {
     session.user.id,
     organizationId,
   );
-  if (!org || org.stripeAccountId !== accountId) {
+  if (!org) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
   }
 
-  const account = await stripe.accounts.retrieve(accountId);
+  if (!org.stripeAccountId) {
+    return NextResponse.json(
+      { error: "Nenhuma conta Stripe conectada a este grupo" },
+      { status: 400 },
+    );
+  }
 
-  return NextResponse.json({
-    chargesEnabled: account.charges_enabled,
-    payoutsEnabled: account.payouts_enabled,
-    detailsSubmitted: account.details_submitted,
-  });
+  const loginLink = await stripe.accounts.createLoginLink(org.stripeAccountId);
+
+  return NextResponse.json({ url: loginLink.url });
 }

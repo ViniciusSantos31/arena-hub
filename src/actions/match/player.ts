@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/db";
+import { matchesTable } from "@/db/schema/match";
 import { playersTable } from "@/db/schema/player";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
@@ -19,6 +20,7 @@ const buildReturnPlayer = (player: {
   confirmedAt: Date | null;
   teamId: number | null;
   memberId: string | null;
+  paymentStatus: "pending" | "paid" | "refunded" | "exempt";
   user: {
     id: string;
     name: string;
@@ -38,6 +40,7 @@ const buildReturnPlayer = (player: {
     confirmed: player.confirmed,
     confirmedAt: player.confirmedAt,
     waitingQueue: player.waitingQueue,
+    paymentStatus: player.paymentStatus,
   };
 };
 
@@ -103,6 +106,39 @@ export const confirmMatchPresence = actionClient
     }
 
     const userId = session.user.id;
+
+    const matchRow = await db.query.matchesTable.findFirst({
+      where: eq(matchesTable.id, matchId),
+      columns: { isPaid: true },
+    });
+
+    if (!matchRow) {
+      throw new Error("Partida não encontrada");
+    }
+
+    const existing = await db.query.playersTable.findFirst({
+      where: and(
+        eq(playersTable.matchId, matchId),
+        eq(playersTable.userId, userId),
+      ),
+    });
+
+    if (!existing) {
+      throw new Error("Player not found in the match");
+    }
+
+    if (matchRow.isPaid && existing.paymentStatus === "pending") {
+      throw new Error(
+        "Conclua o pagamento pelo link enviado para participar desta partida.",
+      );
+    }
+
+    if (existing.confirmed) {
+      return {
+        id: existing.id,
+        confirmed: existing.confirmed,
+      };
+    }
 
     const player = await db
       .update(playersTable)

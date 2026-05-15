@@ -1,6 +1,7 @@
 import { db } from "@/db";
 import { organization } from "@/db/schema/auth";
 import { auth } from "@/lib/auth";
+import { getOrgIfUserCanManageStripe } from "@/lib/stripe-connect-access";
 import { stripe } from "@/lib/stripe";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
@@ -21,14 +22,30 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL("/home", req.url));
   }
 
-  const account = await stripe.accounts.retrieve(accountId);
-
-  if (account.details_submitted) {
-    await db
-      .update(organization)
-      .set({ stripeAccountId: accountId })
-      .where(eq(organization.id, organizationId));
+  const orgAccess = await getOrgIfUserCanManageStripe(
+    session.user.id,
+    organizationId,
+  );
+  if (!orgAccess) {
+    return NextResponse.redirect(new URL("/home", req.url));
   }
+
+  if (orgAccess.stripeAccountId && orgAccess.stripeAccountId !== accountId) {
+    return NextResponse.redirect(new URL("/home", req.url));
+  }
+
+  const account = await stripe.accounts.retrieve(accountId);
+  if (
+    account.metadata?.organizationId &&
+    account.metadata.organizationId !== organizationId
+  ) {
+    return NextResponse.redirect(new URL("/home", req.url));
+  }
+
+  await db
+    .update(organization)
+    .set({ stripeAccountId: accountId })
+    .where(eq(organization.id, organizationId));
 
   const org = await db.query.organization.findFirst({
     where: eq(organization.id, organizationId),
