@@ -7,6 +7,7 @@ import { DeleteGroupButton } from "./delete-group-button";
 import { InviteLinksSection } from "./invite-links-section";
 import { PunishmentConfigForm } from "./punishment-config-form";
 import { SettingsSection } from "./settings-section";
+import { StripeConnectSection } from "./stripe-connect-section";
 
 interface GroupSettingsFormProps {
   group: {
@@ -20,6 +21,7 @@ interface GroupSettingsFormProps {
     description?: string | null;
     punishmentsToSuspend: number;
     suspensionMatchCount: number;
+    stripeAccountId: string | null;
   };
   userRole: Role;
 }
@@ -35,6 +37,16 @@ export function GroupSettingsForm({ group, userRole }: GroupSettingsFormProps) {
         id="punishment-config"
       />
       <InviteLinksSection group={{ code: group.code }} id="invite-links" />
+      {(userRole === "owner" || userRole === "admin") && (
+        <StripeConnectSection
+          group={{
+            id: group.id,
+            code: group.code,
+            stripeAccountId: group.stripeAccountId,
+          }}
+          id="payments"
+        />
+      )}
       {userRole === "owner" && (
         <SettingsSection
           id="danger-zone"
