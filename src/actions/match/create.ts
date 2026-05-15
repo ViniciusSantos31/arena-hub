@@ -2,10 +2,13 @@
 
 import { createMatchSchema } from "@/app/(protected)/group/[code]/matches/_schema/create";
 import { db } from "@/db";
+import { organization as organizationTable } from "@/db/schema/auth";
 import { matchesTable } from "@/db/schema/match";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
+import { stripe } from "@/lib/stripe";
 import dayjs from "dayjs";
+import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import z from "zod/v4";
 import { getOrgIdByCode } from "../group/get-org-by-code";
@@ -33,7 +36,7 @@ export const createMatch = actionClient
       throw new Error("User not authenticated");
     }
 
-    const { organizationCode: code, ...data } = parsedInput;
+    const { organizationCode: code } = parsedInput;
 
     if (!code) {
       throw new Error("Organization code is required");
@@ -49,7 +52,38 @@ export const createMatch = actionClient
 
     const organizationId = group.data;
 
-    const dateTime = getDateWithTime(data.date, data.time);
+    const orgRow = await db.query.organization.findFirst({
+      where: eq(organizationTable.id, organizationId),
+      columns: { stripeAccountId: true },
+    });
+
+    if (parsedInput.isPaid) {
+      if (!orgRow?.stripeAccountId) {
+        throw new Error(
+          "Conecte sua conta Stripe nas configurações do grupo para criar partidas pagas.",
+        );
+      }
+      const account = await stripe.accounts.retrieve(orgRow.stripeAccountId);
+      if (!account.charges_enabled) {
+        throw new Error(
+          "Complete o cadastro no Stripe nas configurações do grupo antes de criar partidas pagas.",
+        );
+      }
+    }
+
+    const {
+      organizationCode: _code,
+      priceReais,
+      isPaid,
+      ...matchPayload
+    } = parsedInput;
+
+    const priceCents =
+      isPaid && priceReais != null && !Number.isNaN(priceReais)
+        ? Math.round(priceReais * 100)
+        : null;
+
+    const dateTime = getDateWithTime(matchPayload.date, matchPayload.time);
     const dateTimeUTC = dayjs(dateTime).utc().toDate();
 
     // Here you would typically interact with your database to create the match.
@@ -57,10 +91,12 @@ export const createMatch = actionClient
     const match = await db
       .insert(matchesTable)
       .values({
-        ...data,
+        ...matchPayload,
         date: dateTimeUTC,
         time: dayjs(dateTimeUTC).format("HH:mm"),
         organizationId,
+        isPaid,
+        price: isPaid ? priceCents : null,
       })
       .onConflictDoNothing()
       .returning()

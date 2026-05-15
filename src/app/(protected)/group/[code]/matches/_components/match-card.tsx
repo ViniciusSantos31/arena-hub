@@ -34,6 +34,14 @@ export const MatchCard = ({ match }: MatchCardProps) => {
 
   const SportIcon = getSportIconById(match.sport as Sport);
 
+  const priceLabel =
+    match.isPaid && match.price != null
+      ? new Intl.NumberFormat("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }).format(match.price / 100)
+      : "Grátis";
+
   return (
     <Link href={`matches/${match.id}`} className="group w-full">
       <Card className="border-border/60 hover:border-primary/20 h-full transition-all duration-200">
@@ -70,7 +78,9 @@ export const MatchCard = ({ match }: MatchCardProps) => {
               <span className="text-muted-foreground">
                 {filledPlayers} / {match.maxPlayers} vagas
               </span>
-              <span className="text-primary text-sm font-semibold">Grátis</span>
+              <span className="text-primary text-sm font-semibold">
+                {priceLabel}
+              </span>
             </div>
             <Progress value={progressValue} className="h-1.5" />
           </div>

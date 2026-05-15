@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
     country: "BR",
     capabilities: {
       transfers: { requested: true },
+      card_payments: { requested: true },
     },
     metadata: {
       organizationId,
