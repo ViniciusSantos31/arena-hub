@@ -12,11 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  ArrowRightIcon,
-  PlayIcon,
-  UsersIcon,
-} from "lucide-react";
+import { ArrowRightIcon, PlayIcon, UsersIcon } from "lucide-react";
 import Link from "next/link";
 import { GroupRankingCard } from "./_components/group-ranking-card";
 import { NextMatchCard } from "./_components/next-match-card";
@@ -150,15 +146,6 @@ export default async function GroupDashboardPage({
                 </div>
               </div>
             </div>
-            {/* {!!details.data?.matchesPercentageRate && (
-              <div className="bg-primary/5 border-primary/10 mt-3 flex items-center gap-2 rounded-xl border p-3">
-                <TrendingUpIcon className="text-primary h-4 w-4 shrink-0" />
-                <span className="text-primary text-xs font-medium">
-                  +{details.data?.matchesPercentageRate}% em relação ao período
-                  anterior
-                </span>
-              </div>
-            )} */}
           </CardContent>
           <CardFooter className="border-t pt-3 @[26rem]/card:hidden">
             <Button

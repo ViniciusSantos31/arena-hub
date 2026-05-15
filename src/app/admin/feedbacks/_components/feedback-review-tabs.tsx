@@ -4,13 +4,11 @@ import {
   adminDeleteFeedback,
   adminSetFeedbackApproval,
 } from "@/actions/admin/feedback";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FeedbackCardsGrid } from "@/app/admin/feedbacks/_components/feedback-cards-grid";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAction } from "next-safe-action/hooks";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { FeedbackCardsGrid } from "@/app/admin/feedbacks/_components/feedback-cards-grid";
 
 type FeedbackRow = {
   id: string;
@@ -95,51 +93,37 @@ export function FeedbackReviewTabs({
   };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between gap-4">
-        <CardTitle>Revisão</CardTitle>
-        <Button
-          variant="outline"
-          onClick={() => window.location.reload()}
-          disabled={isBusy}
-        >
-          Recarregar
-        </Button>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="pending">
-          <TabsList>
-            <TabsTrigger value="pending">
-              Pendentes ({pendingRows.length})
-            </TabsTrigger>
-            <TabsTrigger value="approved">
-              Aprovados ({approvedRows.length})
-            </TabsTrigger>
-          </TabsList>
+    <Tabs defaultValue="pending">
+      <TabsList>
+        <TabsTrigger value="pending">
+          Pendentes ({pendingRows.length})
+        </TabsTrigger>
+        <TabsTrigger value="approved">
+          Aprovados ({approvedRows.length})
+        </TabsTrigger>
+      </TabsList>
 
-          <TabsContent value="pending" className="pt-4">
-            <FeedbackCardsGrid
-              rows={pendingRows}
-              primaryActionLabel="Aprovar"
-              secondaryActionLabel="Reprovar"
-              onPrimaryAction={approve}
-              onSecondaryAction={remove}
-              disableActions={isBusy}
-            />
-          </TabsContent>
+      <TabsContent value="pending" className="pt-4">
+        <FeedbackCardsGrid
+          rows={pendingRows}
+          primaryActionLabel="Aprovar"
+          secondaryActionLabel="Reprovar"
+          onPrimaryAction={approve}
+          onSecondaryAction={remove}
+          disableActions={isBusy}
+        />
+      </TabsContent>
 
-          <TabsContent value="approved" className="pt-4">
-            <FeedbackCardsGrid
-              rows={approvedRows}
-              primaryActionLabel="Desaprovar"
-              secondaryActionLabel={null}
-              onPrimaryAction={reject}
-              onSecondaryAction={undefined}
-              disableActions={isBusy}
-            />
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
+      <TabsContent value="approved" className="pt-4">
+        <FeedbackCardsGrid
+          rows={approvedRows}
+          primaryActionLabel="Desaprovar"
+          secondaryActionLabel={null}
+          onPrimaryAction={reject}
+          onSecondaryAction={undefined}
+          disableActions={isBusy}
+        />
+      </TabsContent>
+    </Tabs>
   );
 }

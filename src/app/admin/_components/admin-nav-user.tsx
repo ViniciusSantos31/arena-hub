@@ -1,32 +1,21 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { auth } from "@/lib/auth";
+import { authClient } from "@/lib/auth-client";
 import { ShieldCheckIcon } from "lucide-react";
-import { headers } from "next/headers";
 
-export async function AdminNavUser() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+export function AdminNavUser() {
+  const session = authClient.useSession();
 
-  const user = session?.user;
+  const user = session?.data?.user;
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <SidebarMenuButton
-          size="lg"
-          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-        >
-          <Avatar className="h-8 w-8 rounded-lg">
-            <AvatarFallback className="bg-primary text-primary-foreground rounded-lg">
-              <ShieldCheckIcon className="h-4 w-4" />
-            </AvatarFallback>
-          </Avatar>
+        <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground group-data-[collapsible=icon]:bg-primary/25 group-data-[collapsible=icon]:text-primary group-data-[collapsible=icon]:hover:bg-primary/50 h-12 transition-colors">
+          <ShieldCheckIcon />
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate font-semibold">
               {user?.name || "Admin"}

@@ -47,9 +47,11 @@ const ROLE_ACTIONS: Record<Role, GroupAction[]> = {
   guest: ["match:read", "match:join_queue"],
 };
 
-export function roleHasActions(role: Role | null | undefined, actions: GroupAction[]) {
+export function roleHasActions(
+  role: Role | null | undefined,
+  actions: GroupAction[],
+) {
   if (!role) return false;
   const allowed = ROLE_ACTIONS[role] ?? [];
   return actions.every((a) => allowed.includes(a));
 }
-

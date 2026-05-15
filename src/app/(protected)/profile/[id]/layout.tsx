@@ -20,7 +20,7 @@ export default function PublicProfileLayout({
           <PageTitle>Perfil do jogador</PageTitle>
         </div>
       </PageHeader>
-      <PageContent>{children}</PageContent>
+      <PageContent className="px-0">{children}</PageContent>
     </PageContainer>
   );
 }

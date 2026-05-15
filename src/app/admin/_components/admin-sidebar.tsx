@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 
 import { AdminNavItems } from "@/app/admin/_components/admin-nav-items";
@@ -6,29 +8,45 @@ import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
+import { AdminNavOptions } from "./admin-nav-options";
 
-export async function AdminSidebar({
+export function AdminSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
+  const { open } = useSidebar();
+
   return (
-    <Sidebar collapsible="icon" variant="inset" {...props}>
+    <Sidebar
+      collapsible="icon"
+      variant="inset"
+      className="overflow-x-clip"
+      {...props}
+    >
+      <SidebarRail />
+
       <SidebarHeader>
         <AdminNavUser />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="mt-4">
         <AdminNavItems />
       </SidebarContent>
-      <SidebarRail />
-      <SidebarFooter className="p-0">
+      <SidebarContent className="mt-auto justify-end">
         <Separator />
-        <div className="text-muted-foreground p-4 text-xs">
+        <div
+          className={cn(
+            "text-muted-foreground p-4 text-xs text-nowrap",
+            !open && "hidden",
+          )}
+        >
           Arena Hub Admin v1.0
         </div>
-      </SidebarFooter>
+        <AdminNavOptions />
+      </SidebarContent>
     </Sidebar>
   );
 }

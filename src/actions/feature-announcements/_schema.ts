@@ -4,27 +4,33 @@ import { z } from "zod/v4";
 
 export { DEFAULT_FEATURE_ANNOUNCEMENT_DISMISS_LABEL };
 
+export const VALID_GROUP_ACTIONS: GroupAction[] = [
+  "match:create",
+  "match:read",
+  "match:join",
+  "match:update",
+  "match:delete",
+  "team:create",
+  "team:update",
+  "match:join_queue",
+  "membership:update",
+  "membership:delete",
+  "membership:approve",
+  "group:settings",
+  "group:links",
+];
+
 export const groupActionSchema = z.custom<GroupAction>((val) => {
   return (
-    typeof val === "string" &&
-    [
-      "match:create",
-      "match:read",
-      "match:join",
-      "match:update",
-      "match:delete",
-      "team:create",
-      "team:update",
-      "match:join_queue",
-      "membership:update",
-      "membership:delete",
-      "membership:approve",
-      "group:settings",
-      "group:links",
-    ].includes(val)
+    typeof val === "string" && VALID_GROUP_ACTIONS.includes(val as GroupAction)
   );
 }, "Ação inválida");
 
+/**
+ * requiredAction aceita:
+ * - "all" → exibir para qualquer membro, independente de permissão
+ * - string com ações separadas por vírgula → exibir para membros com QUALQUER uma das permissões listadas
+ */
 export const adminUpsertFeatureAnnouncementSchema = z.object({
   slug: z.string().trim().min(1).max(64),
   title: z.string().trim().min(1).max(120),
@@ -36,10 +42,21 @@ export const adminUpsertFeatureAnnouncementSchema = z.object({
     .min(1)
     .max(80)
     .default(DEFAULT_FEATURE_ANNOUNCEMENT_DISMISS_LABEL),
-  requiredAction: groupActionSchema,
+  requiredAction: z
+    .string()
+    .min(1)
+    .refine(
+      (val) =>
+        val === "all" ||
+        val
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
+          .every((a) => VALID_GROUP_ACTIONS.includes(a as GroupAction)),
+      "Deve ser 'all' ou uma lista de ações válidas separadas por vírgula",
+    ),
   isActive: z.boolean().default(true),
   startsAt: z.coerce.date().optional(),
   endsAt: z.coerce.date().optional(),
   priority: z.number().int().min(0).max(100).default(0),
 });
-

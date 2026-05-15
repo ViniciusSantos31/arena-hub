@@ -8,6 +8,7 @@ import {
 } from "@/actions/feature-announcements/admin";
 import {
   DEFAULT_FEATURE_ANNOUNCEMENT_DISMISS_LABEL,
+  VALID_GROUP_ACTIONS,
   adminUpsertFeatureAnnouncementSchema,
 } from "@/actions/feature-announcements/_schema";
 import { ResponsiveDialog } from "@/components/responsive-dialog";
@@ -34,7 +35,7 @@ import {
   UsersIcon,
   type LucideIcon,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -68,23 +69,16 @@ type Announcement = {
   updatedAt: Date;
 };
 
-const allActions: GroupAction[] = [
-  "match:create",
-  "match:read",
-  "match:join",
-  "match:update",
-  "match:delete",
-  "team:create",
-  "team:update",
-  "match:join_queue",
-  "membership:update",
-  "membership:delete",
-  "membership:approve",
-  "group:settings",
-  "group:links",
-];
-
 type FormData = z.input<typeof adminUpsertFeatureAnnouncementSchema>;
+
+function parseRequiredAction(raw: string): { forAllUsers: boolean; actions: GroupAction[] } {
+  if (raw === "all") return { forAllUsers: true, actions: [] };
+  const actions = raw
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => VALID_GROUP_ACTIONS.includes(s as GroupAction)) as GroupAction[];
+  return { forAllUsers: false, actions: actions.length > 0 ? actions : ["group:links"] };
+}
 
 function toDatetimeLocalValue(date: Date | null | undefined) {
   if (!date) return "";
@@ -117,6 +111,14 @@ export function FeatureAnnouncementsAdmin({
   const [editing, setEditing] = useState<Announcement | null>(null);
   const [previewAnnouncement, setPreviewAnnouncement] = useState<Announcement | null>(null);
   const [statsAnnouncement, setStatsAnnouncement] = useState<Announcement | null>(null);
+  const [forAllUsers, setForAllUsers] = useState(false);
+  const [selectedActions, setSelectedActions] = useState<GroupAction[]>(["group:links"]);
+
+  const toggleAction = useCallback((action: GroupAction) => {
+    setSelectedActions((prev) =>
+      prev.includes(action) ? prev.filter((a) => a !== action) : [...prev, action],
+    );
+  }, []);
 
   const createAction = useAction(adminCreateFeatureAnnouncement, {
     onSuccess: () => {
@@ -142,7 +144,7 @@ export function FeatureAnnouncementsAdmin({
     },
   });
 
-  const toggleAction = useAction(adminToggleFeatureAnnouncementActive, {
+  const toggleActiveAction = useAction(adminToggleFeatureAnnouncementActive, {
     onSuccess: () => router.refresh(),
     onError: ({ error }) =>
       toast.error(error.serverError ?? "Não foi possível atualizar status"),
@@ -189,6 +191,8 @@ export function FeatureAnnouncementsAdmin({
 
   const openCreate = () => {
     setEditing(null);
+    setForAllUsers(false);
+    setSelectedActions(["group:links"]);
     methods.reset({
       slug: "",
       title: "",
@@ -206,13 +210,16 @@ export function FeatureAnnouncementsAdmin({
 
   const openEdit = (a: Announcement) => {
     setEditing(a);
+    const parsed = parseRequiredAction(a.requiredAction);
+    setForAllUsers(parsed.forAllUsers);
+    setSelectedActions(parsed.actions);
     methods.reset({
       slug: a.slug,
       title: a.title,
       description: a.description,
       icon: a.icon,
       dismissButtonLabel: a.dismissButtonLabel,
-      requiredAction: a.requiredAction as GroupAction,
+      requiredAction: a.requiredAction,
       isActive: a.isActive,
       startsAt: a.startsAt ?? undefined,
       endsAt: a.endsAt ?? undefined,
@@ -222,10 +229,18 @@ export function FeatureAnnouncementsAdmin({
   };
 
   const submit = async (data: FormData) => {
+    const requiredAction = forAllUsers
+      ? "all"
+      : selectedActions.length > 0
+        ? selectedActions.join(",")
+        : "group:links";
+
+    const payload = { ...data, requiredAction };
+
     if (editing) {
-      await updateAction.executeAsync({ id: editing.id, ...data });
+      await updateAction.executeAsync({ id: editing.id, ...payload });
     } else {
-      await createAction.executeAsync(data);
+      await createAction.executeAsync(payload);
     }
   };
 
@@ -282,29 +297,48 @@ export function FeatureAnnouncementsAdmin({
                 placeholder={DEFAULT_FEATURE_ANNOUNCEMENT_DISMISS_LABEL}
               />
 
-              <FormField
-                control={methods.control}
-                name="requiredAction"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Permissão necessária</FormLabel>
-                    <FormControl>
-                      <select
-                        className="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-[3px]"
-                        value={field.value}
-                        onChange={(e) => field.onChange(e.target.value)}
+              <div className="space-y-2">
+                <FormLabel>Permissão necessária</FormLabel>
+                <div className="rounded-md border">
+                  <label className="flex cursor-pointer items-center gap-3 px-3 py-2.5">
+                    <Checkbox
+                      checked={forAllUsers}
+                      onCheckedChange={(v) => setForAllUsers(Boolean(v))}
+                    />
+                    <div>
+                      <div className="text-sm font-medium">Todos os usuários</div>
+                      <div className="text-muted-foreground text-xs">
+                        Exibe para qualquer membro, independente de permissão
+                      </div>
+                    </div>
+                  </label>
+                  <div className="border-t" />
+                  <div
+                    className={`grid grid-cols-2 gap-1 p-3 transition-opacity ${
+                      forAllUsers ? "pointer-events-none opacity-40" : ""
+                    }`}
+                  >
+                    {VALID_GROUP_ACTIONS.map((action) => (
+                      <label
+                        key={action}
+                        className="flex cursor-pointer items-center gap-2 rounded px-1.5 py-1 hover:bg-muted/50"
                       >
-                        {allActions.map((a) => (
-                          <option key={a} value={a}>
-                            {a}
-                          </option>
-                        ))}
-                      </select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                        <Checkbox
+                          checked={selectedActions.includes(action)}
+                          onCheckedChange={() => toggleAction(action)}
+                          disabled={forAllUsers}
+                        />
+                        <span className="font-mono text-xs">{action}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {!forAllUsers && selectedActions.length === 0 && (
+                    <p className="text-destructive px-3 pb-2 text-xs">
+                      Selecione ao menos uma permissão
+                    </p>
+                  )}
+                </div>
+              </div>
 
               <div className="grid gap-4 md:grid-cols-3">
                 <InputField
@@ -458,10 +492,18 @@ export function FeatureAnnouncementsAdmin({
                 <p className="text-muted-foreground line-clamp-2 text-sm">{a.description}</p>
 
                 <div className="text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 text-xs">
-                  <span>
-                    <span className="font-medium">Permissão:</span>{" "}
-                    <code className="bg-muted rounded px-1 py-0.5">{a.requiredAction}</code>
-                  </span>
+                  <div className="flex flex-wrap items-center gap-1">
+                    <span className="font-medium">Público:</span>{" "}
+                    {a.requiredAction === "all" ? (
+                      <Badge variant="secondary" className="text-xs">Todos os usuários</Badge>
+                    ) : (
+                      a.requiredAction.split(",").map((act) => (
+                        <code key={act} className="bg-muted rounded px-1 py-0.5">
+                          {act.trim()}
+                        </code>
+                      ))
+                    )}
+                  </div>
                   <span>
                     <span className="font-medium">Prioridade:</span> {a.priority}
                   </span>
@@ -514,12 +556,12 @@ export function FeatureAnnouncementsAdmin({
                         variant={a.isActive ? "secondary" : "default"}
                         size="sm"
                         onClick={() =>
-                          toggleAction.execute({
+                          toggleActiveAction.execute({
                             id: a.id,
                             isActive: !a.isActive,
                           })
                         }
-                        disabled={toggleAction.isPending || toggleAction.isExecuting}
+                        disabled={toggleActiveAction.isPending || toggleActiveAction.isExecuting}
                       >
                         {a.isActive ? "Desativar" : "Ativar"}
                       </Button>

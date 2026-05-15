@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import { getRoleLabel, Role } from "@/utils/role";
 import {
   CheckCircle2Icon,
   CircleDotIcon,
@@ -12,7 +12,7 @@ import Link from "next/link";
 interface MockGroup {
   id: string;
   name: string;
-  role: string;
+  role: Role | null;
   code: string;
   image: string | null;
   memberCount: number;
@@ -82,9 +82,11 @@ export function PublicProfileStats({
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{group.name}</p>
                 </div>
-                <Badge variant="secondary" className="text-xs">
-                  {group.role}
-                </Badge>
+                {group.role && (
+                  <Badge variant="secondary" className="text-xs">
+                    {getRoleLabel(group.role)}
+                  </Badge>
+                )}
               </Link>
             ))}
           </div>
@@ -93,7 +95,6 @@ export function PublicProfileStats({
 
       {recentMatches.length > 0 && (
         <>
-          <Separator />
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <SwordsIcon className="text-muted-foreground h-4 w-4" />

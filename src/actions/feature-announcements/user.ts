@@ -81,12 +81,26 @@ export const getNextFeatureAnnouncementForUser = actionClient.action(
     for (const a of activeAnnouncements) {
       if (seenSet.has(a.id)) continue;
 
-      const action = parseGroupAction(a.requiredAction);
-      if (!action) continue;
+      let eligible: boolean;
 
-      const eligible = memberships.some((m) =>
-        roleHasActions(m.role, [action]),
-      );
+      if (a.requiredAction === "all") {
+        eligible = memberships.length > 0;
+      } else {
+        const actionStrings = a.requiredAction
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+
+        eligible =
+          actionStrings.length > 0 &&
+          memberships.some((m) =>
+            actionStrings.some((actionStr) => {
+              const action = parseGroupAction(actionStr);
+              return action ? roleHasActions(m.role, [action]) : false;
+            }),
+          );
+      }
+
       if (!eligible) continue;
 
       return {
@@ -96,7 +110,7 @@ export const getNextFeatureAnnouncementForUser = actionClient.action(
         description: a.description,
         icon: a.icon,
         dismissButtonLabel: a.dismissButtonLabel,
-        requiredAction: action,
+        requiredAction: a.requiredAction,
       };
     }
 

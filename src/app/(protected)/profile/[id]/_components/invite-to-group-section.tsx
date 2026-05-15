@@ -3,9 +3,17 @@
 import { sendDirectInvite } from "@/actions/invite-links/send-direct-invite";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { getAvatarFallback } from "@/utils/avatar";
 import { getRoleLabel, Role } from "@/utils/role";
-import { CheckIcon, LoaderIcon, SendIcon } from "lucide-react";
+import { CheckIcon, LoaderIcon, SendIcon, UsersIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -29,7 +37,28 @@ export function InviteToGroupSection({
   const [loadingCode, setLoadingCode] = useState<string | null>(null);
   const [sentCodes, setSentCodes] = useState<Set<string>>(new Set());
 
-  if (adminGroups.length === 0) return null;
+  if (adminGroups.length === 0)
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <SendIcon className="text-muted-foreground h-4 w-4" />
+          <h3 className="text-sm font-medium">Convidar para um grupo</h3>
+        </div>
+        <Empty className="border border-dashed">
+          <EmptyContent>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <UsersIcon className="text-muted-foreground h-4 w-4" />
+              </EmptyMedia>
+              <EmptyTitle>Nenhum grupo para convidar</EmptyTitle>
+              <EmptyDescription>
+                Não foram encontrados grupos para convidar este jogador.
+              </EmptyDescription>
+            </EmptyHeader>
+          </EmptyContent>
+        </Empty>
+      </div>
+    );
 
   async function handleInvite(group: AdminGroup) {
     if (sentCodes.has(group.code)) return;

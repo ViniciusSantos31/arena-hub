@@ -93,6 +93,7 @@ export const getPublicProfile = actionClient
               name: organization.name,
               code: organization.code,
               image: organization.logo,
+              role: member.role,
             })
             .from(member)
             .innerJoin(organization, eq(member.organizationId, organization.id))
@@ -126,7 +127,7 @@ export const getPublicProfile = actionClient
         id: g.id,
         name: g.name,
         code: g.code,
-        role: "Membro",
+        role: g.role,
         memberCount: 0,
         image: g.image,
       })),

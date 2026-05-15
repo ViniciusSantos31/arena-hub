@@ -12,19 +12,15 @@ export default async function AdminFeedbacksPage() {
   }).then((r) => r.data ?? []);
 
   return (
-    <div className="flex-1 space-y-6 p-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Feedbacks</h1>
-        <p className="text-muted-foreground">
-          Aprove ou reprove feedbacks antes de exibir na landing page.
-        </p>
-      </div>
-
-      <FeedbackReviewTabs
-        pending={pending.map((r) => ({ ...r, createdAt: r.createdAt.toISOString() }))}
-        approved={approved.map((r) => ({ ...r, createdAt: r.createdAt.toISOString() }))}
-      />
-    </div>
+    <FeedbackReviewTabs
+      pending={pending.map((r) => ({
+        ...r,
+        createdAt: r.createdAt.toISOString(),
+      }))}
+      approved={approved.map((r) => ({
+        ...r,
+        createdAt: r.createdAt.toISOString(),
+      }))}
+    />
   );
 }
-

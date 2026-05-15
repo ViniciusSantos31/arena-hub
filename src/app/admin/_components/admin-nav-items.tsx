@@ -1,9 +1,7 @@
 "use client";
 
 import {
-  SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -57,27 +55,24 @@ export function AdminNavItems() {
   return (
     <>
       {adminNavItems.map((section) => (
-        <SidebarGroup key={section.title}>
-          <SidebarGroupLabel>{section.title}</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {section.href ? (
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname === section.href}
-                    tooltip={section.title}
-                  >
-                    <Link href={section.href}>
-                      <section.icon className="h-4 w-4" />
-                      <span>{section.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ) : null}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <SidebarGroupContent key={section.title}>
+          <SidebarMenu>
+            {section.href ? (
+              <SidebarMenuItem className="items-center">
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === section.href}
+                  tooltip={section.title}
+                >
+                  <Link href={section.href} className="mx-auto items-center">
+                    <section.icon className="h-4 w-4" />
+                    <span>{section.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ) : null}
+          </SidebarMenu>
+        </SidebarGroupContent>
       ))}
     </>
   );

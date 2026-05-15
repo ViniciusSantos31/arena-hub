@@ -8,9 +8,16 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { cn } from "@/lib/utils";
 import dayjs from "dayjs";
-import { Star } from "lucide-react";
+import { MessageCircleIcon, Star } from "lucide-react";
 
 type FeedbackRow = {
   id: string;
@@ -57,9 +64,17 @@ export function FeedbackCardsGrid({
 }) {
   if (rows.length === 0) {
     return (
-      <div className="text-muted-foreground rounded-lg border p-6 text-sm">
-        Nenhum feedback aqui.
-      </div>
+      <Empty>
+        <EmptyContent>
+          <EmptyMedia variant={"icon"}>
+            <MessageCircleIcon />
+          </EmptyMedia>
+          <EmptyTitle>Nenhum feedback aqui.</EmptyTitle>
+          <EmptyDescription>
+            Ainda não há feedbacks para revisar.
+          </EmptyDescription>
+        </EmptyContent>
+      </Empty>
     );
   }
 
