@@ -48,6 +48,7 @@ export const PlayersList = ({ id, organizationCode }: PlayersListProps) => {
           matchId={id}
           organizationCode={organizationCode}
           matchStatus={match?.status}
+          isPaidMatch={!!match?.isPaid}
         />
       ))}
     </CardContent>

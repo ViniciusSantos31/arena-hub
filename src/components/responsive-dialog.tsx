@@ -146,7 +146,7 @@ export const ResponsiveDialog = ({
                   </DialogTitle>
                 )}
                 {description && (
-                  <DialogDescription className="line-clamp-2 text-sm leading-relaxed">
+                  <DialogDescription className="text-sm leading-relaxed">
                     {description}
                   </DialogDescription>
                 )}

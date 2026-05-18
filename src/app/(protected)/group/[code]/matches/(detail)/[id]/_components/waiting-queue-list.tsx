@@ -1,6 +1,7 @@
 import { CardContent } from "@/components/ui/card";
 import { useGuard } from "@/hooks/use-guard";
 import { useWaitingQueue } from "../_hooks";
+import { useMatch } from "../_hooks/useMatch";
 import { PlayerItem } from "./player-item";
 
 interface WaitingQueueListProps {
@@ -13,6 +14,7 @@ export const WaitingQueueList = ({
   organizationCode,
 }: WaitingQueueListProps) => {
   const { data: players, isLoading } = useWaitingQueue(id);
+  const { data: match } = useMatch();
   const canModerate = useGuard({ action: ["match:update"] });
 
   if (isLoading) {
@@ -52,6 +54,8 @@ export const WaitingQueueList = ({
             canModerate={canModerate}
             matchId={id}
             organizationCode={organizationCode}
+            matchStatus={match?.status}
+            isPaidMatch={!!match?.isPaid}
           />
         ))}
       </CardContent>

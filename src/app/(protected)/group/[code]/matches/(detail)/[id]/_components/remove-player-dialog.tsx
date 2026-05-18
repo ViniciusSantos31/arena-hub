@@ -27,6 +27,7 @@ interface RemovePlayerDialogProps {
   };
   matchId: string;
   organizationCode: string;
+  isPaidMatch?: boolean;
 }
 
 export function RemovePlayerDialog({
@@ -35,6 +36,7 @@ export function RemovePlayerDialog({
   player,
   matchId,
   organizationCode,
+  isPaidMatch = false,
 }: RemovePlayerDialogProps) {
   const [reason, setReason] = useState("");
   const [banFromMatch, setBanFromMatch] = useState(false);
@@ -97,7 +99,11 @@ export function RemovePlayerDialog({
   return (
     <ResponsiveDialog
       title="Remover jogador da partida"
-      description="Esta ação removerá o jogador da partida. Informe o motivo abaixo."
+      description={
+        isPaidMatch
+          ? "Se o jogador já pagou ou tinha link de pagamento ativo, o valor será estornado ou o link encerrado no Stripe antes da remoção."
+          : "Esta ação removerá o jogador da partida. Informe o motivo abaixo."
+      }
       variant="destructive"
       icon={UserRoundXIcon}
       open={open}

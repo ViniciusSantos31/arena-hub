@@ -277,6 +277,9 @@ Valores usados no código da aplicação (configure no `.env.local` ou no painel
 | `FIREBASE_PROJECT_ID`                      | Servidor          | Admin SDK — projeto.                                                  |
 | `FIREBASE_CLIENT_EMAIL`                    | Servidor          | Admin SDK — e-mail da service account.                                |
 | `FIREBASE_PRIVATE_KEY`                     | Servidor          | Admin SDK — chave privada (use `\n` para quebras de linha no `.env`). |
+| `STRIPE_SECRET_KEY`                        | Partidas pagas    | Chave secreta Stripe (`sk_test_…` ou `sk_live_…`).                     |
+| `STRIPE_WEBHOOK_SECRET`                    | Partidas pagas    | Segredo do webhook (eventos: `checkout.session.completed`, `payment_intent.succeeded`, `refund.updated`). |
+| `NEXT_PUBLIC_APP_URL`                      | Partidas pagas    | URL pública do app (Checkout e Stripe Connect), ex.: `https://exemplo.com`. |
 | `IMAGEKIT_PUBLIC_KEY`                      | Upload            | ImageKit — chave pública.                                             |
 | `IMAGEKIT_PRIVATE_KEY`                     | Upload            | ImageKit — chave privada (nunca exponha no cliente).                  |
 

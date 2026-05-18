@@ -13,10 +13,10 @@ import { getSportIconById, Sport } from "@/utils/sports";
 import { Status } from "@/utils/status";
 import { MatchStatusBadge } from "../../../_components/match-status-badge";
 import { MatchStatusBadgeRealtime } from "../../../_components/match-status-badge-realtime";
+import { JoinMatchButton } from "../_components/join-match-button";
 import { useMatchPlayers } from "../_hooks";
 import { useMatch } from "../_hooks/useMatch";
 import { ConfirmPresenceButton } from "./confirm-presence-button";
-import { JoinMatchButton } from "../_components/join-match-button";
 import { PayWithCheckoutLinkButton } from "./pay-with-checkout-link-button";
 
 export const MatchDetailCard = ({ code }: { code: string }) => {

@@ -5,6 +5,7 @@ import { BasicInfoForm } from "./basic-info-form";
 import { ConfigAccessForm } from "./config-access-form";
 import { DeleteGroupButton } from "./delete-group-button";
 import { InviteLinksSection } from "./invite-links-section";
+import { PaymentExemptionSection } from "./payment-exemption-section";
 import { PunishmentConfigForm } from "./punishment-config-form";
 import { SettingsSection } from "./settings-section";
 import { StripeConnectSection } from "./stripe-connect-section";
@@ -37,6 +38,12 @@ export function GroupSettingsForm({ group, userRole }: GroupSettingsFormProps) {
         id="punishment-config"
       />
       <InviteLinksSection group={{ code: group.code }} id="invite-links" />
+      {(userRole === "owner" || userRole === "admin") && (
+        <PaymentExemptionSection
+          group={{ id: group.id, code: group.code }}
+          id="payment-exemptions"
+        />
+      )}
       {userRole === "owner" && (
         <StripeConnectSection
           group={{
