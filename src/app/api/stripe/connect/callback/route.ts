@@ -30,6 +30,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL("/home", req.url));
   }
 
+  if (!orgAccess.paidMatchesFeatureEnabled) {
+    return NextResponse.redirect(new URL("/home", req.url));
+  }
+
   if (orgAccess.stripeAccountId && orgAccess.stripeAccountId !== accountId) {
     return NextResponse.redirect(new URL("/home", req.url));
   }

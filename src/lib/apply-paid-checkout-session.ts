@@ -1,4 +1,5 @@
 import { db } from "@/db";
+import { organization } from "@/db/schema/auth";
 import { matchesTable } from "@/db/schema/match";
 import { playersTable } from "@/db/schema/player";
 import { and, eq } from "drizzle-orm";
@@ -24,10 +25,19 @@ export async function applyPaidCheckoutSession(
 
   const match = await db.query.matchesTable.findFirst({
     where: eq(matchesTable.id, matchId),
-    columns: { price: true },
+    columns: { price: true, organizationId: true },
   });
 
-  if (!match?.price || sess.amount_total !== match.price) {
+  if (!match?.organizationId || !match?.price || sess.amount_total !== match.price) {
+    return "noop";
+  }
+
+  const org = await db.query.organization.findFirst({
+    where: eq(organization.id, match.organizationId),
+    columns: { paidMatchesFeatureEnabled: true },
+  });
+
+  if (!org?.paidMatchesFeatureEnabled) {
     return "noop";
   }
 

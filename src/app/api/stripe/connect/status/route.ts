@@ -30,6 +30,16 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
   }
 
+  if (!org.paidMatchesFeatureEnabled) {
+    return NextResponse.json(
+      {
+        error:
+          "Pagamentos não estão habilitados para este grupo pela plataforma.",
+      },
+      { status: 403 },
+    );
+  }
+
   const account = await stripe.accounts.retrieve(accountId);
 
   return NextResponse.json({

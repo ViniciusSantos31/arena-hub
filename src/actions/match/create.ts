@@ -54,10 +54,15 @@ export const createMatch = actionClient
 
     const orgRow = await db.query.organization.findFirst({
       where: eq(organizationTable.id, organizationId),
-      columns: { stripeAccountId: true },
+      columns: { stripeAccountId: true, paidMatchesFeatureEnabled: true },
     });
 
     if (parsedInput.isPaid) {
+      if (!orgRow?.paidMatchesFeatureEnabled) {
+        throw new Error(
+          "Partidas pagas não estão habilitadas para este grupo. Entre em contato com o suporte.",
+        );
+      }
       if (!orgRow?.stripeAccountId) {
         throw new Error(
           "Conecte sua conta Stripe nas configurações do grupo para criar partidas pagas.",

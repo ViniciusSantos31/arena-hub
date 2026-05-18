@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/db";
+import { organization } from "@/db/schema/auth";
 import { member, roleEnum } from "@/db/schema/member";
 import { organizationPaymentExemptions } from "@/db/schema/payment-exemption";
 import { can } from "@/hooks/use-guard";
@@ -37,6 +38,18 @@ async function requireSettingsAccess(organizationCode: string) {
   return membership;
 }
 
+async function requirePaidMatchesFeatureForOrg(organizationId: string) {
+  const org = await db.query.organization.findFirst({
+    where: eq(organization.id, organizationId),
+    columns: { paidMatchesFeatureEnabled: true },
+  });
+  if (!org?.paidMatchesFeatureEnabled) {
+    throw new Error(
+      "Cobrança por partida e isenções não estão disponíveis para este grupo.",
+    );
+  }
+}
+
 export type PaymentExemptionListItem = {
   id: string;
   kind: "member" | "role";
@@ -52,6 +65,7 @@ export const listPaymentExemptions = actionClient
     const membership = await requireSettingsAccess(
       parsedInput.organizationCode,
     );
+    await requirePaidMatchesFeatureForOrg(membership.organizationId);
 
     const rows = await db.query.organizationPaymentExemptions.findMany({
       where: eq(
@@ -107,6 +121,7 @@ export const syncPaymentExemptions = actionClient
     const membership = await requireSettingsAccess(
       parsedInput.organizationCode,
     );
+    await requirePaidMatchesFeatureForOrg(membership.organizationId);
     const orgId = membership.organizationId;
 
     const uniqueMemberIds = [...new Set(parsedInput.memberIds)];

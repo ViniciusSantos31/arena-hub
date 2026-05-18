@@ -1,5 +1,6 @@
 "use client";
 
+import { getGroupDetails } from "@/actions/group/detail";
 import { getPaidMatchEligibility } from "@/actions/group/paid-match-eligibility";
 import { createMatch } from "@/actions/match/create";
 import { Button } from "@/components/ui/button";
@@ -27,7 +28,7 @@ import ptBR from "dayjs/locale/pt-br";
 import { useAction } from "next-safe-action/hooks";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { CreateMatchFormData, createMatchSchema } from "../_schema/create";
@@ -41,7 +42,7 @@ type CreateMatchFormProps = {
 export const CreateMatchForm = ({ setOpen }: CreateMatchFormProps) => {
   const [stripeBlockOpen, setStripeBlockOpen] = useState(false);
   const [stripeBlockReason, setStripeBlockReason] = useState<
-    "no_account" | "onboarding_incomplete"
+    "no_account" | "onboarding_incomplete" | "feature_disabled"
   >("no_account");
 
   const methods = useForm({
@@ -62,6 +63,14 @@ export const CreateMatchForm = ({ setOpen }: CreateMatchFormProps) => {
 
   const { code } = useParams<{ code: string }>();
 
+  const { data: group } = useQuery({
+    queryKey: ["group-details", code],
+    enabled: !!code,
+    queryFn: () => getGroupDetails({ code }).then((res) => res.data),
+  });
+
+  const paymentsEnabled = group?.paidMatchesFeatureEnabled ?? false;
+
   const { data: eligibility, isPending: eligibilityPending } = useQuery({
     queryKey: ["paid-match-eligibility", code],
     queryFn: async () => {
@@ -72,6 +81,14 @@ export const CreateMatchForm = ({ setOpen }: CreateMatchFormProps) => {
   });
 
   const isPaid = useWatch({ control: methods.control, name: "isPaid" });
+
+  useEffect(() => {
+    if (!paymentsEnabled) {
+      methods.setValue("isPaid", false);
+      methods.setValue("priceReais", undefined);
+      methods.clearErrors("priceReais");
+    }
+  }, [paymentsEnabled, methods]);
 
   const createMatchAction = useAction(createMatch, {
     onSuccess: () => {
@@ -104,6 +121,11 @@ export const CreateMatchForm = ({ setOpen }: CreateMatchFormProps) => {
       title: "Complete o cadastro no Stripe",
       description:
         "Sua conta Stripe ainda não está pronta para receber pagamentos. Continue o cadastro nas configurações do grupo.",
+    },
+    feature_disabled: {
+      title: "Partidas pagas indisponíveis",
+      description:
+        "Este grupo ainda não tem cobrança por partida liberada pela plataforma. Entre em contato com o suporte se precisar deste recurso.",
     },
   } as const;
 
@@ -164,8 +186,9 @@ export const CreateMatchForm = ({ setOpen }: CreateMatchFormProps) => {
               <div className="space-y-0.5">
                 <p className="text-sm font-medium">Partida paga</p>
                 <p className="text-muted-foreground text-xs">
-                  Jogadores pagam via Pix para confirmar presença. Exige conta
-                  Stripe conectada ao grupo.
+                  {paymentsEnabled
+                    ? "Jogadores pagam via Pix para confirmar presença. Exige conta Stripe conectada ao grupo."
+                    : "Indisponível para este grupo até que o recurso seja liberado pela plataforma."}
                 </p>
               </div>
               <Controller
@@ -174,17 +197,24 @@ export const CreateMatchForm = ({ setOpen }: CreateMatchFormProps) => {
                 render={({ field }) => (
                   <Switch
                     checked={field.value}
+                    disabled={!paymentsEnabled}
                     onCheckedChange={(checked) => {
+                      if (!paymentsEnabled) {
+                        return;
+                      }
                       if (checked) {
                         if (eligibilityPending) {
                           toast.info("Verificando conta de pagamentos…");
                           return;
                         }
                         if (!eligibility?.canCreatePaidMatch) {
+                          const r = eligibility?.reason;
                           setStripeBlockReason(
-                            eligibility?.reason === "onboarding_incomplete"
-                              ? "onboarding_incomplete"
-                              : "no_account",
+                            r === "feature_disabled"
+                              ? "feature_disabled"
+                              : r === "onboarding_incomplete"
+                                ? "onboarding_incomplete"
+                                : "no_account",
                           );
                           setStripeBlockOpen(true);
                           return;
@@ -200,7 +230,7 @@ export const CreateMatchForm = ({ setOpen }: CreateMatchFormProps) => {
                 )}
               />
             </div>
-            {isPaid && (
+            {isPaid && paymentsEnabled && (
               <InputField
                 name="priceReais"
                 label="Valor por jogador (R$)"
@@ -271,11 +301,13 @@ export const CreateMatchForm = ({ setOpen }: CreateMatchFormProps) => {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" asChild>
-              <Link href={`/group/${code}/settings#payments`}>
-                Ir para configurações
-              </Link>
-            </Button>
+            {stripeBlockReason !== "feature_disabled" ? (
+              <Button variant="outline" asChild>
+                <Link href={`/group/${code}/settings#payments`}>
+                  Ir para configurações
+                </Link>
+              </Button>
+            ) : null}
             <Button onClick={() => setStripeBlockOpen(false)}>Fechar</Button>
           </DialogFooter>
         </DialogContent>

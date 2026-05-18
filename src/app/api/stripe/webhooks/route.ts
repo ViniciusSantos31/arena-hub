@@ -1,4 +1,5 @@
 import { db } from "@/db";
+import { organization } from "@/db/schema/auth";
 import { matchesTable } from "@/db/schema/match";
 import { playersTable } from "@/db/schema/player";
 import { applyPaidCheckoutSession } from "@/lib/apply-paid-checkout-session";
@@ -42,10 +43,19 @@ export async function POST(req: NextRequest) {
 
     const match = await db.query.matchesTable.findFirst({
       where: eq(matchesTable.id, matchId),
-      columns: { price: true },
+      columns: { price: true, organizationId: true },
     });
 
-    if (!match?.price || pi.amount !== match.price) {
+    if (!match?.organizationId || !match?.price || pi.amount !== match.price) {
+      return NextResponse.json({ received: true });
+    }
+
+    const org = await db.query.organization.findFirst({
+      where: eq(organization.id, match.organizationId),
+      columns: { paidMatchesFeatureEnabled: true },
+    });
+
+    if (!org?.paidMatchesFeatureEnabled) {
       return NextResponse.json({ received: true });
     }
 

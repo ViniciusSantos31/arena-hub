@@ -21,6 +21,7 @@ export interface AdminGroupDetail {
     memberCount: number;
     owner: { name: string; email: string; image: string | null } | null;
     lastActivityAt: string;
+    paidMatchesFeatureEnabled: boolean;
   };
   members: Array<{
     id: string;
@@ -98,6 +99,7 @@ export const getAdminGroupDetail = actionClient
         maxPlayers: true,
         rules: true,
         createdAt: true,
+        paidMatchesFeatureEnabled: true,
       },
       with: {
         members: {
@@ -196,6 +198,7 @@ export const getAdminGroupDetail = actionClient
             }
           : null,
         lastActivityAt: latestActivityAt.toISOString(),
+        paidMatchesFeatureEnabled: group.paidMatchesFeatureEnabled,
       },
       members,
       matches,

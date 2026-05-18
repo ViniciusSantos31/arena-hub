@@ -42,11 +42,15 @@ export async function GET(req: NextRequest) {
     organizationId,
   );
   if (!org) {
-    return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
+    return NextResponse.redirect(new URL("/home", req.url));
+  }
+
+  if (!org.paidMatchesFeatureEnabled) {
+    return NextResponse.redirect(new URL("/home", req.url));
   }
 
   if (org.stripeAccountId !== accountId) {
-    return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
+    return NextResponse.redirect(new URL("/home", req.url));
   }
 
   const accountLink = await createOnboardingAccountLink(organizationId, accountId);
@@ -85,6 +89,16 @@ export async function POST(req: NextRequest) {
   );
   if (!org) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
+  }
+
+  if (!org.paidMatchesFeatureEnabled) {
+    return NextResponse.json(
+      {
+        error:
+          "Pagamentos não estão habilitados para este grupo pela plataforma.",
+      },
+      { status: 403 },
+    );
   }
 
   let accountId = org.stripeAccountId;

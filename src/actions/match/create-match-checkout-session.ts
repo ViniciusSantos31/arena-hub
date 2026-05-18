@@ -63,8 +63,12 @@ export const createMatchCheckoutSession = actionClient
 
     const org = await db.query.organization.findFirst({
       where: eq(organizationTable.id, match.organizationId),
-      columns: { stripeAccountId: true },
+      columns: { stripeAccountId: true, paidMatchesFeatureEnabled: true },
     });
+
+    if (!org?.paidMatchesFeatureEnabled) {
+      throw new Error("Pagamentos não estão disponíveis para este grupo.");
+    }
 
     if (!org?.stripeAccountId) {
       throw new Error("O grupo não está configurado para receber pagamentos.");

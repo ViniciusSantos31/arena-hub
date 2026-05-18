@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/db";
+import { organization as organizationTable } from "@/db/schema/auth";
 import { matchesTable } from "@/db/schema/match";
 import { member } from "@/db/schema/member";
 import { playersTable } from "@/db/schema/player";
@@ -59,8 +60,16 @@ export const joinMatch = actionClient
       throw new Error("Partida inválida");
     }
 
+    const org = await db.query.organization.findFirst({
+      where: eq(organizationTable.id, match.organizationId),
+      columns: { paidMatchesFeatureEnabled: true },
+    });
+
+    const matchCountsAsPaid =
+      match.isPaid === true && org?.paidMatchesFeatureEnabled === true;
+
     const exemptFromPay =
-      !match.isPaid ||
+      !matchCountsAsPaid ||
       (await isMemberExemptFromMatchPayment(
         match.organizationId,
         membershipInfo.id,
@@ -68,7 +77,7 @@ export const joinMatch = actionClient
       ));
 
     const playerPaymentFields =
-      match.isPaid && !exemptFromPay
+      matchCountsAsPaid && !exemptFromPay
         ? { paymentStatus: "pending" as const }
         : { paymentStatus: "exempt" as const };
 

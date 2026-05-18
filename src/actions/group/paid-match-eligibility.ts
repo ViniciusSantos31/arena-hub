@@ -23,11 +23,18 @@ export const getPaidMatchEligibility = actionClient
 
     const org = await db.query.organization.findFirst({
       where: eq(organization.code, parsedInput.organizationCode),
-      columns: { id: true, stripeAccountId: true },
+      columns: { id: true, stripeAccountId: true, paidMatchesFeatureEnabled: true },
     });
 
     if (!org) {
       throw new Error("Grupo não encontrado");
+    }
+
+    if (!org.paidMatchesFeatureEnabled) {
+      return {
+        canCreatePaidMatch: false,
+        reason: "feature_disabled" as const,
+      };
     }
 
     const membership = await db.query.member.findFirst({

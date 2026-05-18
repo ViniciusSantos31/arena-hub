@@ -8,6 +8,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { matchesTable } from "@/db/schema/match";
+import { isPaidMatchActiveForGroup } from "@/lib/paid-match-feature";
 import { getCategoryLabelById } from "@/utils/categories";
 import { formatDate } from "@/utils/date";
 import { getSportIconById, getSportLabelById, Sport } from "@/utils/sports";
@@ -24,9 +25,13 @@ type MatchCardProps = {
       image?: string | null | undefined;
     }[];
   };
+  paidMatchesFeatureEnabled: boolean;
 };
 
-export const MatchCard = ({ match }: MatchCardProps) => {
+export const MatchCard = ({
+  match,
+  paidMatchesFeatureEnabled,
+}: MatchCardProps) => {
   const filledPlayers = match.players.filter(
     (player) => player?.waitingQueue === false,
   ).length;
@@ -35,7 +40,8 @@ export const MatchCard = ({ match }: MatchCardProps) => {
   const SportIcon = getSportIconById(match.sport as Sport);
 
   const priceLabel =
-    match.isPaid && match.price != null
+    isPaidMatchActiveForGroup(!!match.isPaid, paidMatchesFeatureEnabled) &&
+    match.price != null
       ? new Intl.NumberFormat("pt-BR", {
           style: "currency",
           currency: "BRL",

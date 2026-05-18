@@ -23,6 +23,7 @@ interface GroupSettingsFormProps {
     punishmentsToSuspend: number;
     suspensionMatchCount: number;
     stripeAccountId: string | null;
+    paidMatchesFeatureEnabled: boolean;
   };
   userRole: Role;
 }
@@ -38,13 +39,14 @@ export function GroupSettingsForm({ group, userRole }: GroupSettingsFormProps) {
         id="punishment-config"
       />
       <InviteLinksSection group={{ code: group.code }} id="invite-links" />
-      {(userRole === "owner" || userRole === "admin") && (
-        <PaymentExemptionSection
-          group={{ id: group.id, code: group.code }}
-          id="payment-exemptions"
-        />
-      )}
-      {userRole === "owner" && (
+      {(userRole === "owner" || userRole === "admin") &&
+        group.paidMatchesFeatureEnabled && (
+          <PaymentExemptionSection
+            group={{ id: group.id, code: group.code }}
+            id="payment-exemptions"
+          />
+        )}
+      {userRole === "owner" && group.paidMatchesFeatureEnabled && (
         <StripeConnectSection
           group={{
             id: group.id,

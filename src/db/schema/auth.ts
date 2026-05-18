@@ -74,6 +74,10 @@ export const organization = pgTable("organization", {
   punishmentsToSuspend: integer("punishments_to_suspend").notNull().default(3),
   suspensionMatchCount: integer("suspension_match_count").notNull().default(3),
   stripeAccountId: text("stripe_account_id"),
+  /** Liberado pela equipe da plataforma: partidas pagas, Stripe Connect e isenções. */
+  paidMatchesFeatureEnabled: boolean("paid_matches_feature_enabled")
+    .notNull()
+    .default(false),
 });
 
 export const organizationsRelations = relations(organization, ({ many }) => ({

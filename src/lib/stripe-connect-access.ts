@@ -26,7 +26,11 @@ export async function getOrgIfUserCanManageStripe(
 
   const org = await db.query.organization.findFirst({
     where: eq(organization.id, organizationId),
-    columns: { id: true, stripeAccountId: true },
+    columns: {
+      id: true,
+      stripeAccountId: true,
+      paidMatchesFeatureEnabled: true,
+    },
   });
 
   return org ?? null;

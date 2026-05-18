@@ -8,9 +8,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { getGroupDetails } from "@/actions/group/detail";
+import { isPaidMatchActiveForGroup } from "@/lib/paid-match-feature";
 import { formatDate } from "@/utils/date";
 import { getSportIconById, Sport } from "@/utils/sports";
 import { Status } from "@/utils/status";
+import { useQuery } from "@tanstack/react-query";
 import { MatchStatusBadge } from "../../../_components/match-status-badge";
 import { MatchStatusBadgeRealtime } from "../../../_components/match-status-badge-realtime";
 import { JoinMatchButton } from "../_components/join-match-button";
@@ -23,6 +26,14 @@ export const MatchDetailCard = ({ code }: { code: string }) => {
   const { data: match, isLoading } = useMatch();
   const { data: matchPlayers } = useMatchPlayers(match?.id ?? "");
 
+  const { data: group } = useQuery({
+    queryKey: ["group-details", code],
+    enabled: !!code,
+    queryFn: () => getGroupDetails({ code }).then((res) => res.data),
+  });
+
+  const paidFeature = group?.paidMatchesFeatureEnabled ?? false;
+
   const filledPlayers = matchPlayers?.players.length ?? 0;
   const maxPlayers = match?.maxPlayers ?? 1;
   const progressValue = (filledPlayers * 100) / maxPlayers;
@@ -32,6 +43,11 @@ export const MatchDetailCard = ({ code }: { code: string }) => {
   if (isLoading || !match) {
     return <MatchDetailCardLoading />;
   }
+
+  const matchIsPaidActive = isPaidMatchActiveForGroup(
+    !!match.isPaid,
+    paidFeature,
+  );
 
   return (
     <Card className="border-border/60">
@@ -64,7 +80,7 @@ export const MatchDetailCard = ({ code }: { code: string }) => {
             {filledPlayers} / {maxPlayers} vagas
           </span>
           <span className="text-primary font-semibold">
-            {match.isPaid && match.price != null
+            {matchIsPaidActive && match.price != null
               ? `${new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(match.price / 100)} / jogador`
               : "Grátis"}
           </span>
@@ -84,12 +100,12 @@ export const MatchDetailCard = ({ code }: { code: string }) => {
           matchId={match.id}
           matchStatus={match.status as Status}
           organizationCode={code}
-          isPaid={!!match.isPaid}
+          isPaid={matchIsPaidActive}
         />
         <ConfirmPresenceButton
           matchId={match.id}
           matchStatus={match.status as Status}
-          isPaid={!!match.isPaid}
+          isPaid={matchIsPaidActive}
         />
       </CardFooter>
     </Card>

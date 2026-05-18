@@ -32,6 +32,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
   }
 
+  if (!org.paidMatchesFeatureEnabled) {
+    return NextResponse.json(
+      {
+        error:
+          "Pagamentos não estão habilitados para este grupo pela plataforma.",
+      },
+      { status: 403 },
+    );
+  }
+
   if (!org.stripeAccountId) {
     return NextResponse.json(
       { error: "Nenhuma conta Stripe conectada a este grupo" },
