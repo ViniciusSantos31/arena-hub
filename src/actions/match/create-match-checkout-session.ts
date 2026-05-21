@@ -131,6 +131,7 @@ export const createMatchCheckoutSession = actionClient
       {
         mode: "payment",
         locale: "pt-BR",
+        payment_method_types: ["card", "pix"],
         payment_method_options: {
           pix: {
             expires_after_seconds: 60 * 30,
@@ -164,7 +165,7 @@ export const createMatchCheckoutSession = actionClient
         cancel_url: `${baseUrl}/group/${organizationCode}/matches/${matchId}?checkout=cancel`,
       },
       {
-        idempotencyKey: `${player.id}-checkout-${Date.now()}`,
+        idempotencyKey: `${player.id}-${matchId}-checkout`,
       },
     );
 

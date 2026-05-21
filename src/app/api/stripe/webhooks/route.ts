@@ -65,6 +65,8 @@ export async function POST(req: NextRequest) {
         confirmed: true,
         confirmedAt: new Date(),
         paymentStatus: "paid",
+        stripePaymentIntentId: pi.id,
+        stripeCheckoutSessionId: null,
       })
       .where(
         and(

@@ -139,6 +139,12 @@ export const joinMatch = actionClient
     if (isAlreadyJoined.length > 0) {
       const userInMatch = isAlreadyJoined[0];
 
+      if (userInMatch.paymentStatus === "paid") {
+        throw new Error(
+          "Você já realizou o pagamento desta partida e não pode sair. Entre em contato com o moderador.",
+        );
+      }
+
       if (userInMatch.stripeCheckoutSessionId) {
         await stripe.checkout.sessions
           .expire(userInMatch.stripeCheckoutSessionId)

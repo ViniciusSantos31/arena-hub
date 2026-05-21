@@ -4,14 +4,7 @@ import { createMatchCheckoutSession } from "@/actions/match/create-match-checkou
 import { getUserMatchPlayer } from "@/actions/match/join";
 import { ResponsiveDialog } from "@/components/responsive-dialog";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { queryClient } from "@/lib/react-query";
 import { Status } from "@/utils/status";
@@ -209,88 +202,6 @@ export function PayWithCheckoutLinkButton({
         onOpenChange={setOpen}
       />
 
-      <Dialog
-        // open={open}
-        onOpenChange={(next) => {
-          setOpen(next);
-          if (!next) {
-            setCheckoutUrl(null);
-          }
-        }}
-      >
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Seu link de pagamento</DialogTitle>
-            <DialogDescription>
-              Este link é exclusivo para você. Após o pagamento ser concluído
-              com sucesso, ele deixa de poder ser reutilizado. Se o link expirar
-              antes de pagar, gere um novo.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 py-2">
-            {createSession.isPending && (
-              <div className="flex justify-center py-8">
-                <Loader2Icon className="text-muted-foreground size-10 animate-spin" />
-              </div>
-            )}
-            {checkoutUrl && !createSession.isPending && (
-              <>
-                <div className="flex gap-2">
-                  <Input readOnly value={checkoutUrl} className="text-xs" />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={copyLink}
-                    title="Copiar link"
-                  >
-                    <LinkIcon className="size-4" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => createSession.mutate()}
-                    disabled={createSession.isPending}
-                  >
-                    <RefreshCwIcon className="size-4" />
-                  </Button>
-                </div>
-                <Button className="w-full gap-2" asChild>
-                  <a
-                    href={checkoutUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <ExternalLinkIcon className="size-4" />
-                    Abrir página de pagamento
-                  </a>
-                </Button>
-              </>
-            )}
-          </div>
-
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => createSession.mutate()}
-              disabled={createSession.isPending}
-            >
-              <RefreshCwIcon className="size-4" />
-              Novo link
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setOpen(false)}
-            >
-              Fechar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }
