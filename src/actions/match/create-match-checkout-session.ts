@@ -6,11 +6,11 @@ import { matchesTable } from "@/db/schema/match";
 import { playersTable } from "@/db/schema/player";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
+import { requireAppUrl } from "@/lib/require-app-url";
 import { stripe } from "@/lib/stripe";
 import { and, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import z from "zod/v4";
-import { requireAppUrl } from "@/lib/require-app-url";
 import { getUserMembership } from "../group/membership";
 
 const PLATFORM_FEE_RATE = 0.02;
@@ -131,16 +131,24 @@ export const createMatchCheckoutSession = actionClient
       {
         mode: "payment",
         locale: "pt-BR",
+        payment_method_options: {
+          pix: {
+            expires_after_seconds: 60 * 30,
+          },
+        },
         line_items: [
           {
             price_data: {
               currency: "brl",
               unit_amount: match.price,
+
               product_data: {
                 name: `Inscrição: ${match.title}`,
-                description: "Pagamento único — após concluir, o link deixa de ser válido.",
+                description:
+                  "Pagamento único — após concluir, o link deixa de ser válido.",
               },
             },
+
             quantity: 1,
           },
         ],

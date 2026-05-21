@@ -2,8 +2,8 @@ import { db } from "@/db";
 import { organization } from "@/db/schema/auth";
 import { auth } from "@/lib/auth";
 import { requireAppUrl } from "@/lib/require-app-url";
-import { getOrgIfUserCanManageStripe } from "@/lib/stripe-connect-access";
 import { stripe } from "@/lib/stripe";
+import { getOrgIfUserCanManageStripe } from "@/lib/stripe-connect-access";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
@@ -53,7 +53,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL("/home", req.url));
   }
 
-  const accountLink = await createOnboardingAccountLink(organizationId, accountId);
+  const accountLink = await createOnboardingAccountLink(
+    organizationId,
+    accountId,
+  );
   return NextResponse.redirect(accountLink.url);
 }
 
@@ -107,9 +110,11 @@ export async function POST(req: NextRequest) {
     const account = await stripe.accounts.create({
       type: "express",
       country: "BR",
+      business_type: "individual",
       capabilities: {
         transfers: { requested: true },
         card_payments: { requested: true },
+        pix_payments: { requested: true },
       },
       metadata: {
         organizationId,
