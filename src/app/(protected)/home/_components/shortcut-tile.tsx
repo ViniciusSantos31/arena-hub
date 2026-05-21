@@ -1,16 +1,24 @@
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
+  CompassIcon,
   GraduationCapIcon,
   KeyRoundIcon,
   PlusIcon,
   SearchIcon,
+  UsersIcon,
 } from "lucide-react";
 import Link from "next/link";
 
-type ShortcutIcon = "plus" | "search" | "graduation" | "key";
+type ShortcutIcon =
+  | "plus"
+  | "search"
+  | "graduation"
+  | "key"
+  | "compass"
+  | "users";
 
-type ShortcutAccent = "primary" | "emerald" | "violet" | "amber";
+type ShortcutAccent = "primary" | "emerald" | "violet" | "amber" | "teal";
 
 const accentClasses: Record<ShortcutAccent, string> = {
   primary:
@@ -20,7 +28,8 @@ const accentClasses: Record<ShortcutAccent, string> = {
   violet:
     "bg-violet-500/10 text-violet-600 dark:text-violet-400 group-hover:bg-violet-500/15 ring-violet-500/15",
   amber:
-    "bg-amber-500/10 text-amber-700 dark:text-amber-400 group-hover:bg-amber-500/15 ring-amber-500/15 ",
+    "bg-amber-500/10 text-amber-700 dark:text-amber-400 group-hover:bg-amber-500/15 ring-amber-500/15",
+  teal: "bg-teal-500/10 text-teal-600 dark:text-teal-400 group-hover:bg-teal-500/15 ring-teal-500/15",
 };
 
 const accentBorderClasses: Record<ShortcutAccent, string> = {
@@ -28,6 +37,7 @@ const accentBorderClasses: Record<ShortcutAccent, string> = {
   emerald: "hover:border-emerald-500/50",
   violet: "hover:border-violet-500/50",
   amber: "hover:border-amber-500/50",
+  teal: "hover:border-teal-500/50",
 };
 
 function getIcon(icon: ShortcutIcon) {
@@ -40,6 +50,10 @@ function getIcon(icon: ShortcutIcon) {
       return GraduationCapIcon;
     case "key":
       return KeyRoundIcon;
+    case "compass":
+      return CompassIcon;
+    case "users":
+      return UsersIcon;
   }
 }
 
@@ -64,7 +78,7 @@ export function ShortcutTile({
     <Link href={href} className="group outline-none">
       <Card
         className={cn(
-          "border-border/60 hover:border-primary/25 hover:bg-primary/5 transition-colors",
+          "border-border/60 hover:border-primary/25 hover:bg-primary/5 h-full transition-colors",
           compact ? "gap-0 px-0 py-0" : "gap-0 px-0 py-0",
           accentBorderClasses[accent],
         )}
