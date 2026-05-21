@@ -1,6 +1,7 @@
 "use client";
 
 import type { AdminGroupDetail } from "@/actions/admin/groups/detail";
+import { AdminGroupPaidMatchesFeatureSwitch } from "@/app/admin/_componentes/groups/detail/admin-group-paid-matches-feature-switch";
 import { GroupOwnerChip } from "@/app/admin/_componentes/groups/group-owner-chip";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -161,7 +162,7 @@ export function GroupAdminDetailView({ data }: { data: AdminGroupDetail }) {
             </div>
           </CardHeader>
 
-          <CardContent className="pt-0">
+          <CardContent className="flex flex-col gap-2 pt-0">
             <div className="mb-4 grid grid-cols-2 gap-3">
               <div className="border-border/60 bg-background/50 rounded-lg border p-4">
                 <div className="text-muted-foreground flex items-center gap-1 text-xs">
@@ -189,6 +190,7 @@ export function GroupAdminDetailView({ data }: { data: AdminGroupDetail }) {
                 <GroupOwnerChip owner={data.group.owner} />
               </div>
             </div>
+            <AdminGroupPaidMatchesFeatureSwitch group={data.group} />
             {data.group.rules ? (
               <div className="border-border/60 bg-background/50 rounded-lg border p-4">
                 <div className="text-muted-foreground mb-1 text-xs">Regras</div>

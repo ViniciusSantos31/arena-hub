@@ -5,8 +5,9 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { ChevronLeftIcon, Users2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { use, useEffect } from "react";
+import { Suspense, use, useEffect } from "react";
 import { AdvancedSettingsSection } from "./_components/advanced-settings-section";
+import { CheckoutReturnHandler } from "./_components/checkout-return-handler";
 import { MatchDetailCard } from "./_components/match-detail-card";
 import { PlayerListRealtime } from "./_components/player-list-realtime";
 import { PlayersList } from "./_components/players-list";
@@ -31,6 +32,9 @@ export default function MatchDetailPage({
 
   return (
     <main className="flex w-full flex-col gap-4">
+      <Suspense fallback={null}>
+        <CheckoutReturnHandler matchId={id} organizationCode={code} />
+      </Suspense>
       <section className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
         <Button variant="ghost" size="sm" className="w-fit gap-1.5 pl-1" onClick={router.back}>
           <ChevronLeftIcon className="size-4" />

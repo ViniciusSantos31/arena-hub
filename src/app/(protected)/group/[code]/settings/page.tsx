@@ -33,5 +33,10 @@ export default async function GroupSettingsPage({
     return redirect(`/group/${code}/overview`);
   }
 
-  return <GroupSettingsForm group={group} userRole={membership.role as Role} />;
+  return (
+    <GroupSettingsForm
+      group={{ ...group, stripeAccountId: group.stripeAccountId ?? null }}
+      userRole={membership.role as Role}
+    />
+  );
 }

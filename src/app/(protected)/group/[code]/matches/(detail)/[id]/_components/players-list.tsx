@@ -1,5 +1,8 @@
 import { CardContent } from "@/components/ui/card";
 import { useGuard } from "@/hooks/use-guard";
+import { getGroupDetails } from "@/actions/group/detail";
+import { isPaidMatchActiveForGroup } from "@/lib/paid-match-feature";
+import { useQuery } from "@tanstack/react-query";
 import { useMatchPlayers } from "../_hooks";
 import { useMatch } from "../_hooks/useMatch";
 import { PlayerEmptyList } from "./player-empty-list";
@@ -14,6 +17,18 @@ export const PlayersList = ({ id, organizationCode }: PlayersListProps) => {
   const { data: players, isLoading } = useMatchPlayers(id);
   const { data: match } = useMatch();
   const canModerate = useGuard({ action: ["match:update"] });
+
+  const { data: group } = useQuery({
+    queryKey: ["group-details", organizationCode],
+    enabled: !!organizationCode,
+    queryFn: () =>
+      getGroupDetails({ code: organizationCode }).then((res) => res.data),
+  });
+
+  const isPaidMatch = isPaidMatchActiveForGroup(
+    !!match?.isPaid,
+    group?.paidMatchesFeatureEnabled ?? false,
+  );
 
   if (isLoading) {
     return (
@@ -48,6 +63,7 @@ export const PlayersList = ({ id, organizationCode }: PlayersListProps) => {
           matchId={id}
           organizationCode={organizationCode}
           matchStatus={match?.status}
+          isPaidMatch={isPaidMatch}
         />
       ))}
     </CardContent>

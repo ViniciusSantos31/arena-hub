@@ -11,9 +11,11 @@ import { matchDetailQueryKeys } from "../_hooks";
 export const ConfirmPresenceButton = ({
   matchId,
   matchStatus,
+  isPaid,
 }: {
   matchId: string;
   matchStatus: Status;
+  isPaid: boolean;
 }) => {
   const { sendEvent } = useWebSocket();
 
@@ -54,6 +56,10 @@ export const ConfirmPresenceButton = ({
   });
 
   if (!player || player.confirmed || matchStatus !== "open_registration") {
+    return null;
+  }
+
+  if (isPaid && player.paymentStatus === "pending") {
     return null;
   }
 

@@ -8,6 +8,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { matchesTable } from "@/db/schema/match";
+import { isPaidMatchActiveForGroup } from "@/lib/paid-match-feature";
 import { getCategoryLabelById } from "@/utils/categories";
 import { formatDate } from "@/utils/date";
 import { getSportIconById, getSportLabelById, Sport } from "@/utils/sports";
@@ -24,15 +25,28 @@ type MatchCardProps = {
       image?: string | null | undefined;
     }[];
   };
+  paidMatchesFeatureEnabled: boolean;
 };
 
-export const MatchCard = ({ match }: MatchCardProps) => {
+export const MatchCard = ({
+  match,
+  paidMatchesFeatureEnabled,
+}: MatchCardProps) => {
   const filledPlayers = match.players.filter(
     (player) => player?.waitingQueue === false,
   ).length;
   const progressValue = (filledPlayers * 100) / match.maxPlayers;
 
   const SportIcon = getSportIconById(match.sport as Sport);
+
+  const priceLabel =
+    isPaidMatchActiveForGroup(!!match.isPaid, paidMatchesFeatureEnabled) &&
+    match.price != null
+      ? new Intl.NumberFormat("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }).format(match.price / 100)
+      : "Grátis";
 
   return (
     <Link href={`matches/${match.id}`} className="group w-full">
@@ -70,7 +84,9 @@ export const MatchCard = ({ match }: MatchCardProps) => {
               <span className="text-muted-foreground">
                 {filledPlayers} / {match.maxPlayers} vagas
               </span>
-              <span className="text-primary text-sm font-semibold">Grátis</span>
+              <span className="text-primary text-sm font-semibold">
+                {priceLabel}
+              </span>
             </div>
             <Progress value={progressValue} className="h-1.5" />
           </div>

@@ -22,14 +22,21 @@ export const CancelMatchButton = () => {
   const cancelMatchAction = useAction(updateMatch, {
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: matchDetailQueryKeys.match(matchId || ""),
+        predicate(query) {
+          return (
+            query.queryKey[0] === matchDetailQueryKeys.all[0] ||
+            query.queryKey[0] === "player"
+          );
+        },
       });
       toast.success("Partida cancelada com sucesso.", { id: "cancel-match" });
     },
-    onError: () => {
-      toast.error("Não foi possível cancelar a partida.", {
-        id: "cancel-match",
-      });
+    onError: ({ error }) => {
+      toast.error(
+        error.serverError ??
+          "Não foi possível cancelar a partida.",
+        { id: "cancel-match" },
+      );
     },
   });
 
@@ -59,7 +66,11 @@ export const CancelMatchButton = () => {
     <>
       <ResponsiveDialog
         title="Tem certeza que deseja cancelar esta partida?"
-        description="Ao cancelar a partida, ela não poderá ser reativada e todos os dados relacionados serão perdidos."
+        description={
+          match?.isPaid
+            ? "As inscrições já pagas serão estornadas no Stripe (valor devolvido aos jogadores). Links de pagamento pendentes serão encerrados. Esta ação não pode ser desfeita."
+            : "Ao cancelar a partida, ela não poderá ser reativada. Esta ação não pode ser desfeita."
+        }
         variant="warning"
         icon={AlertTriangleIcon}
         open={modalIsOpen}

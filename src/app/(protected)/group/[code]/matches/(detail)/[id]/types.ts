@@ -13,6 +13,8 @@ export interface MatchDetail {
   organizationId: string;
   createdAt: Date;
   updatedAt: Date;
+  isPaid: boolean;
+  price: number | null;
 }
 
 export interface MatchPlayer {
@@ -24,6 +26,7 @@ export interface MatchPlayer {
   score: number;
   confirmed: boolean;
   waitingQueue?: boolean;
+  paymentStatus?: "pending" | "paid" | "refunded" | "exempt";
 }
 
 export interface MatchPlayersData {

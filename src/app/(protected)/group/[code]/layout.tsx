@@ -2,13 +2,10 @@
 
 import { getGroupDetails } from "@/actions/group/detail";
 import { getUserMembership } from "@/actions/group/membership";
+import UnauthorizedPage from "@/app/unauthorized";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import {
-  redirect,
-  RedirectType,
-  useSelectedLayoutSegments,
-} from "next/navigation";
+import { useSelectedLayoutSegments } from "next/navigation";
 import { use } from "react";
 import {
   PageContainer,
@@ -56,14 +53,13 @@ export default function GroupDetailsLayout({
     },
   });
 
+  const { name } = group || { name: "" };
+
   if (isLoadingGroup || isLoadingMembership) {
     return <LoadingGroupPage />;
   }
 
-  const { name } = group || { name: "" };
-
-  if (!membership && !isLoadingMembership)
-    return redirect("/home", RedirectType.replace);
+  if (!membership && !isLoadingMembership) return <UnauthorizedPage />;
 
   return (
     <PageContainer>

@@ -1,5 +1,5 @@
-import { listMyPendingInvites } from "@/actions/invite-links/list-pending-invites";
 import { listMyGroups } from "@/actions/group/list-my-groups";
+import { listMyPendingInvites } from "@/actions/invite-links/list-pending-invites";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { PiLightning } from "react-icons/pi";
@@ -33,6 +33,7 @@ export default async function HomePage() {
           </p>
         </div>
       </section>
+
       <PendingInvitesBanner invites={pendingInvites} />
 
       <section className="space-y-3">
@@ -43,18 +44,25 @@ export default async function HomePage() {
           </h2>
         </div>
 
-        <div className="grid gap-3 @md:grid-cols-2 @2xl:grid-cols-3">
+        <div className="grid gap-3 @md:grid-cols-2">
           <ShortcutTile
             title="Criar grupo"
-            description="Monte um novo grupo e convide a galera"
+            description="Monte um novo grupo e convide a galera para jogar com você"
             icon="plus"
             href="/group/create"
             accent="primary"
           />
           <ShortcutTile
+            title="Explorar grupos"
+            description="Encontre grupos públicos ou solicite entrada em privados"
+            icon="compass"
+            href="/groups"
+            accent="teal"
+          />
+          <ShortcutTile
             title="Encontre jogadores"
-            description="Descubra jogadores procurando grupo para jogar"
-            icon="search"
+            description="Descubra jogadores procurando grupos para jogar e convide-os para jogar com você"
+            icon="users"
             href="/discover"
             accent="violet"
           />
@@ -67,6 +75,7 @@ export default async function HomePage() {
           />
         </div>
       </section>
+
       {groups.length !== 0 && (
         <section className="space-y-3">
           <div className="flex items-end justify-between gap-2">

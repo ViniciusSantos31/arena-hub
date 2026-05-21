@@ -1,15 +1,17 @@
 import { listMyPendingInvites } from "@/actions/invite-links/list-pending-invites";
 import { getMyProfile } from "@/actions/user/get-my-profile";
-import { Separator } from "@/components/ui/separator";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import { auth } from "@/lib/auth";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2Icon, CircleDotIcon, SendIcon, SwordsIcon } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { auth } from "@/lib/auth";
+import {
+  CheckCircle2Icon,
+  CircleDotIcon,
+  SendIcon,
+  SettingsIcon,
+  SwordsIcon,
+  UserIcon,
+} from "lucide-react";
 import { headers } from "next/headers";
 import {
   PageContainer,
@@ -23,7 +25,7 @@ import { PrivateProfileHeader } from "./_components/private-profile-header";
 import { SecuritySection } from "./_components/security-section";
 
 const tabTriggerClass =
-  "data-[state=active]:bg-background dark:data-[state=active]:bg-background data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:border-b-primary dark:data-[state=active]:border-primary max-w-fit flex-1 rounded-none border-0 border-b-2 border-transparent px-8 text-center";
+  "data-[state=active]:bg-background cursor-pointer dark:data-[state=active]:bg-background data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:border-b-primary dark:data-[state=active]:border-primary max-w-fit flex-1 rounded-none border-0 border-b-2 border-transparent px-8 text-center";
 
 export default async function ProfilePage() {
   const [session, profileResult, pendingInvitesResult] = await Promise.all([
@@ -45,7 +47,10 @@ export default async function ProfilePage() {
         <Tabs defaultValue="profile" className="flex flex-col gap-0">
           <TabsList className="bg-background sticky top-0 z-10 min-h-12 w-full justify-start rounded-none border-b p-0">
             <TabsTrigger value="profile" className={tabTriggerClass}>
-              Perfil
+              <span className="flex items-center gap-1.5">
+                <UserIcon className="h-3.5 w-3.5" />
+                Perfil
+              </span>
             </TabsTrigger>
             <TabsTrigger value="invites" className={tabTriggerClass}>
               <span className="flex items-center gap-1.5">
@@ -59,7 +64,10 @@ export default async function ProfilePage() {
               </span>
             </TabsTrigger>
             <TabsTrigger value="settings" className={tabTriggerClass}>
-              Configurações
+              <span className="flex items-center gap-1.5">
+                <SettingsIcon className="h-3.5 w-3.5" />
+                Configurações
+              </span>
             </TabsTrigger>
           </TabsList>
 

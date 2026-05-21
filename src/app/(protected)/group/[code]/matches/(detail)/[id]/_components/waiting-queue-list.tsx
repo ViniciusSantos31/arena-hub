@@ -1,6 +1,10 @@
 import { CardContent } from "@/components/ui/card";
 import { useGuard } from "@/hooks/use-guard";
+import { getGroupDetails } from "@/actions/group/detail";
+import { isPaidMatchActiveForGroup } from "@/lib/paid-match-feature";
+import { useQuery } from "@tanstack/react-query";
 import { useWaitingQueue } from "../_hooks";
+import { useMatch } from "../_hooks/useMatch";
 import { PlayerItem } from "./player-item";
 
 interface WaitingQueueListProps {
@@ -13,7 +17,20 @@ export const WaitingQueueList = ({
   organizationCode,
 }: WaitingQueueListProps) => {
   const { data: players, isLoading } = useWaitingQueue(id);
+  const { data: match } = useMatch();
   const canModerate = useGuard({ action: ["match:update"] });
+
+  const { data: group } = useQuery({
+    queryKey: ["group-details", organizationCode],
+    enabled: !!organizationCode,
+    queryFn: () =>
+      getGroupDetails({ code: organizationCode }).then((res) => res.data),
+  });
+
+  const isPaidMatch = isPaidMatchActiveForGroup(
+    !!match?.isPaid,
+    group?.paidMatchesFeatureEnabled ?? false,
+  );
 
   if (isLoading) {
     return (
@@ -52,6 +69,8 @@ export const WaitingQueueList = ({
             canModerate={canModerate}
             matchId={id}
             organizationCode={organizationCode}
+            matchStatus={match?.status}
+            isPaidMatch={isPaidMatch}
           />
         ))}
       </CardContent>

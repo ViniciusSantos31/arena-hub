@@ -84,7 +84,7 @@ export function GroupDetailsDrawer({
       <SheetTrigger asChild>
         <Button variant="outline" size="sm" className="h-9">
           <Settings2Icon />
-          <span className="text-xs md:text-base">Preferências</span>
+          <span className="text-xs md:text-sm">Preferências</span>
         </Button>
       </SheetTrigger>
 

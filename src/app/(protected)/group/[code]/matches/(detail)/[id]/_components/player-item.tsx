@@ -1,6 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -11,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { getMatchPaymentStatusPresentation } from "@/lib/match-payment-ui";
 import { getAvatarFallback } from "@/utils/avatar";
 import { formatDate } from "@/utils/date";
 import { Status } from "@/utils/status";
@@ -35,12 +37,14 @@ interface PlayerItemProps {
     confirmedAt?: Date;
     userId?: string | null;
     memberId?: string | null;
+    paymentStatus?: "pending" | "paid" | "refunded" | "exempt";
   };
   ref?: React.Ref<HTMLDivElement>;
   canModerate?: boolean;
   matchId?: string;
   organizationCode?: string;
   matchStatus?: Status;
+  isPaidMatch?: boolean;
 }
 
 export const PlayerItem = ({
@@ -50,6 +54,7 @@ export const PlayerItem = ({
   matchId,
   organizationCode,
   matchStatus,
+  isPaidMatch = false,
 }: PlayerItemProps) => {
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
   const [memberDetailsOpen, setMemberDetailsOpen] = useState(false);
@@ -64,6 +69,11 @@ export const PlayerItem = ({
         matchStatus === "closed_registration")
     );
   }, [canModerate, player.userId, matchId, organizationCode, matchStatus]);
+
+  const paymentBadge =
+    canModerate && isPaidMatch
+      ? getMatchPaymentStatusPresentation(player.paymentStatus)
+      : null;
 
   return (
     <>
@@ -102,7 +112,17 @@ export const PlayerItem = ({
             />
           </Avatar>
           <div className="flex flex-col gap-1">
-            <span className="text-sm font-medium">{player.name}</span>
+            <span className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-medium">{player.name}</span>
+              {paymentBadge ? (
+                <Badge
+                  variant={paymentBadge.variant}
+                  className={cn("font-normal", paymentBadge.className)}
+                >
+                  {paymentBadge.label}
+                </Badge>
+              ) : null}
+            </span>
 
             {player.score !== undefined && (
               <span className="text-muted-foreground text-xs font-medium">
@@ -174,6 +194,7 @@ export const PlayerItem = ({
           }}
           matchId={matchId}
           organizationCode={organizationCode}
+          isPaidMatch={isPaidMatch}
         />
       )}
 

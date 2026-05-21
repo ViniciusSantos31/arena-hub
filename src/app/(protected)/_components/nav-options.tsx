@@ -1,6 +1,6 @@
 "use client";
 
-import { PlusCircleIcon, UsersRoundIcon } from "lucide-react";
+import { CompassIcon, PlusCircleIcon, UsersRoundIcon } from "lucide-react";
 import { NavSidebar } from "./nav-sidebar";
 
 const options = {
@@ -16,6 +16,11 @@ const options = {
       title: "Criar grupo",
       url: "/group/create",
       icon: PlusCircleIcon,
+    },
+    {
+      title: "Explorar grupos",
+      url: "/groups",
+      icon: CompassIcon,
     },
     {
       title: "Vitrine",

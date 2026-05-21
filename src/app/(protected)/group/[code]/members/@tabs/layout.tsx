@@ -1,8 +1,12 @@
 "use client";
 
+import { getJoinRequestsCount } from "@/actions/group/get-join-requests-count";
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useGuard } from "@/hooks/use-guard";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useSelectedLayoutSegment } from "next/navigation";
+import { useParams, useSelectedLayoutSegment } from "next/navigation";
 
 const CustomTabsTrigger = (props: React.ComponentProps<typeof TabsTrigger>) => {
   return (
@@ -19,6 +23,18 @@ export default function GroupMembersParallelLayout({
   children: React.ReactNode;
 }) {
   const segment = useSelectedLayoutSegment() || "active";
+  const { code } = useParams<{ code: string }>();
+  const canApprove = useGuard({ action: ["membership:approve"] });
+
+  const { data: requestsCount } = useQuery({
+    queryKey: ["join-requests-count", code],
+    queryFn: async () => {
+      const res = await getJoinRequestsCount({ organizationCode: code });
+      return res?.data ?? 0;
+    },
+    enabled: canApprove && !!code,
+    staleTime: 30_000,
+  });
 
   return (
     <Tabs
@@ -32,6 +48,18 @@ export default function GroupMembersParallelLayout({
         <CustomTabsTrigger value="active" asChild>
           <Link href={"active"}>Ativos</Link>
         </CustomTabsTrigger>
+        {canApprove && (
+          <CustomTabsTrigger value="requests" asChild>
+            <Link href={"requests"} className="flex items-center gap-2">
+              Solicitações
+              {!!requestsCount && requestsCount > 0 && (
+                <Badge className="bg-primary/10 text-primary aspect-square h-5 min-w-5 px-1 text-xs">
+                  {requestsCount}
+                </Badge>
+              )}
+            </Link>
+          </CustomTabsTrigger>
+        )}
       </TabsList>
       <TabsContent value={segment} className="overflow-y-auto">
         {children}

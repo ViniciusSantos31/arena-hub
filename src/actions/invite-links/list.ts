@@ -2,6 +2,7 @@
 
 import { db } from "@/db";
 import { organization } from "@/db/schema/auth";
+import { directInvitesTable } from "@/db/schema/direct-invite";
 import {
   organizationInviteLink,
   organizationInviteLinkUse,
@@ -67,10 +68,19 @@ export const listInviteLinks = actionClient
       throw new Error("Sem permissão para ver links de convite");
     }
 
-    const links = await db.query.organizationInviteLink.findMany({
+    const allLinks = await db.query.organizationInviteLink.findMany({
       where: eq(organizationInviteLink.organizationId, org.id),
       orderBy: (t, { desc }) => [desc(t.createdAt)],
     });
+
+    const directLinks = await db.query.directInvitesTable.findMany({
+      where: eq(directInvitesTable.organizationId, org.id),
+      orderBy: (t, { desc }) => [desc(t.createdAt)],
+    });
+
+    const links = allLinks.filter(
+      (l) => !directLinks.some((d) => d.inviteLinkId === l.id),
+    );
 
     if (links.length === 0) {
       return { links: [] as const };

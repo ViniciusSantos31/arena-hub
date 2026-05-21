@@ -1,10 +1,13 @@
 "use server";
 
 import { db } from "@/db";
+import { organization as organizationTable } from "@/db/schema/auth";
 import { matchesTable } from "@/db/schema/match";
 import { member } from "@/db/schema/member";
 import { playersTable } from "@/db/schema/player";
 import { auth } from "@/lib/auth";
+import { isMemberExemptFromMatchPayment } from "@/lib/match-payment-exemption";
+import { stripe } from "@/lib/stripe";
 import { actionClient } from "@/lib/next-safe-action";
 import { and, count, eq } from "drizzle-orm";
 import { headers } from "next/headers";
@@ -42,6 +45,41 @@ export const joinMatch = actionClient
     if (!membershipInfo) {
       throw new Error("User is not a member of the organization");
     }
+
+    const match = await db.query.matchesTable.findFirst({
+      where: eq(matchesTable.id, matchId),
+      columns: {
+        organizationId: true,
+        isPaid: true,
+        price: true,
+        status: true,
+      },
+    });
+
+    if (!match?.organizationId) {
+      throw new Error("Partida inválida");
+    }
+
+    const org = await db.query.organization.findFirst({
+      where: eq(organizationTable.id, match.organizationId),
+      columns: { paidMatchesFeatureEnabled: true },
+    });
+
+    const matchCountsAsPaid =
+      match.isPaid === true && org?.paidMatchesFeatureEnabled === true;
+
+    const exemptFromPay =
+      !matchCountsAsPaid ||
+      (await isMemberExemptFromMatchPayment(
+        match.organizationId,
+        membershipInfo.id,
+        membershipInfo.role,
+      ));
+
+    const playerPaymentFields =
+      matchCountsAsPaid && !exemptFromPay
+        ? { paymentStatus: "pending" as const }
+        : { paymentStatus: "exempt" as const };
 
     // Verify if the user is already joined to the match (or banned)
     const isAlreadyJoined = await db
@@ -101,6 +139,24 @@ export const joinMatch = actionClient
     if (isAlreadyJoined.length > 0) {
       const userInMatch = isAlreadyJoined[0];
 
+      if (userInMatch.paymentStatus === "paid") {
+        throw new Error(
+          "Você já realizou o pagamento desta partida e não pode sair. Entre em contato com o moderador.",
+        );
+      }
+
+      if (userInMatch.stripeCheckoutSessionId) {
+        await stripe.checkout.sessions
+          .expire(userInMatch.stripeCheckoutSessionId)
+          .catch(() => undefined);
+      }
+
+      if (userInMatch.stripePaymentIntentId) {
+        await stripe.paymentIntents
+          .cancel(userInMatch.stripePaymentIntentId)
+          .catch(() => undefined);
+      }
+
       await db.delete(playersTable).where(eq(playersTable.id, userInMatch.id));
       return {
         player,
@@ -137,6 +193,7 @@ export const joinMatch = actionClient
         userId,
         memberId: membershipInfo.id,
         waitingQueue: true,
+        ...playerPaymentFields,
       });
       return;
     }
@@ -147,6 +204,7 @@ export const joinMatch = actionClient
       userId,
       memberId: membershipInfo.id,
       waitingQueue: membershipInfo.role === "guest",
+      ...playerPaymentFields,
     });
 
     const websocketData = {

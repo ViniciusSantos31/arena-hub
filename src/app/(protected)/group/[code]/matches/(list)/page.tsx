@@ -1,11 +1,23 @@
 "use client";
 
+import { getGroupDetails } from "@/actions/group/detail";
 import { MatchCard, MatchCardLoading } from "../_components/match-card";
 import { MatchEmptyList } from "../_components/match-empty-list";
 import { useMatchesFilter } from "../_contexts/matches-filter";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 
 export default function MatchesPage() {
+  const { code } = useParams<{ code: string }>();
   const { data, isLoading, isError } = useMatchesFilter();
+
+  const { data: group } = useQuery({
+    queryKey: ["group-details", code],
+    enabled: !!code,
+    queryFn: () => getGroupDetails({ code }).then((res) => res.data),
+  });
+
+  const paidFeature = group?.paidMatchesFeatureEnabled ?? false;
 
   if (isError) {
     return (
@@ -37,7 +49,11 @@ export default function MatchesPage() {
   return (
     <div className="flex h-full flex-col gap-4">
       {data?.data?.map((match) => (
-        <MatchCard key={match.id} match={match} />
+        <MatchCard
+          key={match.id}
+          match={match}
+          paidMatchesFeatureEnabled={paidFeature}
+        />
       ))}
     </div>
   );
