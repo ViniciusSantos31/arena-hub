@@ -13,6 +13,8 @@ import { CreateInviteLinkSuccessModal } from "./create-invite-link-success-modal
 import { InviteLinkList } from "./invite-link-list";
 import { SettingsSection } from "./settings-section";
 
+const MAX_INVITE_LINKS = 10;
+
 export function InviteLinksSection({
   group,
   id,
@@ -37,6 +39,11 @@ export function InviteLinksSection({
     });
   }, [group.code]);
 
+  const inviteLinksCount =
+    queryClient.getQueryData<{ id: string }[]>(
+      inviteLinksQueryKeys.list(group.code),
+    )?.length ?? 0;
+
   const onCreateInviteLinkSuccess = useCallback(
     (link: string) => {
       refetchInviteLinks();
@@ -57,23 +64,34 @@ export function InviteLinksSection({
       title="Links de convite"
       description="Crie links que permitem entrar direto no grupo (sem solicitação)."
       action={
-        <ResponsiveDialog
-          open={open}
-          onOpenChange={setOpen}
-          title="Criar link de convite"
-          description="Configure permissões e limites do link. Você pode revogá-lo a qualquer momento."
-          icon={LinkIcon}
-          content={
-            <CreateInviteLinkForm
-              onSuccess={(link) => onCreateInviteLinkSuccess(link)}
-            />
-          }
-        >
-          <Button size="sm" className="ml-auto w-full sm:w-auto">
-            <PlusIcon />
-            Novo link
-          </Button>
-        </ResponsiveDialog>
+        <div className="flex flex-col items-center justify-center gap-2">
+          <ResponsiveDialog
+            open={open}
+            onOpenChange={setOpen}
+            title="Criar link de convite"
+            description="Configure permissões e limites do link. Você pode revogá-lo a qualquer momento."
+            icon={LinkIcon}
+            content={
+              <CreateInviteLinkForm
+                onSuccess={(link) => onCreateInviteLinkSuccess(link)}
+              />
+            }
+          >
+            <Button
+              size="sm"
+              disabled={inviteLinksCount >= MAX_INVITE_LINKS}
+              className="ml-auto w-full sm:w-auto"
+            >
+              <PlusIcon />
+              Novo link
+            </Button>
+          </ResponsiveDialog>
+          {inviteLinksCount >= MAX_INVITE_LINKS && (
+            <p className="text-muted-foreground text-xs">
+              Você atingiu o limite de {MAX_INVITE_LINKS} links de convite.
+            </p>
+          )}
+        </div>
       }
     >
       <InviteLinkList />

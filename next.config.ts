@@ -9,7 +9,6 @@ const withPWA = withSerwist({
 });
 
 const nextConfig: NextConfig = {
-  /* config options here */
   images: {
     remotePatterns: [
       {
