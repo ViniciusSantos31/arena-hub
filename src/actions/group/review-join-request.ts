@@ -14,7 +14,9 @@ import { requestsTable } from "@/db/schema/request";
 import { can } from "@/hooks/use-guard";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
-import { and, eq } from "drizzle-orm";
+import { PlanLimitError } from "@/lib/user-plan/plan-limit-error";
+import { getEffectiveMemberCapForOrganization } from "@/lib/user-plan/assertions";
+import { and, eq, sql } from "drizzle-orm";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import z from "zod/v4";
@@ -80,6 +82,24 @@ export const reviewJoinRequest = actionClient
     });
 
     if (!org) throw new Error("Grupo não encontrado");
+
+    const membersCount = await db
+      .select({ count: sql<number>`count(*)`.mapWith(Number) })
+      .from(member)
+      .where(eq(member.organizationId, request.organizationId))
+      .then((rows) => rows[0]?.count ?? 0);
+
+    const effectiveCap = await getEffectiveMemberCapForOrganization(
+      request.organizationId,
+    );
+
+    if (effectiveCap !== null && membersCount >= effectiveCap) {
+      throw new PlanLimitError(
+        "MEMBER_LIMIT",
+        "Este grupo atingiu o limite de membros do plano do organizador.",
+        { currentMemberCount: membersCount, cap: effectiveCap },
+      );
+    }
 
     const token = generateInviteToken();
     const tokenHash = hashInviteToken(token);

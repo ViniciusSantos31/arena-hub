@@ -1,3 +1,4 @@
+import { getSubscriptionSummary } from "@/actions/user-plan/get-subscription-summary";
 import { listMyPendingInvites } from "@/actions/invite-links/list-pending-invites";
 import { getMyProfile } from "@/actions/user/get-my-profile";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +8,7 @@ import { auth } from "@/lib/auth";
 import {
   CheckCircle2Icon,
   CircleDotIcon,
+  CreditCardIcon,
   SendIcon,
   SettingsIcon,
   SwordsIcon,
@@ -23,20 +25,31 @@ import { AccountSettingsForm } from "./_components/account-settings-form";
 import { PendingInvitesList } from "./_components/pending-invites-list";
 import { PrivateProfileHeader } from "./_components/private-profile-header";
 import { SecuritySection } from "./_components/security-section";
+import { SubscriptionSection } from "./_components/subscription-section";
 
 const tabTriggerClass =
   "data-[state=active]:bg-background cursor-pointer dark:data-[state=active]:bg-background data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:border-b-primary dark:data-[state=active]:border-primary max-w-fit flex-1 rounded-none border-0 border-b-2 border-transparent px-8 text-center";
 
-export default async function ProfilePage() {
-  const [session, profileResult, pendingInvitesResult] = await Promise.all([
+export default async function ProfilePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
+  const { tab } = await searchParams;
+  const defaultTab = tab === "subscription" ? "subscription" : "profile";
+
+  const [session, profileResult, pendingInvitesResult, subscriptionResult] =
+    await Promise.all([
     auth.api.getSession({ headers: await headers() }),
     getMyProfile(),
     listMyPendingInvites(),
+    getSubscriptionSummary(),
   ]);
 
   const user = session?.user;
   const data = profileResult?.data;
   const pendingInvites = pendingInvitesResult?.data ?? [];
+  const subscriptionSummary = subscriptionResult?.data;
 
   return (
     <PageContainer>
@@ -44,12 +57,18 @@ export default async function ProfilePage() {
         <PageHeaderContent title="Perfil" />
       </PageHeader>
       <PageContent className="p-0">
-        <Tabs defaultValue="profile" className="flex flex-col gap-0">
+        <Tabs defaultValue={defaultTab} className="flex flex-col gap-0">
           <TabsList className="bg-background sticky top-0 z-10 min-h-12 w-full justify-start rounded-none border-b p-0">
             <TabsTrigger value="profile" className={tabTriggerClass}>
               <span className="flex items-center gap-1.5">
                 <UserIcon className="h-3.5 w-3.5" />
                 Perfil
+              </span>
+            </TabsTrigger>
+            <TabsTrigger value="subscription" className={tabTriggerClass}>
+              <span className="flex items-center gap-1.5">
+                <CreditCardIcon className="h-3.5 w-3.5" />
+                Assinatura
               </span>
             </TabsTrigger>
             <TabsTrigger value="invites" className={tabTriggerClass}>
@@ -142,6 +161,16 @@ export default async function ProfilePage() {
               </p>
             </div>
             <PendingInvitesList invites={pendingInvites} />
+          </TabsContent>
+
+          <TabsContent value="subscription" className="space-y-6 px-4 py-5">
+            {subscriptionSummary ? (
+              <SubscriptionSection summary={subscriptionSummary} />
+            ) : (
+              <p className="text-muted-foreground text-sm">
+                Não foi possível carregar os dados da assinatura.
+              </p>
+            )}
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6 px-4 py-5">

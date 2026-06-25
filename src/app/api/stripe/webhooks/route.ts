@@ -3,6 +3,7 @@ import { organization } from "@/db/schema/auth";
 import { matchesTable } from "@/db/schema/match";
 import { playersTable } from "@/db/schema/player";
 import { applyPaidCheckoutSession } from "@/lib/apply-paid-checkout-session";
+import { handleStripeBillingWebhook } from "@/lib/stripe-billing/webhooks";
 import { stripe } from "@/lib/stripe";
 import { and, eq } from "drizzle-orm";
 import type Stripe from "stripe";
@@ -27,9 +28,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Assinatura inválida" }, { status: 400 });
   }
 
+  const billingResult = await handleStripeBillingWebhook(event);
+  if (billingResult === "handled") {
+    return NextResponse.json({ received: true });
+  }
+
   if (event.type === "checkout.session.completed") {
     const sess = event.data.object as Stripe.Checkout.Session;
-    await applyPaidCheckoutSession(sess);
+    if (sess.metadata?.type !== "platform_subscription") {
+      await applyPaidCheckoutSession(sess);
+    }
   }
 
   if (event.type === "payment_intent.succeeded") {

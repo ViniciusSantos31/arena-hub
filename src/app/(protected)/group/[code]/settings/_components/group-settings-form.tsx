@@ -26,13 +26,23 @@ interface GroupSettingsFormProps {
     paidMatchesFeatureEnabled: boolean;
   };
   userRole: Role;
+  maxPlayersLimit?: number | null;
 }
 
-export function GroupSettingsForm({ group, userRole }: GroupSettingsFormProps) {
+export function GroupSettingsForm({
+  group,
+  userRole,
+  maxPlayersLimit,
+}: GroupSettingsFormProps) {
   return (
     <div className="space-y-4">
       <BasicInfoForm group={group} userRole={userRole} id="basic-info" />
-      <ConfigAccessForm group={group} userRole={userRole} id="config-access" />
+      <ConfigAccessForm
+        group={group}
+        userRole={userRole}
+        id="config-access"
+        maxPlayersLimit={maxPlayersLimit}
+      />
       <PunishmentConfigForm
         group={group}
         userRole={userRole}
