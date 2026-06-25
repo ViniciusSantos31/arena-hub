@@ -188,7 +188,7 @@ export const InviteLinkList = () => {
               <Button
                 type="button"
                 size="icon"
-                variant="destructive"
+                variant="outline"
                 onClick={() => handleDeleteInviteLink(l.id)}
               >
                 <TrashIcon />
