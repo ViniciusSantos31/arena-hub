@@ -1,9 +1,9 @@
 import { db } from "@/db";
+import { usersTable } from "@/db/schema/user";
 import {
   userBillingSubscription,
   type UserBillingSubscription,
 } from "@/db/schema/user-billing";
-import { usersTable } from "@/db/schema/user";
 import { priceIdToPlanTier } from "@/lib/stripe-billing/map-price-to-tier";
 import { getGracePeriodDays } from "@/lib/user-plan/subscription-status";
 import { eq } from "drizzle-orm";
@@ -21,7 +21,9 @@ const STRIPE_STATUSES: ReadonlySet<string> = new Set([
   "unpaid",
 ]);
 
-function toBillingStatus(status: Stripe.Subscription.Status): BillingSubscriptionStatus {
+function toBillingStatus(
+  status: Stripe.Subscription.Status,
+): BillingSubscriptionStatus {
   if (STRIPE_STATUSES.has(status)) {
     return status as BillingSubscriptionStatus;
   }
@@ -37,7 +39,8 @@ function getSubscriptionPeriod(sub: Stripe.Subscription): {
     current_period_start?: number;
     current_period_end?: number;
   };
-  const periodStart = legacySub.current_period_start ?? item?.current_period_start;
+  const periodStart =
+    legacySub.current_period_start ?? item?.current_period_start;
   const periodEnd = legacySub.current_period_end ?? item?.current_period_end;
 
   if (!periodStart || !periodEnd) {
@@ -76,10 +79,7 @@ export async function syncSubscriptionFromStripe(
 ): Promise<void> {
   const priceId = sub.items.data[0]?.price?.id;
   if (!priceId) {
-    console.error(
-      "[stripe-billing] Subscription sem price item:",
-      sub.id,
-    );
+    console.error("[stripe-billing] Subscription sem price item:", sub.id);
     return;
   }
 

@@ -1,11 +1,11 @@
 import { db } from "@/db";
+import { usersTable } from "@/db/schema/user";
 import {
   stripeProcessedEvent,
   userBillingSubscription,
 } from "@/db/schema/user-billing";
-import { usersTable } from "@/db/schema/user";
-import { syncSubscriptionFromStripe } from "@/lib/stripe-billing/sync-subscription";
 import { stripe } from "@/lib/stripe";
+import { syncSubscriptionFromStripe } from "@/lib/stripe-billing/sync-subscription";
 import { eq } from "drizzle-orm";
 import type Stripe from "stripe";
 

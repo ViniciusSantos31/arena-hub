@@ -13,14 +13,16 @@ import { CreateInviteLinkSuccessModal } from "./create-invite-link-success-modal
 import { InviteLinkList } from "./invite-link-list";
 import { SettingsSection } from "./settings-section";
 
-const MAX_INVITE_LINKS = 10;
-
 export function InviteLinksSection({
   group,
   id,
+  maxInviteLinksLimit,
+  activeInviteLinksTotal,
 }: {
   id: string;
   group: { code: string };
+  maxInviteLinksLimit?: number | null;
+  activeInviteLinksTotal?: number;
 }) {
   const canManageGroupLinks = useGuard({
     action: ["group:links"],
@@ -43,6 +45,10 @@ export function InviteLinksSection({
     queryClient.getQueryData<{ id: string }[]>(
       inviteLinksQueryKeys.list(group.code),
     )?.length ?? 0;
+
+  const totalActiveLinks = activeInviteLinksTotal ?? inviteLinksCount;
+  const atPlanLinkLimit =
+    maxInviteLinksLimit != null && totalActiveLinks >= maxInviteLinksLimit;
 
   const onCreateInviteLinkSuccess = useCallback(
     (link: string) => {
@@ -79,16 +85,17 @@ export function InviteLinksSection({
           >
             <Button
               size="sm"
-              disabled={inviteLinksCount >= MAX_INVITE_LINKS}
+              disabled={atPlanLinkLimit}
               className="ml-auto w-full sm:w-auto"
             >
               <PlusIcon />
               Novo link
             </Button>
           </ResponsiveDialog>
-          {inviteLinksCount >= MAX_INVITE_LINKS && (
+          {atPlanLinkLimit && (
             <p className="text-muted-foreground text-xs">
-              Você atingiu o limite de {MAX_INVITE_LINKS} links de convite.
+              Você atingiu o limite de {maxInviteLinksLimit} links de convite
+              ativos do seu plano.
             </p>
           )}
         </div>

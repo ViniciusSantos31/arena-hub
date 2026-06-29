@@ -1,10 +1,10 @@
-import { getSubscriptionSummary } from "@/actions/user-plan/get-subscription-summary";
 import { listMyPendingInvites } from "@/actions/invite-links/list-pending-invites";
 import { getMyProfile } from "@/actions/user/get-my-profile";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { auth } from "@/lib/auth";
+import { getSubscriptionSummaryForUser } from "@/lib/user-plan/subscription-summary";
 import {
   CheckCircle2Icon,
   CircleDotIcon,
@@ -30,6 +30,8 @@ import { SubscriptionSection } from "./_components/subscription-section";
 const tabTriggerClass =
   "data-[state=active]:bg-background cursor-pointer dark:data-[state=active]:bg-background data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:border-b-primary dark:data-[state=active]:border-primary max-w-fit flex-1 rounded-none border-0 border-b-2 border-transparent px-8 text-center";
 
+export const dynamic = "force-dynamic";
+
 export default async function ProfilePage({
   searchParams,
 }: {
@@ -38,18 +40,20 @@ export default async function ProfilePage({
   const { tab } = await searchParams;
   const defaultTab = tab === "subscription" ? "subscription" : "profile";
 
-  const [session, profileResult, pendingInvitesResult, subscriptionResult] =
+  const session = await auth.api.getSession({ headers: await headers() });
+
+  const [profileResult, pendingInvitesResult, subscriptionSummary] =
     await Promise.all([
-    auth.api.getSession({ headers: await headers() }),
-    getMyProfile(),
-    listMyPendingInvites(),
-    getSubscriptionSummary(),
-  ]);
+      getMyProfile(),
+      listMyPendingInvites(),
+      session?.user
+        ? getSubscriptionSummaryForUser(session.user.id)
+        : Promise.resolve(null),
+    ]);
 
   const user = session?.user;
   const data = profileResult?.data;
   const pendingInvites = pendingInvitesResult?.data ?? [];
-  const subscriptionSummary = subscriptionResult?.data;
 
   return (
     <PageContainer>

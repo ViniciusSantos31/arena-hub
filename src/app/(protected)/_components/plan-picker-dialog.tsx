@@ -6,18 +6,12 @@ import {
   PLAN_TIERS,
   PLAN_TIER_LABELS,
 } from "@/lib/user-plan/plan-tiers";
-import type { PlanTier } from "@/lib/user-plan/types";
+import type { PlanPickerReason, PlanTier } from "@/lib/user-plan/types";
 import { CreditCardIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PlanTierCard } from "./plan-tier-card";
-
-export type PlanPickerReason =
-  | "plan_required"
-  | "group_limit"
-  | "early_adopter_limit"
-  | "upgrade";
 
 type PlanPickerDialogProps = {
   open?: boolean;

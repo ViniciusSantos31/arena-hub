@@ -69,11 +69,11 @@ export const ResponsiveDialog = ({
     <span
       data-slot="icon-badge"
       className={cn(
-        "bg-primary/10 text-primary ring-primary/50 flex size-10 shrink-0 items-center justify-center rounded-2xl ring-1",
+        "bg-primary/10 text-primary ring-border/50 dark:shadow-primary/15 flex size-10 shrink-0 items-center justify-center rounded-2xl shadow-lg ring-1 backdrop-blur-sm dark:shadow-xl",
         variant === "destructive" &&
-          "bg-destructive/10 text-destructive ring-destructive/50",
+          "bg-destructive/10 text-destructive ring-destructive/10 dark:shadow-destructive/15 dark:shadow-xl",
         variant === "warning" &&
-          "bg-yellow-500/10 text-yellow-500 ring-yellow-500/50",
+          "bg-yellow-500/10 text-yellow-500 ring-yellow-500/10 dark:shadow-xl dark:shadow-yellow-500/15",
       )}
     >
       <Icon className="size-5" />

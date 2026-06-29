@@ -1,7 +1,6 @@
 "use client";
 
 import { createBillingPortalSession } from "@/actions/user-plan/create-portal-session";
-import type { SubscriptionSummary } from "@/actions/user-plan/get-subscription-summary";
 import { PlanPickerDialog } from "@/app/(protected)/_components/plan-picker-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,8 @@ import {
   EARLY_ADOPTER_FREE_GROUPS,
   PLAN_TIER_LABELS,
 } from "@/lib/user-plan/plan-tiers";
+import type { SubscriptionSummary } from "@/lib/user-plan/subscription-summary";
+import { cva } from "class-variance-authority";
 import {
   CreditCardIcon,
   ExternalLinkIcon,
@@ -21,7 +22,16 @@ import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import { toast } from "sonner";
 
-const STATUS_LABELS: Record<string, string> = {
+type SubscriptionStatus =
+  | "active"
+  | "trialing"
+  | "past_due"
+  | "canceled"
+  | "incomplete"
+  | "incomplete_expired"
+  | "unpaid";
+
+const STATUS_LABELS: Record<SubscriptionStatus, string> = {
   active: "Ativo",
   trialing: "Período de teste",
   past_due: "Pagamento pendente",
@@ -30,6 +40,20 @@ const STATUS_LABELS: Record<string, string> = {
   incomplete_expired: "Expirado",
   unpaid: "Não pago",
 };
+
+const statusBadgeVariants = cva("text-xs", {
+  variants: {
+    variant: {
+      active: "bg-green-500 text-white",
+      trialing: "bg-yellow-500 text-white",
+      past_due: "bg-red-500 text-white",
+      canceled: "bg-gray-500 text-white",
+      incomplete: "bg-gray-500 text-white",
+      incomplete_expired: "bg-gray-500 text-white",
+      unpaid: "bg-gray-500 text-white",
+    },
+  },
+});
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("pt-BR", {
@@ -57,7 +81,7 @@ export function SubscriptionSection({ summary }: SubscriptionSectionProps) {
     {
       onSuccess({ data }) {
         if (data?.url) {
-          window.location.href = data.url;
+          window.open(data.url, "_blank");
           return;
         }
         toast.error("Não foi possível abrir o portal de assinatura.");
@@ -122,18 +146,31 @@ export function SubscriptionSection({ summary }: SubscriptionSectionProps) {
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <CreditCardIcon className="text-muted-foreground h-4 w-4" />
-                <h3 className="text-sm font-medium">
-                  Plano {PLAN_TIER_LABELS[summary.subscription.planTier]}
-                </h3>
+                <div className="bg-primary/10 text-primary ring-border/50 dark:shadow-primary/15 flex size-10 shrink-0 items-center justify-center rounded-2xl shadow-lg ring-1 backdrop-blur-sm dark:shadow-xl">
+                  <CreditCardIcon className="size-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium">
+                    Plano {PLAN_TIER_LABELS[summary.subscription.planTier]}
+                  </h3>
+                  <Badge
+                    className={statusBadgeVariants({
+                      variant: summary.subscription
+                        .status as SubscriptionStatus,
+                    })}
+                  >
+                    {STATUS_LABELS[
+                      summary.subscription.status as SubscriptionStatus
+                    ] ?? (summary.subscription.status as SubscriptionStatus)}
+                  </Badge>
+                </div>
               </div>
-              <p className="text-muted-foreground text-sm">
-                Status:{" "}
-                {STATUS_LABELS[summary.subscription.status] ??
-                  summary.subscription.status}
-              </p>
             </div>
-            <Badge variant={summary.subscription.cancelAtPeriodEnd ? "secondary" : "default"}>
+            <Badge
+              variant={
+                summary.subscription.cancelAtPeriodEnd ? "secondary" : "default"
+              }
+            >
               {summary.subscription.cancelAtPeriodEnd
                 ? "Cancela ao fim do período"
                 : "Renovação automática"}
@@ -153,7 +190,8 @@ export function SubscriptionSection({ summary }: SubscriptionSectionProps) {
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Grupos</span>
                 <span className="font-medium">
-                  {summary.usage.ownedGroups}/{formatLimit(summary.limits.maxGroups)}
+                  {summary.usage.ownedGroups}/
+                  {formatLimit(summary.limits.maxGroups)}
                 </span>
               </div>
               <Progress value={groupsProgress} />
@@ -162,7 +200,9 @@ export function SubscriptionSection({ summary }: SubscriptionSectionProps) {
             {linksCap != null && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Links de convite ativos</span>
+                  <span className="text-muted-foreground">
+                    Links de convite ativos
+                  </span>
                   <span className="font-medium">
                     {summary.usage.activeInviteLinks}/{formatLimit(linksCap)}
                   </span>
@@ -180,7 +220,6 @@ export function SubscriptionSection({ summary }: SubscriptionSectionProps) {
 
           <Button
             variant="outline"
-            className="w-full"
             disabled={isOpeningPortal}
             onClick={() => openPortal()}
           >

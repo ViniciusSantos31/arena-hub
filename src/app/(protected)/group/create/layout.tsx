@@ -6,6 +6,8 @@ import {
 } from "../../../(protected)/_components/page-structure";
 import { CreateGroupGate } from "./_components/create-group-gate";
 
+export const dynamic = "force-dynamic";
+
 export default async function CreateGroupLayout({
   children,
 }: {

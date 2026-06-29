@@ -36,12 +36,16 @@ export default async function GroupSettingsPage({
 
   const ownerPlanCtx = await getOwnerPlanContextForOrganization(group.id);
   const maxPlayersLimit = ownerPlanCtx?.limits.maxMembersPerGroup ?? null;
+  const maxInviteLinksLimit = ownerPlanCtx?.limits.maxInviteLinksTotal ?? null;
+  const activeInviteLinksTotal = ownerPlanCtx?.usage.activeInviteLinks ?? 0;
 
   return (
     <GroupSettingsForm
       group={{ ...group, stripeAccountId: group.stripeAccountId ?? null }}
       userRole={membership.role as Role}
       maxPlayersLimit={maxPlayersLimit}
+      maxInviteLinksLimit={maxInviteLinksLimit}
+      activeInviteLinksTotal={activeInviteLinksTotal}
     />
   );
 }

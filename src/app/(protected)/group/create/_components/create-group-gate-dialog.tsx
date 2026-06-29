@@ -1,10 +1,7 @@
 "use client";
 
-import {
-  PlanPickerDialog,
-  type PlanPickerReason,
-} from "@/app/(protected)/_components/plan-picker-dialog";
-import type { PlanTier } from "@/lib/user-plan/types";
+import { PlanPickerDialog } from "@/app/(protected)/_components/plan-picker-dialog";
+import type { PlanPickerReason, PlanTier } from "@/lib/user-plan/types";
 import { redirect } from "next/navigation";
 
 type CreateGroupGateDialogProps = {

@@ -3,11 +3,11 @@ import { organization } from "@/db/schema/auth";
 import { matchesTable } from "@/db/schema/match";
 import { playersTable } from "@/db/schema/player";
 import { applyPaidCheckoutSession } from "@/lib/apply-paid-checkout-session";
-import { handleStripeBillingWebhook } from "@/lib/stripe-billing/webhooks";
 import { stripe } from "@/lib/stripe";
+import { handleStripeBillingWebhook } from "@/lib/stripe-billing/webhooks";
 import { and, eq } from "drizzle-orm";
-import type Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
+import type Stripe from "stripe";
 
 export async function POST(req: NextRequest) {
   const rawBody = await req.text();

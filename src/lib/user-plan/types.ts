@@ -30,3 +30,9 @@ export type PlanErrorCode =
   | "MEMBER_LIMIT"
   | "INVITE_LINK_LIMIT"
   | "MAX_PLAYERS_EXCEEDS_PLAN";
+
+export type PlanPickerReason =
+  | "plan_required"
+  | "group_limit"
+  | "early_adopter_limit"
+  | "upgrade";

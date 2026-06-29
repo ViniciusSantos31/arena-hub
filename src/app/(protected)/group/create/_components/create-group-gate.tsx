@@ -2,13 +2,14 @@ import { auth } from "@/lib/auth";
 import {
   getUserPlanContext,
   resolveGroupLimit,
+  shouldEnforcePlanMemberAndLinkLimits,
 } from "@/lib/user-plan/get-user-plan-context";
 import { EARLY_ADOPTER_FREE_GROUPS } from "@/lib/user-plan/plan-tiers";
-import type { PlanTier } from "@/lib/user-plan/types";
+import type { PlanPickerReason, PlanTier } from "@/lib/user-plan/types";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import type { PlanPickerReason } from "@/app/(protected)/_components/plan-picker-dialog";
 import { CreateGroupGateDialog } from "./create-group-gate-dialog";
+import { CreateGroupPlanProvider } from "./create-group-plan-context";
 
 function resolveGateReason(
   ctx: Awaited<ReturnType<typeof getUserPlanContext>>,
@@ -51,7 +52,15 @@ export async function CreateGroupGate({
   const canCreate = ctx.usage.ownedGroups < limit;
 
   if (canCreate) {
-    return <>{children}</>;
+    const maxPlayersLimit = shouldEnforcePlanMemberAndLinkLimits(ctx)
+      ? ctx.limits.maxMembersPerGroup
+      : null;
+
+    return (
+      <CreateGroupPlanProvider maxPlayersLimit={maxPlayersLimit}>
+        {children}
+      </CreateGroupPlanProvider>
+    );
   }
 
   const reason = resolveGateReason(ctx, limit);
