@@ -30,6 +30,26 @@ function toBillingStatus(
   return "canceled";
 }
 
+function isScheduledCancellation(sub: Stripe.Subscription): boolean {
+  return sub.status === "active" || sub.status === "trialing";
+}
+
+/**
+ * Basil/dahlia API: o portal agenda cancelamento via `cancel_at` (timestamp)
+ * em vez de `cancel_at_period_end: true`.
+ */
+function resolveCancelAtPeriodEnd(sub: Stripe.Subscription): boolean {
+  if (sub.cancel_at_period_end) {
+    return true;
+  }
+
+  if (sub.cancel_at == null) {
+    return false;
+  }
+
+  return isScheduledCancellation(sub);
+}
+
 function getSubscriptionPeriod(sub: Stripe.Subscription): {
   currentPeriodStart: Date;
   currentPeriodEnd: Date;
@@ -41,7 +61,11 @@ function getSubscriptionPeriod(sub: Stripe.Subscription): {
   };
   const periodStart =
     legacySub.current_period_start ?? item?.current_period_start;
-  const periodEnd = legacySub.current_period_end ?? item?.current_period_end;
+  let periodEnd = legacySub.current_period_end ?? item?.current_period_end;
+
+  if (sub.cancel_at != null && isScheduledCancellation(sub)) {
+    periodEnd = sub.cancel_at;
+  }
 
   if (!periodStart || !periodEnd) {
     throw new Error(
@@ -107,6 +131,7 @@ export async function syncSubscriptionFromStripe(
   );
 
   const { currentPeriodStart, currentPeriodEnd } = getSubscriptionPeriod(sub);
+  const cancelAtPeriodEnd = resolveCancelAtPeriodEnd(sub);
 
   const customerId =
     typeof sub.customer === "string" ? sub.customer : sub.customer?.id;
@@ -130,7 +155,7 @@ export async function syncSubscriptionFromStripe(
       status,
       currentPeriodStart,
       currentPeriodEnd,
-      cancelAtPeriodEnd: sub.cancel_at_period_end,
+      cancelAtPeriodEnd,
       gracePeriodEndsAt,
       updatedAt: new Date(),
     })
@@ -142,7 +167,7 @@ export async function syncSubscriptionFromStripe(
         status,
         currentPeriodStart,
         currentPeriodEnd,
-        cancelAtPeriodEnd: sub.cancel_at_period_end,
+        cancelAtPeriodEnd,
         gracePeriodEndsAt,
         updatedAt: new Date(),
       },

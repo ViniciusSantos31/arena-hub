@@ -81,7 +81,7 @@ export function SubscriptionSection({ summary }: SubscriptionSectionProps) {
     {
       onSuccess({ data }) {
         if (data?.url) {
-          window.open(data.url, "_blank");
+          window.location.href = data.url;
           return;
         }
         toast.error("Não foi possível abrir o portal de assinatura.");
@@ -256,7 +256,11 @@ export function SubscriptionSection({ summary }: SubscriptionSectionProps) {
         open={planPickerOpen}
         onOpenChange={setPlanPickerOpen}
         reason={hasActivePlan ? "upgrade" : "plan_required"}
-        currentTier={summary.subscription?.planTier}
+        currentTier={
+          summary.subscription?.status === "active"
+            ? summary.subscription?.planTier
+            : undefined
+        }
         ownedGroups={summary.usage.ownedGroups}
       />
     </div>
