@@ -97,12 +97,12 @@ export function PlanPickerDialog({
       content={
         <div className="space-y-5">
           {copy.extra && (
-            <p className="text-muted-foreground rounded-lg border bg-muted/40 p-4 text-sm leading-relaxed">
+            <p className="text-muted-foreground rounded-xl border border-amber-500/20 bg-linear-to-r from-amber-500/10 to-orange-500/5 p-4 text-sm leading-relaxed">
               {copy.extra}
             </p>
           )}
 
-          <div className="grid gap-4 pt-2 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-3">
             {PLAN_TIERS.map((tier) => (
               <PlanTierCard
                 key={tier}

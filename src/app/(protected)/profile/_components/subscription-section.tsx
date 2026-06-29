@@ -4,19 +4,22 @@ import { createBillingPortalSession } from "@/actions/user-plan/create-portal-se
 import { PlanPickerDialog } from "@/app/(protected)/_components/plan-picker-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
 import {
   EARLY_ADOPTER_FREE_GROUPS,
   PLAN_TIER_LABELS,
 } from "@/lib/user-plan/plan-tiers";
 import type { SubscriptionSummary } from "@/lib/user-plan/subscription-summary";
+import { cn } from "@/lib/utils";
 import { cva } from "class-variance-authority";
 import {
+  CalendarIcon,
   CreditCardIcon,
   ExternalLinkIcon,
+  LinkIcon,
   Loader2Icon,
   SparklesIcon,
+  UserIcon,
+  UsersIcon,
 } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
@@ -41,19 +44,25 @@ const STATUS_LABELS: Record<SubscriptionStatus, string> = {
   unpaid: "Não pago",
 };
 
-const statusBadgeVariants = cva("text-xs", {
-  variants: {
-    variant: {
-      active: "bg-green-500 text-white",
-      trialing: "bg-yellow-500 text-white",
-      past_due: "bg-red-500 text-white",
-      canceled: "bg-gray-500 text-white",
-      incomplete: "bg-gray-500 text-white",
-      incomplete_expired: "bg-gray-500 text-white",
-      unpaid: "bg-gray-500 text-white",
+const statusBadgeVariants = cva(
+  "rounded-full border px-2.5 py-0.5 text-xs font-medium",
+  {
+    variants: {
+      variant: {
+        active:
+          "border-green-500/30 bg-green-500/10 text-green-700 dark:text-green-400",
+        trialing:
+          "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400",
+        past_due:
+          "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-400",
+        canceled: "border-border bg-muted/60 text-muted-foreground",
+        incomplete: "border-border bg-muted/60 text-muted-foreground",
+        incomplete_expired: "border-border bg-muted/60 text-muted-foreground",
+        unpaid: "border-border bg-muted/60 text-muted-foreground",
+      },
     },
   },
-});
+);
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("pt-BR", {
@@ -64,8 +73,40 @@ function formatDate(iso: string) {
 }
 
 function formatLimit(value: number | null) {
-  if (value === null) return "Ilimitado";
+  if (value === null) return "∞";
   return String(value);
+}
+
+type UsageMetricProps = {
+  icon: React.ElementType;
+  label: string;
+  used?: number;
+  limit: number | null;
+};
+
+function UsageMetric({ icon: Icon, label, used, limit }: UsageMetricProps) {
+  return (
+    <div className="bg-background/80 rounded-xl border p-4 shadow-sm backdrop-blur-sm">
+      <div className="flex items-start justify-between gap-2">
+        <div className="bg-primary/10 flex size-9 shrink-0 items-center justify-center rounded-lg">
+          <Icon className="text-primary size-4" />
+        </div>
+        <div className="min-w-0 flex-1 text-right">
+          <p className="text-muted-foreground text-xs">{label}</p>
+          {used != null ? (
+            <p className="text-lg font-semibold tabular-nums">
+              {used}
+              <span className="text-muted-foreground text-sm font-normal">
+                /{formatLimit(limit)}
+              </span>
+            </p>
+          ) : (
+            <p className="text-lg font-semibold">{formatLimit(limit)}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 type SubscriptionSectionProps = {
@@ -96,19 +137,6 @@ export function SubscriptionSection({ summary }: SubscriptionSectionProps) {
     },
   );
 
-  const groupsProgress =
-    summary.groupLimit > 0
-      ? Math.min(100, (summary.usage.ownedGroups / summary.groupLimit) * 100)
-      : summary.usage.ownedGroups > 0
-        ? 100
-        : 0;
-
-  const linksCap = summary.limits.maxInviteLinksTotal;
-  const linksProgress =
-    linksCap != null && linksCap > 0
-      ? Math.min(100, (summary.usage.activeInviteLinks / linksCap) * 100)
-      : 0;
-
   return (
     <div className="space-y-6">
       <div className="space-y-1">
@@ -119,136 +147,175 @@ export function SubscriptionSection({ summary }: SubscriptionSectionProps) {
       </div>
 
       {summary.isEarlyAdopter && !hasActivePlan && (
-        <div className="space-y-3 rounded-xl border border-amber-200/50 bg-linear-to-r from-amber-500/10 to-orange-500/10 p-4">
-          <div className="flex items-center gap-2">
-            <SparklesIcon className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-            <Badge variant="secondary">Early Adopter</Badge>
-          </div>
-          <p className="text-sm leading-relaxed">
-            Você pode criar até{" "}
-            <strong>{EARLY_ADOPTER_FREE_GROUPS} grupos</strong> sem assinatura
-            como Early Adopter.
-          </p>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Grupos criados</span>
-              <span className="font-medium">
-                {summary.usage.ownedGroups}/{EARLY_ADOPTER_FREE_GROUPS}
-              </span>
+        <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-linear-to-br from-amber-500/10 via-orange-500/5 to-transparent p-5 shadow-sm">
+          <div className="pointer-events-none absolute -top-8 -right-8 size-32 rounded-full bg-amber-400/10 blur-2xl" />
+          <div className="relative space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500/15">
+                <SparklesIcon className="size-5 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div>
+                <Badge
+                  variant="secondary"
+                  className="border-amber-500/20 bg-amber-500/10 text-amber-800 dark:text-amber-300"
+                >
+                  Early Adopter
+                </Badge>
+                <p className="mt-1 text-sm leading-relaxed">
+                  Você pode criar até{" "}
+                  <span className="font-semibold">
+                    {EARLY_ADOPTER_FREE_GROUPS} grupos
+                  </span>{" "}
+                  sem assinatura.
+                </p>
+              </div>
             </div>
-            <Progress value={groupsProgress} />
+            <UsageMetric
+              icon={UsersIcon}
+              label="Grupos criados"
+              used={summary.usage.ownedGroups}
+              limit={EARLY_ADOPTER_FREE_GROUPS}
+            />
           </div>
         </div>
       )}
 
       {hasActivePlan && summary.subscription && (
-        <div className="space-y-4 rounded-xl border p-4">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <div className="bg-primary/10 text-primary ring-border/50 dark:shadow-primary/15 flex size-10 shrink-0 items-center justify-center rounded-2xl shadow-lg ring-1 backdrop-blur-sm dark:shadow-xl">
-                  <CreditCardIcon className="size-4" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium">
-                    Plano {PLAN_TIER_LABELS[summary.subscription.planTier]}
-                  </h3>
-                  <Badge
-                    className={statusBadgeVariants({
-                      variant: summary.subscription
-                        .status as SubscriptionStatus,
-                    })}
-                  >
-                    {STATUS_LABELS[
-                      summary.subscription.status as SubscriptionStatus
-                    ] ?? (summary.subscription.status as SubscriptionStatus)}
-                  </Badge>
-                </div>
-              </div>
-            </div>
-            <Badge
-              variant={
-                summary.subscription.cancelAtPeriodEnd ? "secondary" : "default"
-              }
-            >
-              {summary.subscription.cancelAtPeriodEnd
-                ? "Cancela ao fim do período"
-                : "Renovação automática"}
-            </Badge>
-          </div>
-
-          <p className="text-muted-foreground text-sm">
-            {summary.subscription.cancelAtPeriodEnd
-              ? `Acesso até ${formatDate(summary.subscription.currentPeriodEnd)}`
-              : `Próxima renovação em ${formatDate(summary.subscription.currentPeriodEnd)}`}
-          </p>
-
-          <Separator />
-
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Grupos</span>
-                <span className="font-medium">
-                  {summary.usage.ownedGroups}/
-                  {formatLimit(summary.limits.maxGroups)}
+        <div className="overflow-hidden rounded-2xl border shadow-sm">
+          <div className="from-primary/8 via-primary/4 relative bg-linear-to-br to-transparent px-5 pt-5 pb-4">
+            <div className="bg-primary/10 pointer-events-none absolute -top-10 -right-10 size-40 rounded-full blur-3xl" />
+            <div className="relative flex flex-wrap items-start justify-between gap-4">
+              <div className="space-y-2">
+                <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                  Plano atual
+                </p>
+                <h3 className="text-2xl font-bold tracking-tight">
+                  {PLAN_TIER_LABELS[summary.subscription.planTier]}
+                </h3>
+                <span
+                  className={statusBadgeVariants({
+                    variant: summary.subscription.status as SubscriptionStatus,
+                  })}
+                >
+                  {STATUS_LABELS[
+                    summary.subscription.status as SubscriptionStatus
+                  ] ?? (summary.subscription.status as SubscriptionStatus)}
                 </span>
               </div>
-              <Progress value={groupsProgress} />
+              <Badge
+                variant="outline"
+                className={cn(
+                  "shrink-0 rounded-full px-3 py-1",
+                  summary.subscription.cancelAtPeriodEnd
+                    ? "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400"
+                    : "border-primary/20 bg-background/80",
+                )}
+              >
+                {summary.subscription.cancelAtPeriodEnd
+                  ? "Cancela ao fim do período"
+                  : "Renovação automática"}
+              </Badge>
             </div>
-
-            {linksCap != null && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">
-                    Links de convite ativos
-                  </span>
-                  <span className="font-medium">
-                    {summary.usage.activeInviteLinks}/{formatLimit(linksCap)}
-                  </span>
-                </div>
-                <Progress value={linksProgress} />
-              </div>
-            )}
-
-            {summary.limits.maxMembersPerGroup != null && (
-              <p className="text-muted-foreground text-sm">
-                Até {summary.limits.maxMembersPerGroup} membros por grupo
-              </p>
-            )}
           </div>
 
-          <Button
-            variant="outline"
-            disabled={isOpeningPortal}
-            onClick={() => openPortal()}
-          >
-            {isOpeningPortal ? (
-              <>
-                <Loader2Icon className="h-4 w-4 animate-spin" />
-                Abrindo portal…
-              </>
-            ) : (
-              <>
-                <ExternalLinkIcon className="h-4 w-4" />
-                Gerenciar assinatura
-              </>
-            )}
-          </Button>
+          <div className="flex flex-col space-y-5 px-5 py-5">
+            <div className="bg-muted/40 flex items-center gap-3 rounded-xl border px-4 py-3">
+              <CalendarIcon className="text-muted-foreground size-4 shrink-0" />
+              <p className="text-sm">
+                {summary.subscription.cancelAtPeriodEnd ? (
+                  <>
+                    <span className="text-muted-foreground">Acesso até </span>
+                    <span className="font-medium">
+                      {formatDate(summary.subscription.currentPeriodEnd)}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-muted-foreground">
+                      Próxima renovação em{" "}
+                    </span>
+                    <span className="font-medium">
+                      {formatDate(summary.subscription.currentPeriodEnd)}
+                    </span>
+                  </>
+                )}
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                Uso do plano
+              </p>
+              <div className="grid gap-3 sm:grid-cols-3">
+                <UsageMetric
+                  icon={UsersIcon}
+                  label="Grupos"
+                  used={summary.usage.ownedGroups}
+                  limit={summary.limits.maxGroups}
+                />
+                <UsageMetric
+                  icon={LinkIcon}
+                  label="Links de convite ativos"
+                  used={summary.usage.activeInviteLinks}
+                  limit={summary.limits.maxInviteLinksTotal}
+                />
+                <UsageMetric
+                  icon={UserIcon}
+                  label="Membros por grupo"
+                  limit={summary.limits.maxMembersPerGroup}
+                />
+              </div>
+            </div>
+
+            <Button
+              variant="outline"
+              className="ml-auto w-full sm:w-auto"
+              disabled={isOpeningPortal}
+              onClick={() => openPortal()}
+            >
+              {isOpeningPortal ? (
+                <>
+                  <Loader2Icon className="size-4 animate-spin" />
+                  Abrindo portal…
+                </>
+              ) : (
+                <>
+                  <ExternalLinkIcon className="size-4" />
+                  Gerenciar assinatura
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       )}
 
       {!hasActivePlan && (
-        <div className="space-y-4 rounded-xl border border-dashed p-4">
-          <p className="text-muted-foreground text-sm leading-relaxed">
-            {summary.isEarlyAdopter
-              ? "Assine um plano para criar mais grupos e desbloquear limites de membros e links de convite."
-              : "Assine um plano para criar grupos e gerenciar sua comunidade na plataforma."}
-          </p>
-          <Button className="w-full" onClick={() => setPlanPickerOpen(true)}>
-            <CreditCardIcon className="h-4 w-4" />
-            Ver planos
-          </Button>
+        <div className="relative overflow-hidden rounded-2xl border border-dashed p-6 text-center shadow-sm">
+          <div className="from-muted/40 pointer-events-none absolute inset-0 bg-linear-to-b to-transparent" />
+          <div className="relative space-y-5">
+            <div className="bg-primary/10 mx-auto flex size-14 items-center justify-center rounded-2xl">
+              <CreditCardIcon className="text-primary size-6" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-base font-semibold">
+                {summary.isEarlyAdopter
+                  ? "Desbloqueie mais recursos"
+                  : "Comece com um plano"}
+              </h3>
+              <p className="text-muted-foreground mx-auto max-w-sm text-sm leading-relaxed">
+                {summary.isEarlyAdopter
+                  ? "Assine um plano para criar mais grupos e desbloquear limites de membros e links de convite."
+                  : "Assine um plano para criar grupos e gerenciar sua comunidade na plataforma."}
+              </p>
+            </div>
+            <Button
+              className="w-full sm:w-auto"
+              onClick={() => setPlanPickerOpen(true)}
+            >
+              <CreditCardIcon className="size-4" />
+              Ver planos
+            </Button>
+          </div>
         </div>
       )}
 

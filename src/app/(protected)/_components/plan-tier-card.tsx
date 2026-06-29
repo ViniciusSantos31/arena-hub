@@ -56,38 +56,62 @@ export function PlanTierCard({
   return (
     <Card
       className={cn(
-        "relative flex h-full flex-col gap-0 py-0 shadow-sm",
-        highlighted && "border-primary ring-primary/20 ring-1",
+        "relative flex h-full flex-col gap-0 overflow-hidden py-0 transition-shadow",
+        highlighted
+          ? "border-primary/40 shadow-md ring-1 ring-primary/15"
+          : "shadow-sm hover:shadow-md",
+        isCurrent && "opacity-90",
       )}
     >
       {highlighted && (
-        <div className="bg-primary text-primary-foreground absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3 py-0.5 text-xs font-medium">
-          Popular
+        <div className="bg-primary text-primary-foreground absolute top-0 right-0 left-0 py-1 text-center text-[11px] font-semibold tracking-wide uppercase">
+          Mais popular
         </div>
       )}
-      <CardHeader className="gap-1 border-b px-4 py-4">
-        <CardTitle className="text-base">{PLAN_TIER_LABELS[tier]}</CardTitle>
-        <CardDescription className="text-foreground text-xl font-semibold">
-          {PLAN_TIER_PRICES[tier]}
+      <CardHeader
+        className={cn(
+          "gap-1 px-5 pb-4",
+          highlighted ? "border-primary/10 bg-primary/5 pt-8" : "border-b pt-5",
+        )}
+      >
+        <CardTitle className="text-base font-semibold">
+          {PLAN_TIER_LABELS[tier]}
+        </CardTitle>
+        <CardDescription className="text-foreground pt-1">
+          <span className="text-3xl font-bold tracking-tight">
+            {PLAN_TIER_PRICES[tier]}
+          </span>
           <span className="text-muted-foreground text-sm font-normal">
             /mês
           </span>
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-1 flex-col gap-3 px-4 py-4">
-        <ul className="space-y-2">
+      <CardContent className="flex flex-1 flex-col gap-3 px-5 py-5">
+        <ul className="space-y-2.5">
           {features.map((feature, index) => (
             <li
               key={`${feature}-${index}`}
-              className="flex items-start gap-2 text-sm"
+              className="flex items-start gap-2.5 text-sm"
             >
-              <CheckIcon className="text-primary mt-0.5 h-4 w-4 shrink-0" />
+              <span
+                className={cn(
+                  "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full",
+                  highlighted ? "bg-primary/15" : "bg-muted",
+                )}
+              >
+                <CheckIcon
+                  className={cn(
+                    "size-3",
+                    highlighted ? "text-primary" : "text-muted-foreground",
+                  )}
+                />
+              </span>
               <span>{feature}</span>
             </li>
           ))}
         </ul>
       </CardContent>
-      <CardFooter className="px-4 pb-4">
+      <CardFooter className="px-5 pt-0 pb-5">
         <Button
           className="w-full"
           variant={highlighted ? "default" : "outline"}
@@ -96,7 +120,7 @@ export function PlanTierCard({
         >
           {loading ? (
             <>
-              <Loader2Icon className="h-4 w-4 animate-spin" />
+              <Loader2Icon className="size-4 animate-spin" />
               Aguarde…
             </>
           ) : isCurrent ? (
