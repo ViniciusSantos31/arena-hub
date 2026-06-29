@@ -43,6 +43,11 @@ const REASON_COPY: Record<
     title: "Faça upgrade do seu plano",
     description: "Seu plano atual atingiu o limite de grupos.",
   },
+  subscription_required_for_match: {
+    title: "Assinatura necessária",
+    description:
+      "A assinatura do organizador não está ativa. Regularize o plano para criar novas partidas.",
+  },
 };
 
 export function PlanPickerDialog({

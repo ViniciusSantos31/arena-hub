@@ -73,6 +73,28 @@ export function assertCanAddMemberToGroup(
   }
 }
 
+export function canOwnerCreateMatch(ctx: UserPlanContext): boolean {
+  if (ctx.isEarlyAdopter) return true;
+  return ctx.subscription?.isEffectivelyActive === true;
+}
+
+export function assertCanCreateMatch(ctx: UserPlanContext): void {
+  if (canOwnerCreateMatch(ctx)) return;
+
+  throw new PlanLimitError(
+    "SUBSCRIPTION_REQUIRED_FOR_MATCH",
+    "Regularize sua assinatura para criar novas partidas.",
+  );
+}
+
+export async function getOwnerCanCreateMatchForOrganization(
+  organizationId: string,
+): Promise<boolean> {
+  const ownerCtx = await getOwnerPlanContextForOrganization(organizationId);
+  if (!ownerCtx) return true;
+  return canOwnerCreateMatch(ownerCtx);
+}
+
 export function assertCanCreateInviteLink(ctx: UserPlanContext): void {
   if (!shouldEnforcePlanMemberAndLinkLimits(ctx)) return;
 

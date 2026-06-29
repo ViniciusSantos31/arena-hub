@@ -29,10 +29,12 @@ export type PlanErrorCode =
   | "EARLY_ADOPTER_GROUP_LIMIT"
   | "MEMBER_LIMIT"
   | "INVITE_LINK_LIMIT"
-  | "MAX_PLAYERS_EXCEEDS_PLAN";
+  | "MAX_PLAYERS_EXCEEDS_PLAN"
+  | "SUBSCRIPTION_REQUIRED_FOR_MATCH";
 
 export type PlanPickerReason =
   | "plan_required"
   | "group_limit"
   | "early_adopter_limit"
-  | "upgrade";
+  | "upgrade"
+  | "subscription_required_for_match";

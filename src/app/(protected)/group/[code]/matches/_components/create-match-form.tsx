@@ -69,8 +69,12 @@ export const CreateMatchForm = ({ setOpen }: CreateMatchFormProps) => {
       queryClient.invalidateQueries({ queryKey: ["matches", code] });
       toast.success("Partida criada com sucesso!");
     },
-    onError: () => {
-      toast.error("Ocorreu um erro ao criar a partida. Tente novamente.");
+    onError: ({ error }) => {
+      const message =
+        error.serverError != null
+          ? String(error.serverError)
+          : "Ocorreu um erro ao criar a partida. Tente novamente.";
+      toast.error(message);
     },
   });
 
