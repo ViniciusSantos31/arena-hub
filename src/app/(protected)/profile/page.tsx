@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { auth } from "@/lib/auth";
+import { getAccountDeletionImpact } from "@/lib/user-account/delete-user-account";
 import { getSubscriptionSummaryForUser } from "@/lib/user-plan/subscription-summary";
 import {
   CheckCircle2Icon,
@@ -42,13 +43,16 @@ export default async function ProfilePage({
 
   const session = await auth.api.getSession({ headers: await headers() });
 
-  const [profileResult, pendingInvitesResult, subscriptionSummary] =
+  const [profileResult, pendingInvitesResult, subscriptionSummary, deletionImpact] =
     await Promise.all([
       getMyProfile(),
       listMyPendingInvites(),
       session?.user
         ? getSubscriptionSummaryForUser(session.user.id)
         : Promise.resolve(null),
+      session?.user
+        ? getAccountDeletionImpact(session.user.id)
+        : Promise.resolve({ ownedGroupsCount: 0, hasActiveSubscription: false }),
     ]);
 
   const user = session?.user;
@@ -199,6 +203,7 @@ export default async function ProfilePage({
             <SecuritySection
               user={user}
               linkedAccounts={data?.linkedAccounts ?? []}
+              deletionImpact={deletionImpact}
             />
           </TabsContent>
         </Tabs>
