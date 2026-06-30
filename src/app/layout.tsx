@@ -1,17 +1,17 @@
 import { ThemeProvider } from "@/components/theme-provider";
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
-import { Nunito, Nunito_Sans } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
-const nunitoSans = Nunito_Sans({
-  variable: "--font-nunito-sans",
+const geistSans = Geist({
+  variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
-const nunito = Nunito({
-  variable: "--font-nunito-mono",
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
@@ -66,7 +66,7 @@ export default function RootLayout({
     <html lang="pt-BR" suppressHydrationWarning>
       <meta name="apple-mobile-web-app-title" content="Arena Hub" />
       <body
-        className={`${nunitoSans.variable} ${nunito.variable} bg-sidebar scroll-smooth antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-sidebar scroll-smooth antialiased`}
       >
         <ThemeProvider
           attribute="class"

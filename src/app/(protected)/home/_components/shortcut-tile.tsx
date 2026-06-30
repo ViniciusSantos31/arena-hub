@@ -78,7 +78,7 @@ export function ShortcutTile({
     <Link href={href} className="group outline-none">
       <Card
         className={cn(
-          "border-border/60 hover:border-primary/25 hover:bg-primary/5 h-full transition-colors",
+          "border-border/60 h-full transition-colors",
           compact ? "gap-0 px-0 py-0" : "gap-0 px-0 py-0",
           accentBorderClasses[accent],
         )}
