@@ -63,7 +63,7 @@ export function ShortcutTile({
   href,
   icon,
   accent = "primary",
-  compact = false,
+  compact = true,
 }: {
   title: string;
   description: string;

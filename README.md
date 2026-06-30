@@ -232,7 +232,7 @@ cd arena-hub
 npm install
 ```
 
-1. Copie as variáveis de ambiente (veja a tabela abaixo) para um arquivo **`.env.local`** na raiz do projeto.
+1. Copie [`.env.example`](.env.example) para **`.env.local`** na raiz do projeto e preencha os valores.
 2. Aplique o schema ao banco:
 
    ```bash
@@ -257,31 +257,37 @@ npm run populate
 
 ## Variáveis de ambiente
 
-Valores usados no código da aplicação (configure no `.env.local` ou no painel do seu host):
+Copie [`.env.example`](.env.example) para `.env.local` e preencha os valores. Todas as variáveis abaixo são lidas pelo código da aplicação:
 
-| Variável                                   | Obrigatória       | Descrição                                                             |
-| ------------------------------------------ | ----------------- | --------------------------------------------------------------------- |
-| `DATABASE_URL`                             | Sim               | URL do PostgreSQL (ex.: Neon).                                        |
-| `BETTER_AUTH_SECRET`                       | Sim               | Segredo do Better Auth.                                               |
-| `GOOGLE_CLIENT_ID`                         | Sim\*             | Client ID OAuth Google.                                               |
-| `GOOGLE_CLIENT_SECRET`                     | Sim\*             | Client Secret OAuth Google.                                           |
-| `ADMIN_EMAIL`                              | Sim para `/admin` | E-mail do administrador da plataforma.                                |
-| `NEXT_PUBLIC_WEBSOCKET_URL`                | Não               | URL do servidor Socket.io. Padrão no código: `http://localhost:3001`. |
-| `NEXT_PUBLIC_FIREBASE_API_KEY`             | Sim para push     | Firebase Web SDK.                                                     |
-| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`         | Sim para push     | Firebase Web SDK.                                                     |
-| `NEXT_PUBLIC_FIREBASE_PROJECT_ID`          | Sim para push     | Firebase Web SDK.                                                     |
-| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`      | Sim para push     | Firebase Web SDK.                                                     |
-| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Sim para push     | Firebase Web SDK.                                                     |
-| `NEXT_PUBLIC_FIREBASE_APP_ID`              | Sim para push     | Firebase Web SDK.                                                     |
-| `NEXT_PUBLIC_FIREBASE_VAPID_KEY`           | Sim para push     | Chave pública VAPID (FCM web).                                        |
-| `FIREBASE_PROJECT_ID`                      | Servidor          | Admin SDK — projeto.                                                  |
-| `FIREBASE_CLIENT_EMAIL`                    | Servidor          | Admin SDK — e-mail da service account.                                |
-| `FIREBASE_PRIVATE_KEY`                     | Servidor          | Admin SDK — chave privada (use `\n` para quebras de linha no `.env`). |
-| `STRIPE_SECRET_KEY`                        | Partidas pagas    | Chave secreta Stripe (`sk_test_…` ou `sk_live_…`).                     |
-| `STRIPE_WEBHOOK_SECRET`                    | Partidas pagas    | Segredo do webhook (eventos: `checkout.session.completed`, `payment_intent.succeeded`, `refund.updated`). |
-| `NEXT_PUBLIC_APP_URL`                      | Partidas pagas    | URL pública do app (Checkout e Stripe Connect), ex.: `https://exemplo.com`. |
-| `IMAGEKIT_PUBLIC_KEY`                      | Upload            | ImageKit — chave pública.                                             |
-| `IMAGEKIT_PRIVATE_KEY`                     | Upload            | ImageKit — chave privada (nunca exponha no cliente).                  |
+| Variável | Obrigatória | Descrição |
+| --- | --- | --- |
+| `DATABASE_URL` | Sim | URL do PostgreSQL (ex.: Neon). |
+| `BETTER_AUTH_SECRET` | Sim | Segredo do Better Auth. |
+| `GOOGLE_CLIENT_ID` | Sim\* | Client ID OAuth Google. |
+| `GOOGLE_CLIENT_SECRET` | Sim\* | Client Secret OAuth Google. |
+| `ADMIN_EMAIL` | Sim para `/admin` | E-mail do administrador da plataforma. |
+| `NEXT_PUBLIC_APP_URL` | Sim para Stripe | URL pública do app (Checkout, Connect e portal de cobrança). |
+| `NEXT_PUBLIC_WEBSOCKET_URL` | Não | URL do servidor Socket.io. Padrão: `http://localhost:3001`. |
+| `NEXT_PUBLIC_FIREBASE_API_KEY` | Sim para push | Firebase Web SDK. |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Sim para push | Firebase Web SDK. |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Sim para push | Firebase Web SDK. |
+| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` | Sim para push | Firebase Web SDK. |
+| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Sim para push | Firebase Web SDK. |
+| `NEXT_PUBLIC_FIREBASE_APP_ID` | Sim para push | Firebase Web SDK. |
+| `NEXT_PUBLIC_FIREBASE_VAPID_KEY` | Sim para push | Chave pública VAPID (FCM web). |
+| `FIREBASE_PROJECT_ID` | Servidor | Admin SDK — projeto. |
+| `FIREBASE_CLIENT_EMAIL` | Servidor | Admin SDK — e-mail da service account. |
+| `FIREBASE_PRIVATE_KEY` | Servidor | Admin SDK — chave privada (use `\n` para quebras de linha no `.env`). |
+| `IMAGEKIT_PUBLIC_KEY` | Upload | ImageKit — chave pública. |
+| `IMAGEKIT_PRIVATE_KEY` | Upload | ImageKit — chave privada (nunca exponha no cliente). |
+| `STRIPE_SECRET_KEY` | Stripe | Chave secreta (`sk_test_…` ou `sk_live_…`). |
+| `STRIPE_WEBHOOK_SECRET` | Stripe | Segredo do webhook. |
+| `STRIPE_PRICE_BASIC` | Planos | Price ID do plano Basic no Stripe Dashboard. |
+| `STRIPE_PRICE_INTERMEDIATE` | Planos | Price ID do plano Intermediate. |
+| `STRIPE_PRICE_PREMIUM` | Planos | Price ID do plano Premium. |
+| `STRIPE_BILLING_PORTAL_RETURN_URL` | Não | URL de retorno do portal de cobrança. Padrão: `{NEXT_PUBLIC_APP_URL}/profile?tab=subscription`. |
+| `PLAN_LAUNCH_DATE` | Script | Data de lançamento da monetização (early adopters). Usada por `grant-early-adopters`. |
+| `PLAN_GRACE_PERIOD_DAYS` | Não | Dias de tolerância após falha de pagamento. Padrão: `3`. |
 
 \*Obrigatórias se você habilitar login com Google; o e-mail/senha pode funcionar sem elas conforme sua configuração do Better Auth.
 
