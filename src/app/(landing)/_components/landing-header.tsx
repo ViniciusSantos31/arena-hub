@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 
 const navLinks = [
   { href: "/#como-funciona", label: "Como funciona" },
+  { href: "/#planos", label: "Planos" },
   { href: "/#tutorial", label: "Tutorial" },
   { href: "/#recursos", label: "Recursos" },
   { href: "/sobre", label: "Sobre nós" },
@@ -52,8 +53,11 @@ export function LandingHeader() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button asChild size="sm" className="hidden sm:inline-flex">
+          <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
             <Link href="/auth/sign-in">Entrar</Link>
+          </Button>
+          <Button asChild size="sm" className="hidden sm:inline-flex">
+            <Link href="/auth/sign-up">Criar conta</Link>
           </Button>
           <ModeToggle />
           <button
@@ -90,8 +94,13 @@ export function LandingHeader() {
           </Link>
         ))}
 
-        <div className="border-border/60 mt-4 border-t pt-4">
+        <div className="border-border/60 mt-4 flex flex-col gap-2 border-t pt-4">
           <Button asChild size="lg" className="w-full">
+            <Link href="/auth/sign-up" onClick={() => setOpen(false)}>
+              Criar conta
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="lg" className="w-full">
             <Link href="/auth/sign-in" onClick={() => setOpen(false)}>
               Entrar
             </Link>

@@ -26,6 +26,7 @@ export function SignInWithGoogle({
       await authClient.signIn.social({
         provider: "google",
         callbackURL: redirectTo,
+        newUserCallbackURL: "/welcome",
       });
     } catch {
       toast.error(

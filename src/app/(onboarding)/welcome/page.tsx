@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ArrowLeftIcon, ArrowRightIcon, HomeIcon } from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { StepContent } from "./_components/step-content";
@@ -33,10 +33,25 @@ export default function WelcomePage() {
     }, 150);
   }
 
+  function goToStep(index: number) {
+    if (isAnimating || index === currentStep) return;
+
+    setIsAnimating(true);
+    setTimeout(() => {
+      setCurrentStep(index);
+      setIsAnimating(false);
+    }, 150);
+  }
+
   return (
-    <div className="flex min-h-screen flex-col">
-      {/* Top bar */}
-      <header className="border-border/60 flex items-center justify-between border-b px-6 py-4">
+    <div className="relative flex min-h-dvh flex-col">
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="landing-wash absolute inset-0" />
+        <div className="landing-dots absolute inset-0 opacity-60" />
+        <div className="from-background via-background/80 to-background absolute inset-0 bg-linear-to-b" />
+      </div>
+
+      <header className="border-border/60 bg-background/80 supports-backdrop-filter:bg-background/60 sticky top-0 z-20 flex items-center justify-between border-b px-6 py-4 backdrop-blur-sm">
         <Link
           href="/"
           className="from-primary to-primary/70 bg-linear-to-r bg-clip-text text-lg font-black text-transparent"
@@ -57,7 +72,6 @@ export default function WelcomePage() {
         </Link>
       </header>
 
-      {/* Progress bar */}
       <div className="bg-border/40 h-1 w-full">
         <div
           className="bg-primary h-full transition-all duration-500 ease-out"
@@ -65,21 +79,14 @@ export default function WelcomePage() {
         />
       </div>
 
-      {/* Step indicators */}
       <div className="flex justify-center gap-1.5 pt-6">
-        {TUTORIAL_STEPS.map((_, i) => (
+        {TUTORIAL_STEPS.map((tutorialStep, i) => (
           <button
-            key={i}
-            onClick={() => {
-              if (!isAnimating && i !== currentStep) {
-                setIsAnimating(true);
-                setTimeout(() => {
-                  setCurrentStep(i);
-                  setIsAnimating(false);
-                }, 150);
-              }
-            }}
-            aria-label={`Ir para passo ${i + 1}`}
+            key={tutorialStep.id}
+            type="button"
+            onClick={() => goToStep(i)}
+            aria-label={`Ir para passo ${i + 1}: ${tutorialStep.title}`}
+            aria-current={i === currentStep ? "step" : undefined}
             className={cn(
               "h-1.5 rounded-full transition-all duration-300",
               i === currentStep
@@ -92,34 +99,25 @@ export default function WelcomePage() {
         ))}
       </div>
 
-      {/* Main content */}
       <main className="flex flex-1 flex-col items-center justify-center px-6 py-10">
         <div className="w-full max-w-2xl">
           <StepContent step={step} isVisible={!isAnimating} />
         </div>
       </main>
 
-      {/* Navigation */}
-      <footer className="border-border/60 bg-background sticky bottom-0 z-20 border-t px-6 py-5">
-        <div className="mx-auto flex w-full max-w-2xl items-center justify-between gap-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("prev")}
-            disabled={isFirst || isAnimating}
-            className="gap-2"
-          >
-            <ArrowLeftIcon className="size-4" />
-            Anterior
-          </Button>
-
-          {isLast ? (
-            <Button asChild size="lg" className="gap-2 px-8">
-              <Link href="/home">
-                <HomeIcon className="size-4" />
-                Ir para o início
-              </Link>
+      {!isLast && (
+        <footer className="border-border/60 bg-background/80 supports-backdrop-filter:bg-background/60 sticky bottom-0 z-20 border-t px-6 py-5 backdrop-blur-sm">
+          <div className="mx-auto flex w-full max-w-2xl items-center justify-between gap-4">
+            <Button
+              variant="ghost"
+              onClick={() => navigate("prev")}
+              disabled={isFirst || isAnimating}
+              className="gap-2"
+            >
+              <ArrowLeftIcon className="size-4" />
+              Anterior
             </Button>
-          ) : (
+
             <Button
               onClick={() => navigate("next")}
               disabled={isAnimating}
@@ -129,9 +127,25 @@ export default function WelcomePage() {
               Próximo
               <ArrowRightIcon className="size-4" />
             </Button>
-          )}
-        </div>
-      </footer>
+          </div>
+        </footer>
+      )}
+
+      {isLast && (
+        <footer className="border-border/60 bg-background/80 supports-backdrop-filter:bg-background/60 sticky bottom-0 z-20 border-t px-6 py-5 backdrop-blur-sm">
+          <div className="mx-auto flex w-full max-w-2xl justify-start">
+            <Button
+              variant="ghost"
+              onClick={() => navigate("prev")}
+              disabled={isAnimating}
+              className="gap-2"
+            >
+              <ArrowLeftIcon className="size-4" />
+              Anterior
+            </Button>
+          </div>
+        </footer>
+      )}
     </div>
   );
 }

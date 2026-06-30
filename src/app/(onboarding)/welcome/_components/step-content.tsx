@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { CheckCircle2Icon, CrownIcon } from "lucide-react";
 import Image from "next/image";
 import type { TutorialStep } from "./steps-data";
+import { WelcomeFinishActions } from "./welcome-finish-actions";
 
 interface StepContentProps {
   step: TutorialStep;
@@ -202,24 +203,7 @@ function FinishStep({ step }: { step: TutorialStep }) {
         </p>
       </div>
 
-      {step.items && (
-        <div className="grid w-full max-w-lg grid-cols-1 gap-3 sm:grid-cols-2">
-          {step.items.map((item, i) => {
-            const Icon = item.icon;
-            return (
-              <div
-                key={i}
-                className="bg-card border-border/60 flex items-center gap-3 rounded-xl border p-4 text-left"
-              >
-                <div className="bg-primary/10 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
-                  <Icon className="text-primary size-4" />
-                </div>
-                <span className="text-sm font-medium">{item.text}</span>
-              </div>
-            );
-          })}
-        </div>
-      )}
+      <WelcomeFinishActions />
     </div>
   );
 }

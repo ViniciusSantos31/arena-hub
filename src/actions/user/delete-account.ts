@@ -1,10 +1,9 @@
 "use server";
 
-import { db } from "@/db";
-import { usersTable } from "@/db/schema/user";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
-import { eq } from "drizzle-orm";
+import { deleteUserAccount } from "@/lib/user-account/delete-user-account";
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
 export const deleteAccount = actionClient.action(async () => {
@@ -16,21 +15,11 @@ export const deleteAccount = actionClient.action(async () => {
     throw new Error("Usuário não autenticado");
   }
 
-  const userId = session.user.id;
+  await deleteUserAccount(session.user.id);
 
-  // Revoga todas as sessões ativas antes de excluir
-  await auth.api.revokeOtherSessions({
-    headers: await headers(),
-  });
-
-  const deleted = await db
-    .delete(usersTable)
-    .where(eq(usersTable.id, userId))
-    .returning({ id: usersTable.id });
-
-  if (!deleted[0]) {
-    throw new Error("Falha ao excluir conta");
-  }
+  revalidatePath("/", "layout");
+  revalidatePath("/group", "layout");
+  revalidatePath("/home");
 
   return { success: true };
 });

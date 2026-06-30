@@ -10,11 +10,13 @@ import * as requests from "./request";
 import * as subscription from "./subscription";
 import * as tutorial from "./tutorial";
 import * as users from "./user";
+import * as userBilling from "./user-billing";
 import * as inviteLinks from "./invite-link";
 import * as featureAnnouncements from "./feature-announcement";
 
 export const schema = {
   ...users,
+  ...userBilling,
   ...auth,
   ...feedback,
   ...member,

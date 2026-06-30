@@ -13,6 +13,10 @@ import { headers } from "next/headers";
 import z from "zod/v4";
 import { getOrgIdByCode } from "../group/get-org-by-code";
 
+import {
+  assertCanCreateMatch,
+  getOwnerPlanContextForOrganization,
+} from "@/lib/user-plan/assertions";
 import { notifyNewMatch } from "@/lib/push-notification";
 import { getDateWithTime } from "@/utils/date";
 import utc from "dayjs/plugin/utc";
@@ -51,6 +55,11 @@ export const createMatch = actionClient
     }
 
     const organizationId = group.data;
+
+    const ownerCtx = await getOwnerPlanContextForOrganization(organizationId);
+    if (ownerCtx) {
+      assertCanCreateMatch(ownerCtx);
+    }
 
     const orgRow = await db.query.organization.findFirst({
       where: eq(organizationTable.id, organizationId),

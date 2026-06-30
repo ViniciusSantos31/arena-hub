@@ -35,6 +35,12 @@ export default function LandingLayout({
               Como funciona
             </Link>
             <Link
+              href="/#planos"
+              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+            >
+              Planos
+            </Link>
+            <Link
               href="/#tutorial"
               className="text-muted-foreground hover:text-foreground text-sm transition-colors"
             >

@@ -26,19 +26,38 @@ interface GroupSettingsFormProps {
     paidMatchesFeatureEnabled: boolean;
   };
   userRole: Role;
+  maxPlayersLimit?: number | null;
+  maxInviteLinksLimit?: number | null;
+  activeInviteLinksTotal?: number;
 }
 
-export function GroupSettingsForm({ group, userRole }: GroupSettingsFormProps) {
+export function GroupSettingsForm({
+  group,
+  userRole,
+  maxPlayersLimit,
+  maxInviteLinksLimit,
+  activeInviteLinksTotal,
+}: GroupSettingsFormProps) {
   return (
     <div className="space-y-4">
       <BasicInfoForm group={group} userRole={userRole} id="basic-info" />
-      <ConfigAccessForm group={group} userRole={userRole} id="config-access" />
+      <ConfigAccessForm
+        group={group}
+        userRole={userRole}
+        id="config-access"
+        maxPlayersLimit={maxPlayersLimit}
+      />
       <PunishmentConfigForm
         group={group}
         userRole={userRole}
         id="punishment-config"
       />
-      <InviteLinksSection group={{ code: group.code }} id="invite-links" />
+      <InviteLinksSection
+        group={{ code: group.code }}
+        id="invite-links"
+        maxInviteLinksLimit={maxInviteLinksLimit}
+        activeInviteLinksTotal={activeInviteLinksTotal}
+      />
       {(userRole === "owner" || userRole === "admin") &&
         group.paidMatchesFeatureEnabled && (
           <PaymentExemptionSection

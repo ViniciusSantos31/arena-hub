@@ -4,6 +4,12 @@ import { db } from "@/db";
 import { organization } from "@/db/schema/auth";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
+import {
+  assertCanCreateGroup,
+  assertCanSetMaxPlayers,
+  getOwnerPlanContextForOrganization,
+} from "@/lib/user-plan/assertions";
+import { getUserPlanContext } from "@/lib/user-plan/get-user-plan-context";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
@@ -50,6 +56,19 @@ export const upsertGroup = actionClient
       suspensionMatchCount,
     } = parsedInput;
 
+    const maxPlayersValue = maxPlayers ?? 10;
+
+    if (id) {
+      const ownerCtx = await getOwnerPlanContextForOrganization(id);
+      if (ownerCtx) {
+        assertCanSetMaxPlayers(ownerCtx, maxPlayersValue);
+      }
+    } else {
+      const ctx = await getUserPlanContext(session.user.id);
+      assertCanCreateGroup(ctx);
+      assertCanSetMaxPlayers(ctx, maxPlayersValue);
+    }
+
     if (id) {
       const orgUpdate = await db
         .update(organization)
@@ -57,7 +76,7 @@ export const upsertGroup = actionClient
           name,
           logo: image,
           private: true,
-          maxPlayers: maxPlayers ?? 10,
+          maxPlayers: maxPlayersValue,
           rules,
           metadata: JSON.stringify({ description }),
           ...(punishmentsToSuspend !== undefined && { punishmentsToSuspend }),
@@ -81,7 +100,7 @@ export const upsertGroup = actionClient
         userId: session.user.id,
         logo: image,
         private: true,
-        maxPlayers: maxPlayers ?? 10,
+        maxPlayers: maxPlayersValue,
         rules: rules ?? "",
         code: Math.random().toString(36).substring(2, 8).toUpperCase(),
         slug:

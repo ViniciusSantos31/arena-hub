@@ -7,6 +7,9 @@ import { member } from "@/db/schema/member";
 import { can } from "@/hooks/use-guard";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
+import { assertCanCreateInviteLink } from "@/lib/user-plan/assertions";
+import { getUserPlanContext } from "@/lib/user-plan/get-user-plan-context";
+import { getOrganizationOwnerUserId } from "@/lib/user-plan/queries";
 import { and, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import z from "zod/v4";
@@ -62,6 +65,11 @@ export const createInviteLink = actionClient
     if (!canCreateInvite) {
       throw new Error("Sem permissão para criar links de convite");
     }
+
+    const ownerUserId = await getOrganizationOwnerUserId(org.id);
+    const planUserId = ownerUserId ?? session.user.id;
+    const ownerCtx = await getUserPlanContext(planUserId);
+    assertCanCreateInviteLink(ownerCtx);
 
     const token = generateInviteToken();
     const tokenHash = hashInviteToken(token);

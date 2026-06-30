@@ -20,8 +20,9 @@ export const CreateInviteLinkSuccessModal = ({
 }: CreateInviteLinkSuccessModalProps) => {
   return (
     <ResponsiveDialog
-      title="Link de convite criado"
-      description="O link de convite foi criado com sucesso."
+      title="Compartilhe o link"
+      icon={LinkIcon}
+      description="Você pode copiar e enviar no WhatsApp ou onde preferir."
       className="h-fit"
       contentClassName="relative p-0"
       content={
@@ -33,36 +34,12 @@ export const CreateInviteLinkSuccessModal = ({
           </div>
 
           <div className="relative flex flex-col gap-4">
-            <div className="flex items-center gap-3 px-4">
-              <div
-                className={cn(
-                  "bg-muted/80 text-primary ring-border/50 flex size-10 items-center justify-center rounded-2xl shadow-lg ring-1 backdrop-blur-sm",
-                  "dark:shadow-primary/15 dark:shadow-xl",
-                )}
-              >
-                <LinkIcon className="size-5" />
-              </div>
-              <div className="min-w-0">
-                <div className="text-sm font-semibold tracking-tight">
-                  Compartilhe o link abaixo
-                </div>
-                <div className="text-muted-foreground text-xs leading-relaxed">
-                  Você pode copiar e enviar no WhatsApp ou onde preferir.
-                </div>
-              </div>
-            </div>
-
             <div
               className={cn(
                 "bg-muted/20 ring-border/40 shadow-primary/5 mx-4 overflow-hidden rounded-xl p-4 py-3 text-sm shadow-sm ring-1",
-                "select-all",
               )}
             >
-              <div className="text-muted-foreground flex items-center gap-2 text-xs">
-                <LinkIcon className="text-primary size-3 shrink-0" />
-                Link gerado
-              </div>
-              <code className="text-foreground mt-1.5 block text-xs font-medium break-all">
+              <code className="text-foreground block truncate text-xs leading-relaxed font-medium whitespace-nowrap select-all">
                 {link}
               </code>
             </div>

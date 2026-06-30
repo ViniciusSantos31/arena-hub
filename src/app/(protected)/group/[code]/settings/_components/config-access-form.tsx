@@ -23,6 +23,7 @@ export const ConfigAccessForm = ({
   group,
   userRole,
   id,
+  maxPlayersLimit,
 }: {
   id: string;
   group: {
@@ -36,6 +37,7 @@ export const ConfigAccessForm = ({
     description?: string | null;
   };
   userRole: Role;
+  maxPlayersLimit?: number | null;
 }) => {
   const isOwner = userRole === "owner";
   const canModerate = isOwner || userRole === "admin";
@@ -91,7 +93,12 @@ export const ConfigAccessForm = ({
               description="Número máximo de membros que podem participar do grupo"
               required
             >
-              <InputField name="maxPlayers" type="number" min={1} max={100} />
+              <InputField
+                name="maxPlayers"
+                type="number"
+                min={1}
+                max={maxPlayersLimit ?? 100}
+              />
             </SettingsField>
           </PermissionWrapper>
           <div className="flex w-full">

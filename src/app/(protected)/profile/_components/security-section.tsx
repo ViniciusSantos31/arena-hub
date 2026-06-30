@@ -1,18 +1,12 @@
 "use client";
 
 import { deleteAccount } from "@/actions/user/delete-account";
+import { ResponsiveDialog } from "@/components/responsive-dialog";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { authClient } from "@/lib/auth-client";
+import type { AccountDeletionImpact } from "@/lib/user-account/delete-user-account";
 import { LoaderIcon, ShieldIcon, Trash2Icon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useRouter } from "next/navigation";
@@ -30,9 +24,41 @@ interface SecuritySectionProps {
     email?: string | null;
   } | null;
   linkedAccounts: LinkedAccount[];
+  deletionImpact: AccountDeletionImpact;
 }
 
-export function SecuritySection({ user, linkedAccounts }: SecuritySectionProps) {
+function DeletionImpactList({
+  deletionImpact,
+}: {
+  deletionImpact: AccountDeletionImpact;
+}) {
+  const items = [
+    "Seu perfil, sessões e dados pessoais serão removidos.",
+    deletionImpact.ownedGroupsCount > 0
+      ? deletionImpact.ownedGroupsCount === 1
+        ? "O grupo que você administra será excluído, incluindo partidas e membros."
+        : `Os ${deletionImpact.ownedGroupsCount} grupos que você administra serão excluídos, incluindo partidas e membros.`
+      : null,
+    "Sua participação em outros grupos será removida.",
+    deletionImpact.hasActiveSubscription
+      ? "Sua assinatura será cancelada imediatamente, sem novas cobranças."
+      : null,
+  ].filter((item): item is string => item !== null);
+
+  return (
+    <ul className="text-muted-foreground list-disc space-y-1.5 pl-5 text-sm">
+      {items.map((item) => (
+        <li key={item}>{item}</li>
+      ))}
+    </ul>
+  );
+}
+
+export function SecuritySection({
+  user,
+  linkedAccounts,
+  deletionImpact,
+}: SecuritySectionProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
@@ -41,9 +67,16 @@ export function SecuritySection({ user, linkedAccounts }: SecuritySectionProps) 
   );
 
   const { execute, isExecuting } = useAction(deleteAccount, {
-    onSuccess() {
+    async onSuccess() {
       toast.success("Conta excluída com sucesso.");
       setOpen(false);
+
+      try {
+        await authClient.signOut();
+      } catch {
+        // A conta já foi removida; a sessão local pode estar inválida.
+      }
+
       router.push("/auth/sign-in");
     },
     onError() {
@@ -55,15 +88,15 @@ export function SecuritySection({ user, linkedAccounts }: SecuritySectionProps) 
     <div className="space-y-6">
       <div className="space-y-3">
         <div className="flex items-center gap-2">
-          <ShieldIcon className="h-4 w-4 text-muted-foreground" />
+          <ShieldIcon className="text-muted-foreground h-4 w-4" />
           <h3 className="text-sm font-medium">Segurança</h3>
         </div>
 
         <div className="space-y-1.5">
-          <p className="text-xs text-muted-foreground">Conta vinculada</p>
+          <p className="text-muted-foreground text-xs">Conta vinculada</p>
           <div className="flex items-center justify-between rounded-lg border p-3">
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+              <div className="bg-muted flex h-8 w-8 items-center justify-center rounded-full">
                 <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
                   <path
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -85,7 +118,7 @@ export function SecuritySection({ user, linkedAccounts }: SecuritySectionProps) 
               </div>
               <div>
                 <p className="text-sm font-medium">Google</p>
-                <p className="text-xs text-muted-foreground">{user?.email}</p>
+                <p className="text-muted-foreground text-xs">{user?.email}</p>
               </div>
             </div>
             {isGoogleLinked ? (
@@ -93,7 +126,7 @@ export function SecuritySection({ user, linkedAccounts }: SecuritySectionProps) 
                 Conectado
               </span>
             ) : (
-              <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+              <span className="bg-muted text-muted-foreground rounded-full px-2 py-0.5 text-xs font-medium">
                 Não conectado
               </span>
             )}
@@ -105,54 +138,58 @@ export function SecuritySection({ user, linkedAccounts }: SecuritySectionProps) 
 
       <div className="space-y-3">
         <div className="flex items-center gap-2">
-          <Trash2Icon className="h-4 w-4 text-destructive" />
-          <h3 className="text-sm font-medium text-destructive">
+          <Trash2Icon className="text-destructive h-4 w-4" />
+          <h3 className="text-destructive text-sm font-medium">
             Zona de perigo
           </h3>
         </div>
 
-        <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
-          <p className="mb-4 text-sm text-muted-foreground">
-            Ao excluir sua conta, todos os dados, grupos e partidas serão
-            permanentemente removidos. Esta ação não pode ser desfeita.
+        <div className="border-destructive/30 bg-destructive/5 rounded-lg border p-4">
+          <p className="text-muted-foreground mb-4 text-sm text-balance">
+            Ao excluir sua conta, seus dados pessoais serão removidos
+            permanentemente. Grupos que você administra também serão excluídos.
+            Esta ação não pode ser desfeita.
           </p>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button variant="destructive" size="sm">
-                <Trash2Icon />
-                Excluir conta
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Excluir conta</DialogTitle>
-                <DialogDescription>
-                  Tem certeza que deseja excluir sua conta? Todos os seus dados,
-                  grupos e partidas serão permanentemente removidos. Esta ação
-                  não pode ser desfeita.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outline" disabled={isExecuting}>
-                    Cancelar
+          <ResponsiveDialog
+            title="Excluir conta"
+            description="Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita."
+            icon={Trash2Icon}
+            variant="destructive"
+            open={open}
+            onOpenChange={setOpen}
+            contentClassName="p-0"
+            content={
+              <div>
+                <div className="p-4">
+                  <DeletionImpactList deletionImpact={deletionImpact} />
+                </div>
+                <DialogFooter className="gap-2 border-t p-4">
+                  <DialogClose asChild>
+                    <Button variant="outline" disabled={isExecuting}>
+                      Cancelar
+                    </Button>
+                  </DialogClose>
+                  <Button
+                    variant="destructive"
+                    disabled={isExecuting}
+                    onClick={() => execute()}
+                  >
+                    {isExecuting ? (
+                      <LoaderIcon className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Trash2Icon />
+                    )}
+                    Excluir conta
                   </Button>
-                </DialogClose>
-                <Button
-                  variant="destructive"
-                  disabled={isExecuting}
-                  onClick={() => execute()}
-                >
-                  {isExecuting ? (
-                    <LoaderIcon className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Trash2Icon />
-                  )}
-                  Excluir permanentemente
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                </DialogFooter>
+              </div>
+            }
+          >
+            <Button variant="destructive" type="button">
+              <Trash2Icon />
+              Excluir conta
+            </Button>
+          </ResponsiveDialog>
         </div>
       </div>
     </div>

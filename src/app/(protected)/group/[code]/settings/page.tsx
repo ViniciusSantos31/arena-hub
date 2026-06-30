@@ -1,6 +1,7 @@
 import { getGroupDetails } from "@/actions/group/detail";
 import { getUserMembership } from "@/actions/group/membership";
 import { can } from "@/hooks/use-guard";
+import { getOwnerPlanContextForOrganization } from "@/lib/user-plan/assertions";
 import { Role } from "@/utils/role";
 import { redirect } from "next/navigation";
 import { LoadingGroupPage } from "../_components/loading-page";
@@ -33,10 +34,18 @@ export default async function GroupSettingsPage({
     return redirect(`/group/${code}/overview`);
   }
 
+  const ownerPlanCtx = await getOwnerPlanContextForOrganization(group.id);
+  const maxPlayersLimit = ownerPlanCtx?.limits.maxMembersPerGroup ?? null;
+  const maxInviteLinksLimit = ownerPlanCtx?.limits.maxInviteLinksTotal ?? null;
+  const activeInviteLinksTotal = ownerPlanCtx?.usage.activeInviteLinks ?? 0;
+
   return (
     <GroupSettingsForm
       group={{ ...group, stripeAccountId: group.stripeAccountId ?? null }}
       userRole={membership.role as Role}
+      maxPlayersLimit={maxPlayersLimit}
+      maxInviteLinksLimit={maxInviteLinksLimit}
+      activeInviteLinksTotal={activeInviteLinksTotal}
     />
   );
 }
