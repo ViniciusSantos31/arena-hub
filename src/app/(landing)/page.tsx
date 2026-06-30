@@ -3,6 +3,7 @@ import {
   BellIcon,
   CalendarIcon,
   CompassIcon,
+  CreditCardIcon,
   GroupIcon,
   LayoutDashboardIcon,
   LinkIcon,
@@ -15,6 +16,7 @@ import {
   ZapIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { LandingPricingSection } from "./_components/landing-pricing-section";
 import { TutorialTabs } from "./_components/tutorial-tabs";
 
 export const dynamic = "force-dynamic";
@@ -85,8 +87,8 @@ const features = [
 const steps = [
   {
     step: "01",
-    title: "Crie seu grupo",
-    desc: "Cadastre-se, crie um grupo para o seu time e convide os membros com um link ou código único.",
+    title: "Crie sua conta",
+    desc: "Cadastre-se gratuitamente, escolha um plano e monte seu grupo em poucos minutos.",
   },
   {
     step: "02",
@@ -96,7 +98,7 @@ const steps = [
   {
     step: "03",
     title: "Jogue sem burocracia",
-    desc: "Com os times sorteados, é só aparecer e jogar.",
+    desc: "Com os times sorteados, é só aparecer e jogar. Seus membros participam de graça.",
   },
 ];
 
@@ -104,17 +106,19 @@ export default function LandingPage() {
   return (
     <>
       <section className="relative overflow-hidden px-4 py-28 md:py-36">
-        {/* <div className="pointer-events-none absolute inset-0">
-          <div className="bg-primary/8 absolute top-0 left-1/3 h-[500px] w-[500px] -translate-x-1/2 rounded-full blur-3xl" />
-          <div className="bg-primary/6 absolute right-1/4 bottom-0 h-[400px] w-[400px] rounded-full blur-3xl" />
-        </div> */}
         <div className="from-background absolute inset-0 bg-linear-to-r bg-[radial-gradient(#dedede_1px,transparent_1px)] to-transparent bg-size-[16px_16px] dark:bg-[radial-gradient(#1c1c1c_1px,transparent_1px)]"></div>
         <div className="from-background via-background/50 to-background/0 absolute inset-0 bg-radial blur-3xl"></div>
 
         <div className="relative container mx-auto max-w-4xl text-center">
-          <div className="bg-primary/10 border-primary/20 text-primary mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium">
-            <span className="bg-primary size-1.5 rounded-full" />
-            Fase beta — acesso gratuito completo
+          <div className="mb-6 flex flex-wrap items-center justify-center gap-2">
+            <div className="bg-primary/10 border-primary/20 text-primary inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium">
+              <span className="bg-primary size-1.5 rounded-full" />
+              Planos a partir de R$ 5/mês
+            </div>
+            <div className="border-border/60 bg-card/50 text-muted-foreground inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium">
+              <UsersIcon className="size-3.5" />
+              Jogadores participam de graça
+            </div>
           </div>
 
           <h1 className="text-foreground mb-6 text-5xl leading-[1.1] font-bold tracking-tight md:text-7xl">
@@ -127,12 +131,12 @@ export default function LandingPage() {
 
           <p className="text-muted-foreground mx-auto mb-10 max-w-2xl text-lg leading-relaxed md:text-xl">
             Arena Hub reúne tudo em um lugar: confirmações de presença, sorteio
-            de times e notificações para todos.
+            de times e notificações — com planos acessíveis para quem organiza.
           </p>
 
           <div className="flex flex-col justify-center gap-3 sm:flex-row">
             <Button asChild size="lg" className="h-12 px-8 text-base">
-              <Link href="/auth/sign-in">Entrar</Link>
+              <Link href="/auth/sign-up">Criar conta</Link>
             </Button>
             <Button
               asChild
@@ -140,7 +144,7 @@ export default function LandingPage() {
               size="lg"
               className="h-12 px-8 text-base"
             >
-              <Link href="/#como-funciona">Ver como funciona</Link>
+              <Link href="/#planos">Ver planos</Link>
             </Button>
           </div>
         </div>
@@ -180,6 +184,8 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      <LandingPricingSection />
 
       <section id="tutorial" className="px-4 py-24">
         <div className="container mx-auto max-w-6xl">
@@ -235,7 +241,7 @@ export default function LandingPage() {
         <div className="container mx-auto max-w-3xl text-center">
           <div className="bg-primary/10 border-primary/20 mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium">
             <GroupIcon className="text-primary size-3.5" />
-            <span className="text-primary">Fase beta aberta</span>
+            <span className="text-primary">Comece a organizar hoje</span>
           </div>
 
           <h2 className="text-foreground mb-4 text-4xl leading-tight font-bold md:text-5xl">
@@ -245,13 +251,24 @@ export default function LandingPage() {
           </h2>
 
           <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
-            Entre na plataforma e organize tudo em minutos. Durante a fase beta,
-            os recursos ficam liberados para você testar.
+            Crie sua conta, escolha o plano que cabe no seu bolso e organize
+            tudo em minutos. Seus jogadores entram e participam sem pagar nada.
           </p>
 
           <div className="flex flex-col justify-center gap-3 sm:flex-row">
             <Button asChild size="lg" className="h-12 px-10 text-base">
-              <Link href="/auth/sign-in">Entrar</Link>
+              <Link href="/auth/sign-up">Criar conta grátis</Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="h-12 px-10 text-base"
+            >
+              <Link href="/#planos">
+                <CreditCardIcon className="size-4" />
+                Comparar planos
+              </Link>
             </Button>
           </div>
         </div>

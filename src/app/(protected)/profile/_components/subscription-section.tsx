@@ -9,6 +9,7 @@ import {
   PLAN_TIER_LABELS,
 } from "@/lib/user-plan/plan-tiers";
 import type { SubscriptionSummary } from "@/lib/user-plan/subscription-summary";
+import type { SubscriptionPayment } from "@/lib/stripe-billing/list-subscription-invoices";
 import { cn } from "@/lib/utils";
 import { cva } from "class-variance-authority";
 import {
@@ -24,6 +25,7 @@ import {
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import { toast } from "sonner";
+import { SubscriptionPaymentHistory } from "./subscription-payment-history";
 
 type SubscriptionStatus =
   | "active"
@@ -111,9 +113,13 @@ function UsageMetric({ icon: Icon, label, used, limit }: UsageMetricProps) {
 
 type SubscriptionSectionProps = {
   summary: SubscriptionSummary;
+  payments: SubscriptionPayment[];
 };
 
-export function SubscriptionSection({ summary }: SubscriptionSectionProps) {
+export function SubscriptionSection({
+  summary,
+  payments,
+}: SubscriptionSectionProps) {
   const [planPickerOpen, setPlanPickerOpen] = useState(false);
   const hasActivePlan = summary.subscription?.isEffectivelyActive === true;
 
@@ -181,112 +187,119 @@ export function SubscriptionSection({ summary }: SubscriptionSectionProps) {
       )}
 
       {hasActivePlan && summary.subscription && (
-        <div className="overflow-hidden rounded-2xl border shadow-sm">
-          <div className="from-primary/8 via-primary/4 relative bg-linear-to-br to-transparent px-5 pt-5 pb-4">
-            <div className="bg-primary/10 pointer-events-none absolute -top-10 -right-10 size-40 rounded-full blur-3xl" />
-            <div className="relative flex flex-wrap items-start justify-between gap-4">
-              <div className="space-y-2">
-                <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-                  Plano atual
-                </p>
-                <h3 className="text-2xl font-bold tracking-tight">
-                  {PLAN_TIER_LABELS[summary.subscription.planTier]}
-                </h3>
-                <span
-                  className={statusBadgeVariants({
-                    variant: summary.subscription.status as SubscriptionStatus,
-                  })}
+        <div className="from-primary via-primary/50 rounded-2xl bg-linear-to-br to-transparent p-px">
+          <div className="bg-background overflow-hidden rounded-2xl shadow-sm">
+            <div className="from-primary/8 via-primary/4 relative bg-linear-to-br to-transparent px-5 pt-5 pb-4">
+              <div className="bg-primary/10 pointer-events-none absolute -top-10 -right-10 size-40 rounded-full blur-3xl" />
+              <div className="relative flex flex-wrap items-start justify-between gap-4">
+                <div className="space-y-2">
+                  <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                    Plano atual
+                  </p>
+                  <h3 className="text-2xl font-bold tracking-tight">
+                    {PLAN_TIER_LABELS[summary.subscription.planTier]}
+                  </h3>
+                  <span
+                    className={statusBadgeVariants({
+                      variant: summary.subscription
+                        .status as SubscriptionStatus,
+                    })}
+                  >
+                    {STATUS_LABELS[
+                      summary.subscription.status as SubscriptionStatus
+                    ] ?? (summary.subscription.status as SubscriptionStatus)}
+                  </span>
+                </div>
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    "shrink-0 rounded-full px-3 py-1",
+                    summary.subscription.cancelAtPeriodEnd
+                      ? "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400"
+                      : "border-primary/20 bg-background/80",
+                  )}
                 >
-                  {STATUS_LABELS[
-                    summary.subscription.status as SubscriptionStatus
-                  ] ?? (summary.subscription.status as SubscriptionStatus)}
-                </span>
+                  {summary.subscription.cancelAtPeriodEnd
+                    ? "Cancela ao fim do período"
+                    : "Renovação automática"}
+                </Badge>
               </div>
-              <Badge
-                variant="outline"
-                className={cn(
-                  "shrink-0 rounded-full px-3 py-1",
-                  summary.subscription.cancelAtPeriodEnd
-                    ? "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400"
-                    : "border-primary/20 bg-background/80",
-                )}
-              >
-                {summary.subscription.cancelAtPeriodEnd
-                  ? "Cancela ao fim do período"
-                  : "Renovação automática"}
-              </Badge>
             </div>
-          </div>
 
-          <div className="flex flex-col space-y-5 px-5 py-5">
-            <div className="bg-muted/40 flex items-center gap-3 rounded-xl border px-4 py-3">
-              <CalendarIcon className="text-muted-foreground size-4 shrink-0" />
-              <p className="text-sm">
-                {summary.subscription.cancelAtPeriodEnd ? (
+            <div className="flex flex-col space-y-5 px-5 py-5">
+              <div className="bg-muted/40 flex items-center gap-3 rounded-xl border px-4 py-3">
+                <CalendarIcon className="text-muted-foreground size-4 shrink-0" />
+                <p className="text-xs">
+                  {summary.subscription.cancelAtPeriodEnd ? (
+                    <>
+                      <span className="text-muted-foreground">Acesso até </span>
+                      <span className="font-medium">
+                        {formatDate(summary.subscription.currentPeriodEnd)}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-muted-foreground">
+                        Próxima renovação em{" "}
+                      </span>
+                      <span className="font-medium">
+                        {formatDate(summary.subscription.currentPeriodEnd)}
+                      </span>
+                    </>
+                  )}
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                  Uso do plano
+                </p>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <UsageMetric
+                    icon={UsersIcon}
+                    label="Grupos"
+                    used={summary.usage.ownedGroups}
+                    limit={summary.limits.maxGroups}
+                  />
+                  <UsageMetric
+                    icon={LinkIcon}
+                    label="Links de convite ativos"
+                    used={summary.usage.activeInviteLinks}
+                    limit={summary.limits.maxInviteLinksTotal}
+                  />
+                  <UsageMetric
+                    icon={UserIcon}
+                    label="Membros por grupo"
+                    limit={summary.limits.maxMembersPerGroup}
+                  />
+                </div>
+              </div>
+
+              <Button
+                variant="outline"
+                className="ml-auto w-full sm:w-auto"
+                disabled={isOpeningPortal}
+                onClick={() => openPortal()}
+              >
+                {isOpeningPortal ? (
                   <>
-                    <span className="text-muted-foreground">Acesso até </span>
-                    <span className="font-medium">
-                      {formatDate(summary.subscription.currentPeriodEnd)}
-                    </span>
+                    <Loader2Icon className="size-4 animate-spin" />
+                    Abrindo portal…
                   </>
                 ) : (
                   <>
-                    <span className="text-muted-foreground">
-                      Próxima renovação em{" "}
-                    </span>
-                    <span className="font-medium">
-                      {formatDate(summary.subscription.currentPeriodEnd)}
-                    </span>
+                    <ExternalLinkIcon className="size-4" />
+                    Gerenciar assinatura
                   </>
                 )}
-              </p>
+              </Button>
             </div>
-
-            <div className="space-y-3">
-              <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-                Uso do plano
-              </p>
-              <div className="grid gap-3 sm:grid-cols-3">
-                <UsageMetric
-                  icon={UsersIcon}
-                  label="Grupos"
-                  used={summary.usage.ownedGroups}
-                  limit={summary.limits.maxGroups}
-                />
-                <UsageMetric
-                  icon={LinkIcon}
-                  label="Links de convite ativos"
-                  used={summary.usage.activeInviteLinks}
-                  limit={summary.limits.maxInviteLinksTotal}
-                />
-                <UsageMetric
-                  icon={UserIcon}
-                  label="Membros por grupo"
-                  limit={summary.limits.maxMembersPerGroup}
-                />
-              </div>
-            </div>
-
-            <Button
-              variant="outline"
-              className="ml-auto w-full sm:w-auto"
-              disabled={isOpeningPortal}
-              onClick={() => openPortal()}
-            >
-              {isOpeningPortal ? (
-                <>
-                  <Loader2Icon className="size-4 animate-spin" />
-                  Abrindo portal…
-                </>
-              ) : (
-                <>
-                  <ExternalLinkIcon className="size-4" />
-                  Gerenciar assinatura
-                </>
-              )}
-            </Button>
           </div>
         </div>
+      )}
+
+      {(hasActivePlan || payments.length > 0) && (
+        <SubscriptionPaymentHistory payments={payments} />
       )}
 
       {!hasActivePlan && (

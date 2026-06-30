@@ -1,9 +1,11 @@
 import {
   CalendarIcon,
   CheckCircle2Icon,
+  CompassIcon,
   CrownIcon,
   EyeIcon,
   LinkIcon,
+  SearchIcon,
   ShieldIcon,
   ShuffleIcon,
   SparklesIcon,
@@ -70,6 +72,32 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
       {
         icon: LinkIcon,
         text: "Convide membros exclusivamente via links de convite",
+      },
+    ],
+  },
+  {
+    id: "explore-groups",
+    title: "Explorar Grupos",
+    subtitle: "Encontre ou entre em grupos existentes",
+    description:
+      "Não precisa criar um grupo do zero. Explore grupos públicos abertos ou solicite entrada em grupos privados — tudo em um só lugar.",
+    type: "features",
+    items: [
+      {
+        icon: CompassIcon,
+        text: "Navegue pela lista de grupos disponíveis na plataforma",
+      },
+      {
+        icon: SearchIcon,
+        text: "Busque grupos pelo nome e filtre por visibilidade",
+      },
+      {
+        icon: CheckCircle2Icon,
+        text: "Entre instantaneamente em grupos públicos abertos",
+      },
+      {
+        icon: ShieldIcon,
+        text: "Solicite entrada em grupos privados e aguarde aprovação",
       },
     ],
   },
@@ -209,15 +237,9 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
   {
     id: "finish",
     title: "Tudo Pronto!",
-    subtitle: "Hora de jogar",
+    subtitle: "Escolha seu próximo passo",
     description:
-      "Você já sabe tudo que precisa para começar. Crie seu primeiro grupo, convide seus amigos e organize a próxima partida agora mesmo.",
+      "Você já conhece as principais funcionalidades do Arena Hub. Agora é só escolher por onde quer começar.",
     type: "finish",
-    items: [
-      { icon: CheckCircle2Icon, text: "Crie seu grupo e personalize as configurações" },
-      { icon: LinkIcon, text: "Gere um link de convite e chame seus amigos" },
-      { icon: CalendarIcon, text: "Crie sua primeira partida" },
-      { icon: ShuffleIcon, text: "Sorteie os times e bora jogar!" },
-    ],
   },
 ];

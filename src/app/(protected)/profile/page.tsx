@@ -4,8 +4,10 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { auth } from "@/lib/auth";
+import { listSubscriptionPaymentsForUser } from "@/lib/stripe-billing/list-subscription-invoices";
 import { getAccountDeletionImpact } from "@/lib/user-account/delete-user-account";
 import { getSubscriptionSummaryForUser } from "@/lib/user-plan/subscription-summary";
+import { cn } from "@/lib/utils";
 import {
   CheckCircle2Icon,
   CircleDotIcon,
@@ -29,7 +31,7 @@ import { SecuritySection } from "./_components/security-section";
 import { SubscriptionSection } from "./_components/subscription-section";
 
 const tabTriggerClass =
-  "data-[state=active]:bg-background cursor-pointer dark:data-[state=active]:bg-background data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:border-b-primary dark:data-[state=active]:border-primary max-w-fit flex-1 rounded-none border-0 border-b-2 border-transparent px-8 text-center";
+  "data-[state=active]:bg-background group w-fit cursor-pointer dark:data-[state=active]:bg-background data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:border-b-primary dark:data-[state=active]:border-primary max-w-fit rounded-none border-0 border-b-2 border-transparent px-4  text-center";
 
 export const dynamic = "force-dynamic";
 
@@ -43,17 +45,25 @@ export default async function ProfilePage({
 
   const session = await auth.api.getSession({ headers: await headers() });
 
-  const [profileResult, pendingInvitesResult, subscriptionSummary, deletionImpact] =
-    await Promise.all([
-      getMyProfile(),
-      listMyPendingInvites(),
-      session?.user
-        ? getSubscriptionSummaryForUser(session.user.id)
-        : Promise.resolve(null),
-      session?.user
-        ? getAccountDeletionImpact(session.user.id)
-        : Promise.resolve({ ownedGroupsCount: 0, hasActiveSubscription: false }),
-    ]);
+  const [
+    profileResult,
+    pendingInvitesResult,
+    subscriptionSummary,
+    subscriptionPayments,
+    deletionImpact,
+  ] = await Promise.all([
+    getMyProfile(),
+    listMyPendingInvites(),
+    session?.user
+      ? getSubscriptionSummaryForUser(session.user.id)
+      : Promise.resolve(null),
+    session?.user
+      ? listSubscriptionPaymentsForUser(session.user.id)
+      : Promise.resolve([]),
+    session?.user
+      ? getAccountDeletionImpact(session.user.id)
+      : Promise.resolve({ ownedGroupsCount: 0, hasActiveSubscription: false }),
+  ]);
 
   const user = session?.user;
   const data = profileResult?.data;
@@ -68,31 +78,51 @@ export default async function ProfilePage({
         <Tabs defaultValue={defaultTab} className="flex flex-col gap-0">
           <TabsList className="bg-background sticky top-0 z-10 min-h-12 w-full justify-start rounded-none border-b p-0">
             <TabsTrigger value="profile" className={tabTriggerClass}>
-              <span className="flex items-center gap-1.5">
-                <UserIcon className="h-3.5 w-3.5" />
+              <UserIcon className="h-3.5 w-3.5" />
+              <span
+                className={cn(
+                  "hidden items-center gap-1.5 sm:flex",
+                  "group-data-[state=active]:flex",
+                )}
+              >
                 Perfil
               </span>
             </TabsTrigger>
             <TabsTrigger value="subscription" className={tabTriggerClass}>
-              <span className="flex items-center gap-1.5">
-                <CreditCardIcon className="h-3.5 w-3.5" />
+              <CreditCardIcon className="h-3.5 w-3.5" />
+              <span
+                className={cn(
+                  "hidden items-center gap-1.5 sm:flex",
+                  "group-data-[state=active]:flex",
+                )}
+              >
                 Assinatura
               </span>
             </TabsTrigger>
             <TabsTrigger value="invites" className={tabTriggerClass}>
-              <span className="flex items-center gap-1.5">
-                <SendIcon className="h-3.5 w-3.5" />
-                Convites
-                {pendingInvites.length > 0 && (
-                  <Badge className="h-4 min-w-4 rounded-full px-1 text-[10px]">
-                    {pendingInvites.length}
-                  </Badge>
+              <SendIcon className="h-3.5 w-3.5" />
+              <span
+                className={cn(
+                  "hidden items-center gap-1.5 sm:flex",
+                  "group-data-[state=active]:flex",
                 )}
+              >
+                Convites
               </span>
+              {pendingInvites.length > 0 && (
+                <Badge className="h-4 min-w-4 rounded-full px-1 text-[10px]">
+                  {pendingInvites.length}
+                </Badge>
+              )}
             </TabsTrigger>
             <TabsTrigger value="settings" className={tabTriggerClass}>
-              <span className="flex items-center gap-1.5">
-                <SettingsIcon className="h-3.5 w-3.5" />
+              <SettingsIcon className="h-3.5 w-3.5" />
+              <span
+                className={cn(
+                  "hidden items-center gap-1.5 sm:flex",
+                  "group-data-[state=active]:flex",
+                )}
+              >
                 Configurações
               </span>
             </TabsTrigger>
@@ -173,7 +203,10 @@ export default async function ProfilePage({
 
           <TabsContent value="subscription" className="space-y-6 px-4 py-5">
             {subscriptionSummary ? (
-              <SubscriptionSection summary={subscriptionSummary} />
+              <SubscriptionSection
+                summary={subscriptionSummary}
+                payments={subscriptionPayments}
+              />
             ) : (
               <p className="text-muted-foreground text-sm">
                 Não foi possível carregar os dados da assinatura.

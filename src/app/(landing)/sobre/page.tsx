@@ -135,12 +135,12 @@ export default function SobrePage() {
             Faça parte
           </h2>
           <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
-            Entre, crie seu grupo e veja na prática como fica mais fácil
-            coordenar a próxima pelada.
+            Crie sua conta, escolha um plano e veja na prática como fica mais
+            fácil coordenar a próxima pelada.
           </p>
           <div className="flex flex-col justify-center gap-3 sm:flex-row sm:justify-center">
             <Button asChild size="lg" className="h-12 px-8 text-base">
-              <Link href="/auth/sign-in">Entrar</Link>
+              <Link href="/auth/sign-up">Criar conta</Link>
             </Button>
             <Button
               asChild
@@ -148,7 +148,7 @@ export default function SobrePage() {
               size="lg"
               className="h-12 px-8 text-base"
             >
-              <Link href="/#como-funciona">Ver como funciona</Link>
+              <Link href="/#planos">Ver planos</Link>
             </Button>
           </div>
         </div>

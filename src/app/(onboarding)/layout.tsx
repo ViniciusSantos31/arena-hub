@@ -7,7 +7,7 @@ export default function OnboardingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-background text-foreground relative flex min-h-screen flex-col">
+    <div className="bg-background text-foreground relative flex min-h-dvh flex-col overflow-x-hidden">
       <Toaster richColors position="top-center" />
       {children}
     </div>
