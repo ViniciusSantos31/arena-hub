@@ -1,8 +1,8 @@
 import { db } from "@/db";
 import { usersTable } from "@/db/schema/user";
-import { planTierToPriceId } from "@/lib/stripe-billing/map-price-to-tier";
 import { requireAppUrl } from "@/lib/require-app-url";
 import { stripe } from "@/lib/stripe";
+import { planTierToPriceId } from "@/lib/stripe-billing/map-price-to-tier";
 import type { PlanTier } from "@/lib/user-plan/types";
 import { eq } from "drizzle-orm";
 
@@ -48,6 +48,7 @@ export async function createSubscriptionCheckout({
     locale: "pt-BR",
     customer: customerId,
     client_reference_id: userId,
+    allow_promotion_codes: true,
     line_items: [{ price: priceId, quantity: 1 }],
     subscription_data: {
       metadata: { userId, planTier },
