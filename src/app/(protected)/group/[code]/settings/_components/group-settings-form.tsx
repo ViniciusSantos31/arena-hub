@@ -5,10 +5,8 @@ import { BasicInfoForm } from "./basic-info-form";
 import { ConfigAccessForm } from "./config-access-form";
 import { DeleteGroupButton } from "./delete-group-button";
 import { InviteLinksSection } from "./invite-links-section";
-import { PaymentExemptionSection } from "./payment-exemption-section";
 import { PunishmentConfigForm } from "./punishment-config-form";
 import { SettingsSection } from "./settings-section";
-import { StripeConnectSection } from "./stripe-connect-section";
 
 interface GroupSettingsFormProps {
   group: {
@@ -19,6 +17,7 @@ interface GroupSettingsFormProps {
     rules: string | null;
     private: boolean;
     maxPlayers: number;
+    memberCount: number;
     description?: string | null;
     punishmentsToSuspend: number;
     suspensionMatchCount: number;
@@ -58,23 +57,7 @@ export function GroupSettingsForm({
         maxInviteLinksLimit={maxInviteLinksLimit}
         activeInviteLinksTotal={activeInviteLinksTotal}
       />
-      {(userRole === "owner" || userRole === "admin") &&
-        group.paidMatchesFeatureEnabled && (
-          <PaymentExemptionSection
-            group={{ id: group.id, code: group.code }}
-            id="payment-exemptions"
-          />
-        )}
-      {userRole === "owner" && group.paidMatchesFeatureEnabled && (
-        <StripeConnectSection
-          group={{
-            id: group.id,
-            code: group.code,
-            stripeAccountId: group.stripeAccountId,
-          }}
-          id="payments"
-        />
-      )}
+
       {userRole === "owner" && (
         <SettingsSection
           id="danger-zone"

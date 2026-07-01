@@ -2,6 +2,7 @@
 
 import { db } from "@/db";
 import { organization } from "@/db/schema/auth";
+import { member } from "@/db/schema/member";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
 import { eq } from "drizzle-orm";
@@ -30,9 +31,14 @@ export const getGroupDetails = actionClient
       throw new Error("Grupo não encontrado");
     }
 
+    const groupMembers = await db.query.member.findMany({
+      where: eq(member.organizationId, group.id),
+    });
+
     return {
       ...group,
       description: transformGroupMetadata(group.metadata),
       logo: group.logo || "",
+      memberCount: groupMembers.length,
     };
   });

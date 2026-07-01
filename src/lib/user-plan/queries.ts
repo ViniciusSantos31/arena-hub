@@ -1,8 +1,9 @@
 import { db } from "@/db";
 import { organization } from "@/db/schema/auth";
+import { directInvitesTable } from "@/db/schema/direct-invite";
 import { organizationInviteLink } from "@/db/schema/invite-link";
 import { member } from "@/db/schema/member";
-import { and, eq, isNull, sql } from "drizzle-orm";
+import { and, eq, isNull, ne, or, sql } from "drizzle-orm";
 
 export async function countOwnedGroups(userId: string): Promise<number> {
   const result = await db
@@ -28,7 +29,19 @@ export async function countActiveInviteLinksForOwner(
         eq(member.role, "owner"),
       ),
     )
-    .where(isNull(organizationInviteLink.revokedAt))
+    .leftJoin(
+      directInvitesTable,
+      eq(organizationInviteLink.id, directInvitesTable.inviteLinkId),
+    )
+    .where(
+      and(
+        isNull(organizationInviteLink.revokedAt),
+        or(
+          isNull(directInvitesTable.inviteLinkId),
+          ne(directInvitesTable.inviteLinkId, organizationInviteLink.id),
+        ),
+      ),
+    )
     .then((rows) => rows[0]?.count ?? 0);
 
   return result;

@@ -1,13 +1,13 @@
 import { upsertGroup } from "@/actions/group/create";
-import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { InputField } from "@/components/ui/input/field";
+import { Progress } from "@/components/ui/progress";
+import { Slider } from "@/components/ui/slider";
 import { Role } from "@/utils/role";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SaveIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
-import { useMemo } from "react";
-import { useForm } from "react-hook-form";
+import { useCallback, useMemo } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import {
   ConfigAccessFormData,
@@ -34,20 +34,33 @@ export const ConfigAccessForm = ({
     rules: string | null;
     private: boolean;
     maxPlayers: number;
+    memberCount: number;
     description?: string | null;
   };
   userRole: Role;
   maxPlayersLimit?: number | null;
 }) => {
   const isOwner = userRole === "owner";
-  const canModerate = isOwner || userRole === "admin";
+
+  const schema = useMemo(
+    () => configAccessSchema(maxPlayersLimit ?? 100),
+    [maxPlayersLimit],
+  );
 
   const methods = useForm({
-    resolver: zodResolver(configAccessSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       maxPlayers: group.maxPlayers,
     },
   });
+
+  const [progressWidth, sliderWidth] = useMemo(() => {
+    const total = maxPlayersLimit ?? 100;
+    const current = group.memberCount;
+    const progress = Math.min((current / total) * 100, 100);
+    const slider = 100 - progress;
+    return [progress, slider];
+  }, [group.memberCount, maxPlayersLimit]);
 
   const upsertGroupAction = useAction(upsertGroup, {
     onSuccess({ input }) {
@@ -64,20 +77,18 @@ export const ConfigAccessForm = ({
     },
   });
 
-  const isAbleToSaveChanges = useMemo(
-    () => canModerate && methods.formState.isDirty && methods.formState.isValid,
-    [canModerate, methods.formState.isDirty, methods.formState.isValid],
+  const onSubmit = useCallback(
+    async (data: ConfigAccessFormData) => {
+      await upsertGroupAction.executeAsync({
+        id: group.id,
+        image: group.logo,
+        name: group.name,
+        description: group.description || "",
+        maxPlayers: data.maxPlayers,
+      });
+    },
+    [upsertGroupAction, group.id, group.logo, group.name, group.description],
   );
-
-  const onSubmit = async (data: ConfigAccessFormData) => {
-    await upsertGroupAction.executeAsync({
-      id: group.id,
-      image: group.logo,
-      name: group.name,
-      description: group.description || "",
-      maxPlayers: data.maxPlayers,
-    });
-  };
 
   return (
     <Form {...methods}>
@@ -88,29 +99,60 @@ export const ConfigAccessForm = ({
           description="Configure quem pode acessar e participar do grupo"
         >
           <PermissionWrapper hasPermission={isOwner}>
-            <SettingsField
-              label="Máximo de Jogadores"
-              description="Número máximo de membros que podem participar do grupo"
-              required
-            >
-              <InputField
-                name="maxPlayers"
-                type="number"
-                min={1}
-                max={maxPlayersLimit ?? 100}
-              />
-            </SettingsField>
+            {maxPlayersLimit ? (
+              <SettingsField
+                label="Máximo de Jogadores"
+                description="Número máximo de membros que podem participar do grupo"
+                required
+              >
+                <InputField
+                  name="maxPlayers"
+                  type="number"
+                  readOnly
+                  disabled
+                  min={1}
+                  max={maxPlayersLimit ?? 100}
+                  className="w-fit items-center self-end border-none text-right"
+                />
+                <div className="flex items-center gap-1">
+                  <Progress
+                    value={100}
+                    max={group.memberCount}
+                    className="*:data-[slot=progress-indicator]:bg-muted-foreground/20 h-1"
+                    style={{ width: `${progressWidth}%` }}
+                  />
+                  <Controller
+                    control={methods.control}
+                    name="maxPlayers"
+                    render={({ field }) => (
+                      <Slider
+                        className="w-full"
+                        value={[field.value]}
+                        onValueChange={(values) => field.onChange(values[0])}
+                        max={maxPlayersLimit ?? 100}
+                        min={group.memberCount}
+                        step={1}
+                        style={{ width: `${sliderWidth}%` }}
+                        onValueCommit={(values) =>
+                          onSubmit({ maxPlayers: values[0] })
+                        }
+                      />
+                    )}
+                  />
+                </div>
+              </SettingsField>
+            ) : (
+              <div className="text-muted-foreground space-y-1">
+                <p className="text-sm">
+                  Seu plano permite que o grupo tenha membros ilimitados.
+                </p>
+                <p className="text-foreground text-sm">
+                  {group.memberCount}
+                  {group.memberCount === 1 ? " membro" : " membros"} no grupo
+                </p>
+              </div>
+            )}
           </PermissionWrapper>
-          <div className="flex w-full">
-            <Button
-              type="submit"
-              className="ml-auto"
-              disabled={!isAbleToSaveChanges || upsertGroupAction.isExecuting}
-            >
-              <SaveIcon />
-              Salvar
-            </Button>
-          </div>
         </SettingsSection>
       </form>
     </Form>
