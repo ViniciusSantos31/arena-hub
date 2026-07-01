@@ -1,25 +1,24 @@
 import { AdminSidebar } from "@/app/admin/_components/admin-sidebar";
+import { AdminSearchCommand } from "@/app/admin/_components/admin-search-command";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { cookies } from "next/headers";
 import React from "react";
 
-import { auth } from "@/lib/auth";
+import { assertAdmin } from "@/lib/admin/assert-admin";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+
+export const dynamic = "force-dynamic";
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Verificar se o usuário é admin
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session || session.user.email !== process.env.ADMIN_EMAIL) {
+  try {
+    await assertAdmin();
+  } catch {
     redirect("/");
   }
 
@@ -32,7 +31,12 @@ export default async function AdminLayout({
       <Toaster richColors position="top-center" />
       <AdminSidebar />
       <ReactQueryDevtools />
-      <SidebarInset className="flex">{children}</SidebarInset>
+      <SidebarInset className="flex flex-col">
+        <div className="border-b px-4 py-3 md:px-6">
+          <AdminSearchCommand />
+        </div>
+        {children}
+      </SidebarInset>
     </SidebarProvider>
   );
 }

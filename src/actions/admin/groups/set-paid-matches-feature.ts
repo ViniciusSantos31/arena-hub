@@ -2,10 +2,9 @@
 
 import { db } from "@/db";
 import { organization } from "@/db/schema/auth";
-import { auth } from "@/lib/auth";
+import { assertAdmin } from "@/lib/admin/assert-admin";
 import { actionClient } from "@/lib/next-safe-action";
 import { eq } from "drizzle-orm";
-import { headers } from "next/headers";
 import z from "zod";
 
 export const setAdminGroupPaidMatchesFeature = actionClient
@@ -16,17 +15,7 @@ export const setAdminGroupPaidMatchesFeature = actionClient
     }),
   )
   .action(async ({ parsedInput }) => {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session?.session || !session?.user) {
-      throw new Error("Usuário não autenticado");
-    }
-
-    if (session.user.email !== process.env.ADMIN_EMAIL) {
-      throw new Error("Acesso negado");
-    }
+    await assertAdmin();
 
     const updated = await db
       .update(organization)

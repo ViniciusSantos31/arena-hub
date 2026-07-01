@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { BarChart3Icon, EyeIcon, UsersIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useEffect } from "react";
+import { AnnouncementViewsOverTimeChart } from "./announcement-views-over-time-chart";
 
 type AnnouncementStatsDialogProps = {
   open: boolean;
@@ -32,6 +33,7 @@ export function AnnouncementStatsDialog({
   const stats = result.data;
   const totalViews = stats?.totalViews ?? 0;
   const viewsByGroup = stats?.viewsByGroup ?? [];
+  const viewsOverTime = stats?.viewsOverTime ?? [];
   const maxCount =
     viewsByGroup.length > 0
       ? Math.max(...viewsByGroup.map((g) => g.viewCount))
@@ -64,6 +66,15 @@ export function AnnouncementStatsDialog({
                 </div>
               )}
             </div>
+          </div>
+
+          <div className="space-y-3">
+            <span className="text-sm font-medium">Visualizações ao longo do tempo</span>
+            {isLoading ? (
+              <Skeleton className="h-[200px] w-full rounded-lg" />
+            ) : (
+              <AnnouncementViewsOverTimeChart data={viewsOverTime} />
+            )}
           </div>
 
           <div className="space-y-3">

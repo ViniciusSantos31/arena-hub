@@ -5,7 +5,7 @@ import {
   PageHeader,
   PageHeaderContent,
 } from "@/app/(protected)/_components/page-structure";
-import { GroupsCardsGrid } from "@/app/admin/_componentes/groups/groups-cards-grid";
+import { GroupsCardsGrid } from "@/app/admin/_components/groups/groups-cards-grid";
 
 export const dynamic = "force-dynamic";
 

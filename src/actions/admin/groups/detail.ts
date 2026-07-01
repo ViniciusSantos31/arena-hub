@@ -2,11 +2,39 @@
 
 import { db } from "@/db";
 import { organization } from "@/db/schema/auth";
-import { auth } from "@/lib/auth";
+import { directInvitesTable } from "@/db/schema/direct-invite";
+import {
+  organizationInviteLink,
+  organizationInviteLinkUse,
+} from "@/db/schema/invite-link";
+import { punishmentTable } from "@/db/schema/punishment";
+import { requestsTable } from "@/db/schema/request";
+import { assertAdmin } from "@/lib/admin/assert-admin";
 import { actionClient } from "@/lib/next-safe-action";
-import { eq } from "drizzle-orm";
-import { headers } from "next/headers";
+import { and, eq, gte, inArray, sql } from "drizzle-orm";
 import z from "zod";
+
+type InviteLinkStatus = "revoked" | "expired" | "max-uses-reached" | "active";
+
+function getInviteLinkStatus(
+  link: {
+    revokedAt: Date | null;
+    expiresAt: Date | null;
+    maxUses: number | null;
+  },
+  usesCount: number,
+): InviteLinkStatus {
+  if (link.revokedAt) return "revoked";
+  if (link.expiresAt && link.expiresAt.getTime() <= Date.now()) return "expired";
+  if (link.maxUses && usesCount >= link.maxUses) return "max-uses-reached";
+  return "active";
+}
+
+function getThirtyDaysAgo() {
+  const date = new Date();
+  date.setDate(date.getDate() - 30);
+  return date;
+}
 
 export interface AdminGroupDetail {
   group: {
@@ -22,6 +50,12 @@ export interface AdminGroupDetail {
     owner: { name: string; email: string; image: string | null } | null;
     lastActivityAt: string;
     paidMatchesFeatureEnabled: boolean;
+    occupancyRate: number;
+    matchesLast30d: number;
+    matchCompletionRate: number;
+    pendingJoinRequests: number;
+    activeInviteLinks: number;
+    recentPunishments: number;
   };
   members: Array<{
     id: string;
@@ -50,6 +84,24 @@ export interface AdminGroupDetail {
     createdAt: string;
     updatedAt: string;
   }>;
+  inviteLinks: Array<{
+    id: string;
+    label: string | null;
+    defaultRole: "guest" | "member";
+    expiresAt: string | null;
+    maxUses: number | null;
+    revokedAt: string | null;
+    revokedReason: string | null;
+    createdAt: string;
+    usesCount: number;
+    status: InviteLinkStatus;
+  }>;
+  joinRequests: Array<{
+    id: string;
+    message: string | null;
+    createdAt: string;
+    user: { id: string; name: string; email: string; image: string | null };
+  }>;
 }
 
 function getLatestDate(dates: Array<Date | null | undefined>): Date | null {
@@ -76,17 +128,7 @@ function rolePriority(role: string | null | undefined) {
 export const getAdminGroupDetail = actionClient
   .inputSchema(z.object({ code: z.string().min(1) }))
   .action(async ({ parsedInput }) => {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session?.session || !session?.user) {
-      throw new Error("Usuário não autenticado");
-    }
-
-    if (session.user.email !== process.env.ADMIN_EMAIL) {
-      throw new Error("Acesso negado");
-    }
+    await assertAdmin();
 
     const group = await db.query.organization.findFirst({
       where: eq(organization.code, parsedInput.code),
@@ -132,6 +174,119 @@ export const getAdminGroupDetail = actionClient
     if (!group) {
       throw new Error("Grupo não encontrado");
     }
+
+    const thirtyDaysAgo = getThirtyDaysAgo();
+    const memberCount = group.members.length;
+    const occupancyRate =
+      group.maxPlayers > 0
+        ? Math.min(100, Math.round((memberCount * 100) / group.maxPlayers))
+        : 0;
+
+    const matchesLast30d = group.matches.filter(
+      (m) => m.createdAt >= thirtyDaysAgo,
+    ).length;
+    const completedMatches = group.matches.filter(
+      (m) => m.status === "completed",
+    ).length;
+    const cancelledMatches = group.matches.filter(
+      (m) => m.status === "cancelled",
+    ).length;
+    const matchCompletionRate =
+      completedMatches + cancelledMatches === 0
+        ? 0
+        : Math.round(
+            (completedMatches / (completedMatches + cancelledMatches)) * 1000,
+          ) / 10;
+
+    const [
+      pendingJoinRequestsRow,
+      recentPunishmentsRow,
+      allInviteLinks,
+      directLinks,
+      pendingJoinRequestsList,
+    ] = await Promise.all([
+      db
+        .select({ count: sql<number>`count(*)`.mapWith(Number) })
+        .from(requestsTable)
+        .where(
+          and(
+            eq(requestsTable.organizationId, group.id),
+            eq(requestsTable.status, "pending"),
+          ),
+        ),
+      db
+        .select({ count: sql<number>`count(*)`.mapWith(Number) })
+        .from(punishmentTable)
+        .where(
+          and(
+            eq(punishmentTable.organizationId, group.id),
+            gte(punishmentTable.createdAt, thirtyDaysAgo),
+          ),
+        ),
+      db.query.organizationInviteLink.findMany({
+        where: eq(organizationInviteLink.organizationId, group.id),
+        orderBy: (t, { desc }) => [desc(t.createdAt)],
+      }),
+      db.query.directInvitesTable.findMany({
+        where: eq(directInvitesTable.organizationId, group.id),
+        columns: { inviteLinkId: true },
+      }),
+      group.private
+        ? db.query.requestsTable.findMany({
+            where: and(
+              eq(requestsTable.organizationId, group.id),
+              eq(requestsTable.status, "pending"),
+            ),
+            with: {
+              user: {
+                columns: { id: true, name: true, email: true, image: true },
+              },
+            },
+            orderBy: (r, { asc }) => [asc(r.createdAt)],
+          })
+        : Promise.resolve([]),
+    ]);
+
+    const pendingJoinRequests = pendingJoinRequestsRow[0]?.count ?? 0;
+    const recentPunishments = recentPunishmentsRow[0]?.count ?? 0;
+
+    const directLinkIds = new Set(
+      directLinks.map((d) => d.inviteLinkId).filter(Boolean) as string[],
+    );
+    const inviteLinksRaw = allInviteLinks.filter((l) => !directLinkIds.has(l.id));
+    const linkIds = inviteLinksRaw.map((l) => l.id);
+
+    const uses =
+      linkIds.length > 0
+        ? await db
+            .select({
+              inviteLinkId: organizationInviteLinkUse.inviteLinkId,
+              usesCount: sql<number>`count(*)`.mapWith(Number),
+            })
+            .from(organizationInviteLinkUse)
+            .where(inArray(organizationInviteLinkUse.inviteLinkId, linkIds))
+            .groupBy(organizationInviteLinkUse.inviteLinkId)
+        : [];
+
+    const usesMap = new Map(uses.map((u) => [u.inviteLinkId, u.usesCount]));
+
+    const inviteLinks = inviteLinksRaw.map((l) => {
+      const usesCount = usesMap.get(l.id) ?? 0;
+      return {
+        id: l.id,
+        label: l.label,
+        defaultRole: l.defaultRole,
+        expiresAt: l.expiresAt?.toISOString() ?? null,
+        maxUses: l.maxUses,
+        revokedAt: l.revokedAt?.toISOString() ?? null,
+        revokedReason: l.revokedReason ?? null,
+        createdAt: l.createdAt.toISOString(),
+        usesCount,
+        status: getInviteLinkStatus(l, usesCount),
+      };
+    });
+
+    const activeInviteLinks = inviteLinks.filter((l) => l.status === "active").length;
 
     const ownerMember =
       group.members.find((m) => m.role === "owner") ??
@@ -189,7 +344,7 @@ export const getAdminGroupDetail = actionClient
         maxPlayers: group.maxPlayers,
         rules: group.rules ?? null,
         createdAt: group.createdAt.toISOString(),
-        memberCount: group.members.length,
+        memberCount,
         owner: ownerMember
           ? {
               name: ownerMember.user.name,
@@ -199,11 +354,28 @@ export const getAdminGroupDetail = actionClient
           : null,
         lastActivityAt: latestActivityAt.toISOString(),
         paidMatchesFeatureEnabled: group.paidMatchesFeatureEnabled,
+        occupancyRate,
+        matchesLast30d,
+        matchCompletionRate,
+        pendingJoinRequests,
+        activeInviteLinks,
+        recentPunishments,
       },
       members,
       matches,
+      inviteLinks,
+      joinRequests: pendingJoinRequestsList.map((req) => ({
+        id: req.id,
+        message: req.message,
+        createdAt: req.createdAt,
+        user: {
+          id: req.user.id,
+          name: req.user.name,
+          email: req.user.email,
+          image: req.user.image ?? null,
+        },
+      })),
     };
 
     return data;
   });
-

@@ -1,9 +1,10 @@
 "use server";
 
 import { db } from "@/db";
-import { auth } from "@/lib/auth";
+import { requestsTable } from "@/db/schema/request";
+import { assertAdmin } from "@/lib/admin/assert-admin";
 import { actionClient } from "@/lib/next-safe-action";
-import { headers } from "next/headers";
+import { eq, sql } from "drizzle-orm";
 
 export interface AdminGroupListItem {
   id: string;
@@ -16,6 +17,9 @@ export interface AdminGroupListItem {
   memberCount: number;
   owner: { name: string; email: string; image: string | null } | null;
   lastActivityAt: string;
+  occupancyRate: number;
+  matchesLast30d: number;
+  pendingJoinRequests: number;
 }
 
 function getLatestDate(dates: Array<Date | null | undefined>): Date | null {
@@ -24,43 +28,55 @@ function getLatestDate(dates: Array<Date | null | undefined>): Date | null {
   return filtered.reduce((max, cur) => (cur > max ? cur : max), filtered[0]);
 }
 
+function getThirtyDaysAgo() {
+  const date = new Date();
+  date.setDate(date.getDate() - 30);
+  return date;
+}
+
 export const listAdminGroups = actionClient.action(async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  await assertAdmin();
 
-  if (!session?.session || !session?.user) {
-    throw new Error("Usuário não autenticado");
-  }
+  const thirtyDaysAgo = getThirtyDaysAgo();
 
-  if (session.user.email !== process.env.ADMIN_EMAIL) {
-    throw new Error("Acesso negado");
-  }
-
-  const groups = await db.query.organization.findMany({
-    columns: {
-      id: true,
-      code: true,
-      name: true,
-      private: true,
-      logo: true,
-      maxPlayers: true,
-      createdAt: true,
-    },
-    with: {
-      members: {
-        columns: { role: true, createdAt: true },
-        with: {
-          user: {
-            columns: { name: true, email: true, image: true },
+  const [groups, pendingByOrg] = await Promise.all([
+    db.query.organization.findMany({
+      columns: {
+        id: true,
+        code: true,
+        name: true,
+        private: true,
+        logo: true,
+        maxPlayers: true,
+        createdAt: true,
+      },
+      with: {
+        members: {
+          columns: { role: true, createdAt: true },
+          with: {
+            user: {
+              columns: { name: true, email: true, image: true },
+            },
           },
         },
+        matches: {
+          columns: { createdAt: true, updatedAt: true },
+        },
       },
-      matches: {
-        columns: { createdAt: true, updatedAt: true },
-      },
-    },
-  });
+    }),
+    db
+      .select({
+        organizationId: requestsTable.organizationId,
+        count: sql<number>`count(*)`.mapWith(Number),
+      })
+      .from(requestsTable)
+      .where(eq(requestsTable.status, "pending"))
+      .groupBy(requestsTable.organizationId),
+  ]);
+
+  const pendingMap = new Map(
+    pendingByOrg.map((row) => [row.organizationId, row.count]),
+  );
 
   const items: AdminGroupListItem[] = groups
     .map((group) => {
@@ -79,6 +95,12 @@ export const listAdminGroups = actionClient.action(async () => {
         getLatestDate([latestMemberAt, latestMatchAt, group.createdAt]) ??
         group.createdAt;
 
+      const memberCount = group.members.length;
+      const occupancyRate =
+        group.maxPlayers > 0
+          ? Math.min(100, Math.round((memberCount * 100) / group.maxPlayers))
+          : 0;
+
       return {
         id: group.id,
         code: group.code,
@@ -87,7 +109,7 @@ export const listAdminGroups = actionClient.action(async () => {
         logo: group.logo ?? null,
         maxPlayers: group.maxPlayers,
         createdAt: group.createdAt.toISOString(),
-        memberCount: group.members.length,
+        memberCount,
         owner: ownerMember
           ? {
               name: ownerMember.user.name,
@@ -96,6 +118,10 @@ export const listAdminGroups = actionClient.action(async () => {
             }
           : null,
         lastActivityAt: latestActivityAt.toISOString(),
+        occupancyRate,
+        matchesLast30d: group.matches.filter((m) => m.createdAt >= thirtyDaysAgo)
+          .length,
+        pendingJoinRequests: pendingMap.get(group.id) ?? 0,
       };
     })
     .sort((a, b) => b.lastActivityAt.localeCompare(a.lastActivityAt));

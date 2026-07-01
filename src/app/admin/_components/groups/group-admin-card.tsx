@@ -13,7 +13,14 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { getAvatarFallback } from "@/utils/avatar";
-import { ClockIcon, LockIcon, UsersRoundIcon } from "lucide-react";
+import {
+  ClockIcon,
+  GlobeIcon,
+  LockIcon,
+  TrophyIcon,
+  UserPlusIcon,
+  UsersRoundIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { GroupOwnerChip } from "./group-owner-chip";
 
@@ -29,10 +36,7 @@ function formatDateTimePtBr(dateIso: string) {
 
 export function GroupAdminCard({ group }: { group: AdminGroupListItem }) {
   const occupancyText = `${group.memberCount}/${group.maxPlayers}`;
-  const occupancyPercent =
-    group.maxPlayers > 0
-      ? Math.min(100, (group.memberCount * 100) / group.maxPlayers)
-      : 0;
+  const occupancyPercent = group.occupancyRate;
 
   return (
     <Card className="border-border/60 overflow-hidden">
@@ -66,8 +70,17 @@ export function GroupAdminCard({ group }: { group: AdminGroupListItem }) {
               </div>
 
               <CardDescription className="mt-1 flex items-center gap-2 text-xs">
-                <LockIcon className="h-3.5 w-3.5 text-yellow-600" />
-                Privado
+                {group.private ? (
+                  <>
+                    <LockIcon className="h-3.5 w-3.5 text-yellow-600" />
+                    Privado
+                  </>
+                ) : (
+                  <>
+                    <GlobeIcon className="h-3.5 w-3.5 text-green-600" />
+                    Público
+                  </>
+                )}
               </CardDescription>
             </div>
           </div>
@@ -81,7 +94,7 @@ export function GroupAdminCard({ group }: { group: AdminGroupListItem }) {
               <div className="mt-1 flex items-end justify-between gap-2">
                 <div className="text-sm font-semibold">{occupancyText}</div>
                 <div className="text-muted-foreground text-xs">
-                  {Math.round(occupancyPercent)}%
+                  {occupancyPercent}%
                 </div>
               </div>
               <div className="bg-muted mt-2 h-1.5 w-full rounded-full">
@@ -101,6 +114,28 @@ export function GroupAdminCard({ group }: { group: AdminGroupListItem }) {
                 {formatDateTimePtBr(group.lastActivityAt)}
               </div>
             </div>
+
+            <div className="border-border/60 bg-background/50 rounded-md border p-3">
+              <div className="text-muted-foreground flex items-center gap-1 text-xs">
+                <TrophyIcon className="h-3.5 w-3.5" />
+                Partidas (30d)
+              </div>
+              <div className="mt-1 text-sm font-semibold">
+                {group.matchesLast30d}
+              </div>
+            </div>
+
+            {group.pendingJoinRequests > 0 ? (
+              <div className="border-border/60 bg-background/50 rounded-md border p-3">
+                <div className="text-muted-foreground flex items-center gap-1 text-xs">
+                  <UserPlusIcon className="h-3.5 w-3.5" />
+                  Pedidos pendentes
+                </div>
+                <div className="mt-1 text-sm font-semibold">
+                  {group.pendingJoinRequests}
+                </div>
+              </div>
+            ) : null}
           </div>
         </CardHeader>
 

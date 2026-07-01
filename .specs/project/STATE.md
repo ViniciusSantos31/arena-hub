@@ -10,6 +10,9 @@
 | 2026-06-25 | Assunções A1–A3 e A5 confirmadas (cancelamento, downgrade, upgrade, 0 grupos sem plano) |
 | 2026-06-25 | Early adopter: isenção na criação de **até 2 grupos** sem assinatura; 3º exige plano com mensagem dedicada (ver `context.md`) |
 | 2026-06-25 | Design concluído em `.specs/features/user-plans/design.md` |
+| 2026-07-01 | Especificação admin dashboard criada em `.specs/features/admin-dashboard/` (spec, design, tasks) |
+| 2026-07-01 | Escopo admin exclui partidas pagas, Stripe Connect e GMV transacional |
+| 2026-07-01 | Priorização admin: P0 Fundação → P1 Usuários/Dashboard/Billing → P2 Partidas/Grupos |
 
 ## Pendências
 
@@ -19,6 +22,8 @@
 - [ ] Criar Products/Prices no Stripe Dashboard (BRL, mensal)
 - [x] Fase Tasks para planos de usuário
 - [x] Execute (T0–T33) — implementação concluída; validação sandbox (T33) pendente manual
+- [ ] Execute admin dashboard — iniciar por Epic 0 (T1–T9)
+- [ ] Aprovar spec/design admin antes de implementação
 
 ## Lições
 

@@ -1,8 +1,8 @@
 "use client";
 
+import type { ComponentType } from "react";
 import type { AdminGroupDetail } from "@/actions/admin/groups/detail";
-import { AdminGroupPaidMatchesFeatureSwitch } from "@/app/admin/_componentes/groups/detail/admin-group-paid-matches-feature-switch";
-import { GroupOwnerChip } from "@/app/admin/_componentes/groups/group-owner-chip";
+import { GroupOwnerChip } from "../group-owner-chip";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,15 +18,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { getAvatarFallback } from "@/utils/avatar";
 import { getCategoryLabelById } from "@/utils/categories";
+import { getRoleLabel } from "@/utils/role";
 import { getSportIconById, getSportLabelById, Sport } from "@/utils/sports";
+import { formatDate } from "@/utils/date";
 import {
   CalendarIcon,
   ClockIcon,
   CrownIcon,
+  GavelIcon,
+  LinkIcon,
   LockIcon,
   MapPinIcon,
+  MessageSquareIcon,
   ShieldIcon,
+  TrophyIcon,
   UnlockIcon,
+  UserPlusIcon,
   UsersRoundIcon,
 } from "lucide-react";
 
@@ -93,12 +100,44 @@ function statusVariant(status: AdminGroupDetail["matches"][number]["status"]) {
   }
 }
 
+const inviteLinkStatusLabels: Record<
+  AdminGroupDetail["inviteLinks"][number]["status"],
+  string
+> = {
+  revoked: "Revogado",
+  expired: "Expirado",
+  "max-uses-reached": "Limite atingido",
+  active: "Ativo",
+};
+
+function formatUses(usesCount: number, maxUses: number | null) {
+  if (!maxUses) return `${usesCount} uso(s)`;
+  return `${usesCount}/${maxUses} uso(s)`;
+}
+
+function MetricCard({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: ComponentType<{ className?: string }>;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="border-border/60 bg-background/50 rounded-lg border p-4">
+      <div className="text-muted-foreground flex items-center gap-1 text-xs">
+        <Icon className="h-3.5 w-3.5" />
+        {label}
+      </div>
+      <div className="mt-1 text-lg font-semibold">{value}</div>
+    </div>
+  );
+}
+
 export function GroupAdminDetailView({ data }: { data: AdminGroupDetail }) {
   const occupancyText = `${data.group.memberCount}/${data.group.maxPlayers}`;
-  const occupancyPercent =
-    data.group.maxPlayers > 0
-      ? Math.min(100, (data.group.memberCount * 100) / data.group.maxPlayers)
-      : 0;
+  const occupancyPercent = data.group.occupancyRate;
 
   const renderSportIcon = (sport: Sport) => {
     const SportIcon = getSportIconById(sport);
@@ -108,12 +147,21 @@ export function GroupAdminDetailView({ data }: { data: AdminGroupDetail }) {
       </div>
     );
   };
+
   return (
     <Tabs defaultValue="overview" className="space-y-4">
       <TabsList>
         <TabsTrigger value="overview">Visão geral</TabsTrigger>
         <TabsTrigger value="members">Membros</TabsTrigger>
         <TabsTrigger value="matches">Partidas</TabsTrigger>
+        <TabsTrigger value="invites">
+          Convites ({data.inviteLinks.length})
+        </TabsTrigger>
+        {data.group.private ? (
+          <TabsTrigger value="requests">
+            Pedidos ({data.joinRequests.length})
+          </TabsTrigger>
+        ) : null}
       </TabsList>
 
       <TabsContent value="overview">
@@ -163,8 +211,8 @@ export function GroupAdminDetailView({ data }: { data: AdminGroupDetail }) {
           </CardHeader>
 
           <CardContent className="flex flex-col gap-2 pt-0">
-            <div className="mb-4 grid grid-cols-2 gap-3">
-              <div className="border-border/60 bg-background/50 rounded-lg border p-4">
+            <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              <div className="border-border/60 bg-background/50 rounded-lg border p-4 sm:col-span-1">
                 <div className="text-muted-foreground flex items-center gap-1 text-xs">
                   <UsersRoundIcon className="h-3.5 w-3.5" />
                   Lotação
@@ -172,7 +220,7 @@ export function GroupAdminDetailView({ data }: { data: AdminGroupDetail }) {
                 <div className="mt-1 flex items-end justify-between gap-2">
                   <div className="text-lg font-semibold">{occupancyText}</div>
                   <div className="text-muted-foreground text-xs">
-                    {Math.round(occupancyPercent)}%
+                    {occupancyPercent}%
                   </div>
                 </div>
                 <div className="bg-muted mt-2 h-1.5 w-full rounded-full">
@@ -183,14 +231,40 @@ export function GroupAdminDetailView({ data }: { data: AdminGroupDetail }) {
                 </div>
               </div>
 
-              <div className="border-border/60 bg-background/50 rounded-lg border p-4">
-                <div className="text-muted-foreground mb-2 text-xs">
-                  Dono do grupo
-                </div>
-                <GroupOwnerChip owner={data.group.owner} />
-              </div>
+              <MetricCard
+                icon={TrophyIcon}
+                label="Partidas (30d)"
+                value={String(data.group.matchesLast30d)}
+              />
+              <MetricCard
+                icon={TrophyIcon}
+                label="Conclusão"
+                value={`${data.group.matchCompletionRate}%`}
+              />
+              <MetricCard
+                icon={UserPlusIcon}
+                label="Pedidos pendentes"
+                value={String(data.group.pendingJoinRequests)}
+              />
+              <MetricCard
+                icon={LinkIcon}
+                label="Links ativos"
+                value={String(data.group.activeInviteLinks)}
+              />
+              <MetricCard
+                icon={GavelIcon}
+                label="Punições (30d)"
+                value={String(data.group.recentPunishments)}
+              />
             </div>
-            <AdminGroupPaidMatchesFeatureSwitch group={data.group} />
+
+            <div className="border-border/60 bg-background/50 rounded-lg border p-4">
+              <div className="text-muted-foreground mb-2 text-xs">
+                Dono do grupo
+              </div>
+              <GroupOwnerChip owner={data.group.owner} />
+            </div>
+
             {data.group.rules ? (
               <div className="border-border/60 bg-background/50 rounded-lg border p-4">
                 <div className="text-muted-foreground mb-1 text-xs">Regras</div>
@@ -212,7 +286,7 @@ export function GroupAdminDetailView({ data }: { data: AdminGroupDetail }) {
           </CardHeader>
           <CardContent className="px-0 pt-0">
             {data.members.length === 0 ? (
-              <div className="text-muted-foreground text-sm">
+              <div className="text-muted-foreground px-6 pb-6 text-sm">
                 Nenhum membro.
               </div>
             ) : (
@@ -289,7 +363,7 @@ export function GroupAdminDetailView({ data }: { data: AdminGroupDetail }) {
           </CardHeader>
           <CardContent className="px-0 pt-0">
             {data.matches.length === 0 ? (
-              <div className="text-muted-foreground text-sm">
+              <div className="text-muted-foreground px-6 pb-6 text-sm">
                 Nenhuma partida.
               </div>
             ) : (
@@ -354,6 +428,149 @@ export function GroupAdminDetailView({ data }: { data: AdminGroupDetail }) {
           </CardContent>
         </Card>
       </TabsContent>
+
+      <TabsContent value="invites">
+        <Card className="border-border/60 py-0">
+          <CardHeader className="pt-6">
+            <CardTitle className="text-base">
+              Links de convite ({data.inviteLinks.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-0 pt-0">
+            {data.inviteLinks.length === 0 ? (
+              <div className="text-muted-foreground px-6 pb-6 text-sm">
+                Nenhum link de convite.
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table className="border-t">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Link</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Função padrão</TableHead>
+                      <TableHead>Usos</TableHead>
+                      <TableHead>Expiração</TableHead>
+                      <TableHead>Criado em</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {data.inviteLinks.map((link) => (
+                      <TableRow key={link.id}>
+                        <TableCell>
+                          <div className="text-sm font-medium">
+                            {link.label || "Link sem nome"}
+                          </div>
+                          {link.revokedReason ? (
+                            <div className="text-muted-foreground mt-0.5 text-xs">
+                              Motivo: {link.revokedReason}
+                            </div>
+                          ) : null}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              link.status === "active" ? "secondary" : "outline"
+                            }
+                          >
+                            {inviteLinkStatusLabels[link.status]}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {getRoleLabel(link.defaultRole)}
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {formatUses(link.usesCount, link.maxUses)}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground text-sm">
+                          {link.expiresAt
+                            ? formatDate(link.expiresAt)
+                            : "Não expira"}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground text-sm">
+                          {formatDatePtBr(link.createdAt)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      {data.group.private ? (
+        <TabsContent value="requests">
+          <Card className="border-border/60 py-0">
+            <CardHeader className="pt-6">
+              <CardTitle className="text-base">
+                Pedidos de entrada ({data.joinRequests.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-0 pt-0">
+              {data.joinRequests.length === 0 ? (
+                <div className="text-muted-foreground px-6 pb-6 text-sm">
+                  Nenhum pedido pendente.
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <Table className="border-t">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Solicitante</TableHead>
+                        <TableHead>Mensagem</TableHead>
+                        <TableHead>Solicitado em</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {data.joinRequests.map((req) => (
+                        <TableRow key={req.id}>
+                          <TableCell>
+                            <div className="flex min-w-0 items-center gap-3">
+                              <Avatar className="size-8">
+                                <AvatarImage
+                                  src={req.user.image ?? undefined}
+                                />
+                                <AvatarFallback className="text-xs">
+                                  {getAvatarFallback(req.user.name)}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="min-w-0">
+                                <div className="truncate text-sm font-medium">
+                                  {req.user.name}
+                                </div>
+                                <div className="text-muted-foreground truncate text-xs">
+                                  {req.user.email}
+                                </div>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {req.message ? (
+                              <div className="text-muted-foreground flex items-start gap-1 text-sm">
+                                <MessageSquareIcon className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                                <span className="line-clamp-2">{req.message}</span>
+                              </div>
+                            ) : (
+                              <span className="text-muted-foreground text-sm">
+                                —
+                              </span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-muted-foreground text-sm">
+                            {formatDateTimePtBr(req.createdAt)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      ) : null}
     </Tabs>
   );
 }

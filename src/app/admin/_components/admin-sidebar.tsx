@@ -32,10 +32,10 @@ export function AdminSidebar({
       <SidebarHeader>
         <AdminNavUser />
       </SidebarHeader>
-      <SidebarContent className="mt-4">
+      <SidebarContent className="mt-4 h-full min-h-fit flex-1 overflow-y-auto">
         <AdminNavItems />
       </SidebarContent>
-      <SidebarContent className="mt-auto justify-end">
+      <SidebarContent className="mt-auto min-h-fit justify-end overflow-y-auto">
         <Separator />
         <div
           className={cn(

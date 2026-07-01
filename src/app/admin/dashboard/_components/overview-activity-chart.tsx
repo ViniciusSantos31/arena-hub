@@ -27,9 +27,11 @@ const chartConfig = {
 export function OverviewActivityChart({
   className,
   data,
+  days = 30,
 }: {
   className?: string;
   data: Array<{ date: string; users: number; groups: number; matches: number }>;
+  days?: number;
 }) {
   const [activeChart, setActiveChart] =
     React.useState<keyof typeof chartConfig>("users");
@@ -47,7 +49,7 @@ export function OverviewActivityChart({
     <Card className={cn("h-full py-0", className)}>
       <CardHeader className="flex flex-col items-stretch border-b p-0! sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:py-0!">
-          <CardTitle>Atividade (30 dias)</CardTitle>
+          <CardTitle>Atividade ({days} dias)</CardTitle>
           <CardDescription>
             Criações por dia (usuários, grupos e partidas)
           </CardDescription>

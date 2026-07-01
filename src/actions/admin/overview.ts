@@ -5,11 +5,10 @@ import { organization } from "@/db/schema/auth";
 import { matchesTable } from "@/db/schema/match";
 import { member } from "@/db/schema/member";
 import { usersTable } from "@/db/schema/user";
-import { auth } from "@/lib/auth";
+import { assertAdmin } from "@/lib/admin/assert-admin";
 import { actionClient } from "@/lib/next-safe-action";
-import { sql } from "drizzle-orm";
+import { and, gte, lte, sql, type SQLWrapper } from "drizzle-orm";
 import dayjs from "dayjs";
-import { headers } from "next/headers";
 
 export interface AdminOverviewData {
   totals: {
@@ -39,18 +38,12 @@ export interface AdminOverviewData {
   }>;
 }
 
+function countsByDayMap(rows: Array<{ date: string; count: number }>) {
+  return new Map(rows.map((row) => [row.date, row.count]));
+}
+
 export const adminOverview = actionClient.action(async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session?.session || !session?.user) {
-    throw new Error("Usuário não autenticado");
-  }
-
-  if (session.user.email !== process.env.ADMIN_EMAIL) {
-    throw new Error("Acesso negado");
-  }
+  await assertAdmin();
 
   const [totalsRow] = await db.select({
     users: sql<number>`(SELECT COUNT(*) FROM ${usersTable})`,
@@ -77,23 +70,39 @@ export const adminOverview = actionClient.action(async () => {
     currentDate = currentDate.add(1, "day");
   }
 
-  const usersInRange = await db.query.usersTable.findMany({
-    where: (t, { and, gte, lte }) =>
-      and(gte(t.createdAt, dateRangeStart), lte(t.createdAt, dateRangeEnd)),
-    columns: { createdAt: true },
-  });
+  const dateFilter = (createdAt: SQLWrapper) =>
+    and(gte(createdAt, dateRangeStart), lte(createdAt, dateRangeEnd));
 
-  const groupsInRange = await db.query.organization.findMany({
-    where: (t, { and, gte, lte }) =>
-      and(gte(t.createdAt, dateRangeStart), lte(t.createdAt, dateRangeEnd)),
-    columns: { createdAt: true },
-  });
+  const [usersByDay, groupsByDay, matchesByDay] = await Promise.all([
+    db
+      .select({
+        date: sql<string>`DATE(${usersTable.createdAt})`,
+        count: sql<number>`COUNT(*)::int`,
+      })
+      .from(usersTable)
+      .where(dateFilter(usersTable.createdAt))
+      .groupBy(sql`DATE(${usersTable.createdAt})`),
+    db
+      .select({
+        date: sql<string>`DATE(${organization.createdAt})`,
+        count: sql<number>`COUNT(*)::int`,
+      })
+      .from(organization)
+      .where(dateFilter(organization.createdAt))
+      .groupBy(sql`DATE(${organization.createdAt})`),
+    db
+      .select({
+        date: sql<string>`DATE(${matchesTable.createdAt})`,
+        count: sql<number>`COUNT(*)::int`,
+      })
+      .from(matchesTable)
+      .where(dateFilter(matchesTable.createdAt))
+      .groupBy(sql`DATE(${matchesTable.createdAt})`),
+  ]);
 
-  const matchesInRange = await db.query.matchesTable.findMany({
-    where: (t, { and, gte, lte }) =>
-      and(gte(t.createdAt, dateRangeStart), lte(t.createdAt, dateRangeEnd)),
-    columns: { createdAt: true },
-  });
+  const usersByDayMap = countsByDayMap(usersByDay);
+  const groupsByDayMap = countsByDayMap(groupsByDay);
+  const matchesByDayMap = countsByDayMap(matchesByDay);
 
   const data: AdminOverviewData = {
     totals: {
@@ -114,14 +123,16 @@ export const adminOverview = actionClient.action(async () => {
       completed: Number(totalsRow?.completed ?? 0),
       cancelled: Number(totalsRow?.cancelled ?? 0),
     },
-    activitySeries: dateIntervalArray.map((date) => ({
-      date: date.toISOString(),
-      users: usersInRange.filter((u) => dayjs(u.createdAt).isSame(date, "day")).length,
-      groups: groupsInRange.filter((g) => dayjs(g.createdAt).isSame(date, "day")).length,
-      matches: matchesInRange.filter((m) => dayjs(m.createdAt).isSame(date, "day")).length,
-    })),
+    activitySeries: dateIntervalArray.map((date) => {
+      const dayKey = dayjs(date).format("YYYY-MM-DD");
+      return {
+        date: date.toISOString(),
+        users: usersByDayMap.get(dayKey) ?? 0,
+        groups: groupsByDayMap.get(dayKey) ?? 0,
+        matches: matchesByDayMap.get(dayKey) ?? 0,
+      };
+    }),
   };
 
   return data;
 });
-

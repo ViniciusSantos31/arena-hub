@@ -1,28 +1,24 @@
 "use server";
 
 import { db } from "@/db";
-import { auth } from "@/lib/auth";
+import { matchesTable } from "@/db/schema/match";
+import { usersTable } from "@/db/schema/user";
+import { assertAdmin } from "@/lib/admin/assert-admin";
 import { actionClient } from "@/lib/next-safe-action";
+import { and, gte, lte, sql } from "drizzle-orm";
 import dayjs from "dayjs";
-import { headers } from "next/headers";
+
+function countsByDayMap(rows: Array<{ date: string; count: number }>) {
+  return new Map(rows.map((row) => [row.date, row.count]));
+}
 
 export const adminResume = actionClient.action(async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session?.session || !session?.user) {
-    throw new Error("Usuário não autenticado");
-  }
-
-  if (session.user.email !== process.env.ADMIN_EMAIL) {
-    throw new Error("Acesso negado");
-  }
+  await assertAdmin();
 
   const dateRangeStart = dayjs().subtract(90, "day").startOf("day").toDate();
   const dateRangeEnd = dayjs().endOf("day").toDate();
 
-  const dateIntervalArray = [];
+  const dateIntervalArray: Date[] = [];
   let currentDate = dayjs(dateRangeStart);
 
   while (currentDate.isBefore(dayjs(dateRangeEnd))) {
@@ -30,35 +26,45 @@ export const adminResume = actionClient.action(async () => {
     currentDate = currentDate.add(1, "day");
   }
 
-  const users = await db.query.usersTable.findMany({
-    where: (usersTable, { and, gte, lte }) =>
-      and(
-        gte(usersTable.createdAt, dateRangeStart),
-        lte(usersTable.createdAt, dateRangeEnd),
-      ),
-  });
+  const [usersByDay, matchesByDay] = await Promise.all([
+    db
+      .select({
+        date: sql<string>`DATE(${usersTable.createdAt})`,
+        count: sql<number>`COUNT(*)::int`,
+      })
+      .from(usersTable)
+      .where(
+        and(
+          gte(usersTable.createdAt, dateRangeStart),
+          lte(usersTable.createdAt, dateRangeEnd),
+        ),
+      )
+      .groupBy(sql`DATE(${usersTable.createdAt})`),
+    db
+      .select({
+        date: sql<string>`DATE(${matchesTable.createdAt})`,
+        count: sql<number>`COUNT(*)::int`,
+      })
+      .from(matchesTable)
+      .where(
+        and(
+          gte(matchesTable.createdAt, dateRangeStart),
+          lte(matchesTable.createdAt, dateRangeEnd),
+        ),
+      )
+      .groupBy(sql`DATE(${matchesTable.createdAt})`),
+  ]);
 
-  const matches = await db.query.matchesTable.findMany({
-    where: (matchesTable, { and, gte, lte }) =>
-      and(
-        gte(matchesTable.createdAt, dateRangeStart),
-        lte(matchesTable.createdAt, dateRangeEnd),
-      ),
-  });
+  const usersByDayMap = countsByDayMap(usersByDay);
+  const matchesByDayMap = countsByDayMap(matchesByDay);
 
   return {
     resume: dateIntervalArray.map((date) => {
-      const usersCount = users.filter((user) =>
-        dayjs(user.createdAt).isSame(date, "day"),
-      ).length;
-      const matchesCount = matches.filter((match) =>
-        dayjs(match.createdAt).isSame(date, "day"),
-      ).length;
-
+      const dayKey = dayjs(date).format("YYYY-MM-DD");
       return {
         date: date.toISOString(),
-        users: usersCount,
-        matches: matchesCount,
+        users: usersByDayMap.get(dayKey) ?? 0,
+        matches: matchesByDayMap.get(dayKey) ?? 0,
       };
     }),
   };

@@ -1,6 +1,8 @@
 import { adminListFeedbacks } from "@/actions/admin/feedback";
 import { FeedbackReviewTabs } from "@/app/admin/feedbacks/_components/feedback-review-tabs";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminFeedbacksPage() {
   const pending = await adminListFeedbacks({
     status: "pending",

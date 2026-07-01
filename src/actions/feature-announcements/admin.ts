@@ -4,27 +4,11 @@ import { db } from "@/db";
 import { featureAnnouncement, userFeatureAnnouncementState } from "@/db/schema/feature-announcement";
 import { organization } from "@/db/schema/auth";
 import { member } from "@/db/schema/member";
-import { auth } from "@/lib/auth";
+import { assertAdmin } from "@/lib/admin/assert-admin";
 import { actionClient } from "@/lib/next-safe-action";
-import { count, desc, eq } from "drizzle-orm";
-import { headers } from "next/headers";
+import { count, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod/v4";
 import { adminUpsertFeatureAnnouncementSchema } from "./_schema";
-
-async function assertAdmin() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session?.session || !session?.user) {
-    throw new Error("Usuário não autenticado");
-  }
-  if (session.user.email !== process.env.ADMIN_EMAIL) {
-    throw new Error("Acesso negado");
-  }
-
-  return session;
-}
 
 export const adminListFeatureAnnouncements = actionClient.action(async () => {
   await assertAdmin();
@@ -142,6 +126,23 @@ export const adminGetAnnouncementStats = actionClient
       .where(eq(userFeatureAnnouncementState.announcementId, parsedInput.announcementId))
       .then((rows) => rows[0]?.total ?? 0);
 
-    return { totalViews, viewsByGroup };
+    const viewsOverTime = await db
+      .select({
+        date: sql<string>`DATE(${userFeatureAnnouncementState.seenAt})`,
+        views: count(),
+      })
+      .from(userFeatureAnnouncementState)
+      .where(eq(userFeatureAnnouncementState.announcementId, parsedInput.announcementId))
+      .groupBy(sql`DATE(${userFeatureAnnouncementState.seenAt})`)
+      .orderBy(sql`DATE(${userFeatureAnnouncementState.seenAt})`);
+
+    return {
+      totalViews,
+      viewsByGroup,
+      viewsOverTime: viewsOverTime.map((row) => ({
+        date: row.date,
+        views: Number(row.views),
+      })),
+    };
   });
 

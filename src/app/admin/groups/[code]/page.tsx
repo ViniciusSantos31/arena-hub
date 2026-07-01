@@ -5,7 +5,7 @@ import {
   PageHeader,
   PageHeaderContent,
 } from "@/app/(protected)/_components/page-structure";
-import { GroupAdminDetailView } from "@/app/admin/_componentes/groups/detail/group-admin-detail-view";
+import { GroupAdminDetailView } from "@/app/admin/_components/groups/detail/group-admin-detail-view";
 import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";

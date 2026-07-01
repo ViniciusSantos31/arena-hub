@@ -1,25 +1,18 @@
 "use server";
 
 import { db } from "@/db";
-import { tutorialSections, userTutorialProgress } from "@/db/schema/tutorial";
+import {
+  tutorialSections,
+  tutorialSteps,
+  userTutorialProgress,
+} from "@/db/schema/tutorial";
 import { usersTable } from "@/db/schema/user";
-import { auth } from "@/lib/auth";
+import { assertAdmin } from "@/lib/admin/assert-admin";
 import { actionClient } from "@/lib/next-safe-action";
-import { eq, sql } from "drizzle-orm";
-import { headers } from "next/headers";
+import { and, eq, sql } from "drizzle-orm";
 
 export const tutorialSectionProgress = actionClient.action(async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session?.session || !session?.user) {
-    throw new Error("Usuário não autenticado");
-  }
-
-  if (session.user.email !== process.env.ADMIN_EMAIL) {
-    throw new Error("Acesso negado");
-  }
+  await assertAdmin();
 
   const result = await db
     .select({
@@ -100,6 +93,8 @@ export const tutorialSectionProgress = actionClient.action(async () => {
 });
 
 export const getTutorialOverallStats = actionClient.action(async () => {
+  await assertAdmin();
+
   const [result] = await db
     .select({
       notStarted: sql<number>`(
@@ -155,4 +150,76 @@ export const getTutorialOverallStats = actionClient.action(async () => {
     inProgress: Number(result.inProgress),
     completed: Number(result.completed),
   };
+});
+
+export const tutorialStepDropOff = actionClient.action(async () => {
+  await assertAdmin();
+
+  const steps = await db
+    .select({
+      stepId: tutorialSteps.id,
+      stepTitle: tutorialSteps.title,
+      stepOrder: tutorialSteps.order,
+      sectionId: tutorialSections.id,
+      sectionTitle: tutorialSections.title,
+      sectionOrder: tutorialSections.order,
+      completedCount: sql<number>`
+        (
+          SELECT COUNT(DISTINCT utp.user_id)
+          FROM ${userTutorialProgress} utp
+          WHERE utp.step_id = ${tutorialSteps.id}
+            AND utp.is_completed = true
+        )
+      `,
+      reachedCount: sql<number>`
+        CASE
+          WHEN ${tutorialSteps.order} = 1 THEN
+            (
+              SELECT COUNT(DISTINCT utp.user_id)
+              FROM ${userTutorialProgress} utp
+              WHERE utp.section_id = ${tutorialSteps.sectionId}
+            )
+          ELSE
+            (
+              SELECT COUNT(DISTINCT utp.user_id)
+              FROM ${userTutorialProgress} utp
+              INNER JOIN ${tutorialSteps} prev_step
+                ON prev_step.id = utp.step_id
+              WHERE prev_step.section_id = ${tutorialSteps.sectionId}
+                AND prev_step."order" = ${tutorialSteps.order} - 1
+                AND prev_step.is_active = true
+                AND utp.is_completed = true
+            )
+        END
+      `,
+    })
+    .from(tutorialSteps)
+    .innerJoin(tutorialSections, eq(tutorialSteps.sectionId, tutorialSections.id))
+    .where(
+      and(eq(tutorialSteps.isActive, true), eq(tutorialSections.isActive, true)),
+    )
+    .orderBy(tutorialSections.order, tutorialSteps.order);
+
+  return steps.map((step) => {
+    const reached = Number(step.reachedCount);
+    const completed = Number(step.completedCount);
+    const dropOff = Math.max(0, reached - completed);
+    const dropOffRate = reached > 0 ? Math.round((dropOff * 100) / reached) : 0;
+    const completionRate =
+      reached > 0 ? Math.round((completed * 100) / reached) : 0;
+
+    return {
+      stepId: step.stepId,
+      stepTitle: step.stepTitle,
+      stepOrder: step.stepOrder,
+      sectionId: step.sectionId,
+      sectionTitle: step.sectionTitle,
+      sectionOrder: step.sectionOrder,
+      reached,
+      completed,
+      dropOff,
+      dropOffRate,
+      completionRate,
+    };
+  });
 });

@@ -8,9 +8,14 @@ import {
 } from "@/components/ui/sidebar";
 import {
   BookOpenIcon,
+  CreditCardIcon,
   LayoutDashboardIcon,
   MessageSquareIcon,
+  ShieldIcon,
   SparklesIcon,
+  SwordsIcon,
+  TrendingUpIcon,
+  UsersIcon,
   UsersRoundIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -23,20 +28,40 @@ const adminNavItems = [
     icon: LayoutDashboardIcon,
   },
   {
+    title: "Usuários",
+    href: "/admin/users",
+    icon: UsersIcon,
+  },
+  {
     title: "Grupos",
     href: "/admin/groups",
     icon: UsersRoundIcon,
+  },
+  {
+    title: "Billing",
+    href: "/admin/billing",
+    icon: CreditCardIcon,
+  },
+  {
+    title: "Crescimento",
+    href: "/admin/growth",
+    icon: TrendingUpIcon,
   },
   {
     title: "Feedbacks",
     href: "/admin/feedbacks",
     icon: MessageSquareIcon,
   },
-  // {
-  //   title: "Partidas",
-  //   href: "/admin/matches",
-  //   icon: SwordsIcon,
-  // },
+  {
+    title: "Moderação",
+    href: "/admin/moderation",
+    icon: ShieldIcon,
+  },
+  {
+    title: "Partidas",
+    href: "/admin/matches",
+    icon: SwordsIcon,
+  },
   {
     title: "Tutorial",
     href: "/admin/tutorial",
@@ -55,13 +80,21 @@ export function AdminNavItems() {
   return (
     <>
       {adminNavItems.map((section) => (
-        <SidebarGroupContent key={section.title}>
-          <SidebarMenu>
+        <SidebarGroupContent key={section.title} className="h-full">
+          <SidebarMenu className="h-full">
             {section.href ? (
               <SidebarMenuItem className="items-center">
                 <SidebarMenuButton
                   asChild
-                  isActive={pathname === section.href}
+                  isActive={
+                    section.href === "/admin/users"
+                      ? pathname.startsWith("/admin/users")
+                      : section.href === "/admin/matches"
+                        ? pathname.startsWith("/admin/matches")
+                        : section.href === "/admin/groups"
+                          ? pathname.startsWith("/admin/groups")
+                          : pathname === section.href
+                  }
                   tooltip={section.title}
                 >
                   <Link href={section.href} className="mx-auto items-center">

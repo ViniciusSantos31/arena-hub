@@ -2,17 +2,10 @@
 
 import { db } from "@/db";
 import { feedbackTable } from "@/db/schema/feedback";
-import { auth } from "@/lib/auth";
+import { assertAdmin } from "@/lib/admin/assert-admin";
 import { actionClient } from "@/lib/next-safe-action";
 import { eq } from "drizzle-orm";
-import { headers } from "next/headers";
 import z from "zod";
-
-function assertAdmin(userEmail?: string | null) {
-  if (!userEmail || userEmail !== process.env.ADMIN_EMAIL) {
-    throw new Error("Acesso negado");
-  }
-}
 
 export const adminListFeedbacks = actionClient
   .inputSchema(
@@ -22,15 +15,7 @@ export const adminListFeedbacks = actionClient
     }),
   )
   .action(async ({ parsedInput }) => {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session?.session || !session?.user) {
-      throw new Error("Usuário não autenticado");
-    }
-
-    assertAdmin(session.user.email);
+    await assertAdmin();
 
     const isApproved = parsedInput.status === "approved";
     const limit = parsedInput.limit ?? 50;
@@ -60,15 +45,7 @@ export const adminSetFeedbackApproval = actionClient
     }),
   )
   .action(async ({ parsedInput }) => {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session?.session || !session?.user) {
-      throw new Error("Usuário não autenticado");
-    }
-
-    assertAdmin(session.user.email);
+    await assertAdmin();
 
     const updated = await db
       .update(feedbackTable)
@@ -91,15 +68,7 @@ export const adminDeleteFeedback = actionClient
     }),
   )
   .action(async ({ parsedInput }) => {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session?.session || !session?.user) {
-      throw new Error("Usuário não autenticado");
-    }
-
-    assertAdmin(session.user.email);
+    await assertAdmin();
 
     const deleted = await db
       .delete(feedbackTable)
@@ -113,4 +82,3 @@ export const adminDeleteFeedback = actionClient
 
     return deleted;
   });
-

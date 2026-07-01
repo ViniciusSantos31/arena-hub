@@ -6,6 +6,7 @@ import {
   tutorialSteps,
   type TutorialSectionWithSteps,
 } from "@/db/schema/tutorial";
+import { assertAdmin } from "@/lib/admin/assert-admin";
 import { actionClient } from "@/lib/next-safe-action";
 import { eq, max } from "drizzle-orm";
 import z from "zod";
@@ -34,6 +35,8 @@ const tutorialStepSchema = z.object({
 export const createTutorialSection = actionClient
   .inputSchema(tutorialSectionSchema)
   .action(async ({ parsedInput }) => {
+    await assertAdmin();
+
     // Buscar a próxima ordem disponível
     const maxOrderResult = await db
       .select({ maxOrder: max(tutorialSections.order) })
@@ -60,6 +63,8 @@ export const updateTutorialSection = actionClient
     }),
   )
   .action(async ({ parsedInput }) => {
+    await assertAdmin();
+
     const { id, ...updateData } = parsedInput;
 
     const [updatedSection] = await db
@@ -78,6 +83,8 @@ export const updateTutorialSection = actionClient
 export const deleteTutorialSection = actionClient
   .inputSchema(z.object({ id: z.string().uuid() }))
   .action(async ({ parsedInput }) => {
+    await assertAdmin();
+
     await db
       .update(tutorialSections)
       .set({
@@ -102,6 +109,8 @@ export const reorderTutorialSections = actionClient
     }),
   )
   .action(async ({ parsedInput }) => {
+    await assertAdmin();
+
     const { sectionOrders } = parsedInput;
 
     // Executar atualizações em batch
@@ -124,6 +133,8 @@ export const reorderTutorialSections = actionClient
 export const createTutorialStep = actionClient
   .inputSchema(tutorialStepSchema)
   .action(async ({ parsedInput }) => {
+    await assertAdmin();
+
     const { sectionId, ...stepData } = parsedInput;
 
     // Buscar a próxima ordem disponível dentro da seção
@@ -154,6 +165,8 @@ export const updateTutorialStep = actionClient
     }),
   )
   .action(async ({ parsedInput }) => {
+    await assertAdmin();
+
     const { id, ...updateData } = parsedInput;
 
     const [updatedStep] = await db
@@ -172,6 +185,8 @@ export const updateTutorialStep = actionClient
 export const deleteTutorialStep = actionClient
   .inputSchema(z.object({ id: z.string().uuid() }))
   .action(async ({ parsedInput }) => {
+    await assertAdmin();
+
     await db
       .update(tutorialSteps)
       .set({
@@ -196,6 +211,8 @@ export const reorderTutorialSteps = actionClient
     }),
   )
   .action(async ({ parsedInput }) => {
+    await assertAdmin();
+
     const { stepOrders } = parsedInput;
 
     // Executar atualizações em batch
@@ -216,6 +233,8 @@ export const reorderTutorialSteps = actionClient
 
 // Buscar todas as seções para administração
 export const getAllTutorialSectionsForAdmin = actionClient.action(async () => {
+  await assertAdmin();
+
   const sections = await db.query.tutorialSections.findMany({
     orderBy: [tutorialSections.order],
     with: {
@@ -232,6 +251,8 @@ export const getAllTutorialSectionsForAdmin = actionClient.action(async () => {
 export const getTutorialSectionById = actionClient
   .inputSchema(z.object({ id: z.string().uuid() }))
   .action(async ({ parsedInput }) => {
+    await assertAdmin();
+
     const section = await db.query.tutorialSections.findFirst({
       where: eq(tutorialSections.id, parsedInput.id),
       with: {

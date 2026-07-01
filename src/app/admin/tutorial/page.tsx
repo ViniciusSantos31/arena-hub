@@ -8,7 +8,10 @@ import {
 } from "@/app/(protected)/_components/page-structure";
 import { ResumeChart } from "@/app/admin/dashboard/_components/resume-chart";
 import { TutorialProgressTable } from "@/app/admin/dashboard/_components/tutorial-progress-table";
+import { TutorialStepDropOffTable } from "@/app/admin/dashboard/_components/tutorial-step-dropoff-table";
 import { UserTutorialChart } from "@/app/admin/dashboard/_components/user-tutorial-chart";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -45,6 +48,11 @@ export default async function AdminTutorialDashboard() {
         />
       </PageHeader>
       <PageContent>
+        <div className="mb-4 flex justify-end">
+          <Button size="sm" asChild>
+            <Link href="/admin/tutorial/content">Gerenciar conteúdo</Link>
+          </Button>
+        </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4 lg:grid-cols-5">
           <div className="col-span-1 lg:col-span-3">
             <ResumeChart data={data || []} />
@@ -53,6 +61,7 @@ export default async function AdminTutorialDashboard() {
             <UserTutorialChart data={tutorialStats.data} />
           </div>
           <TutorialProgressTable className="col-span-1 **:text-xs md:col-span-4 **:md:text-sm lg:col-span-full" />
+          <TutorialStepDropOffTable className="col-span-1 **:text-xs md:col-span-4 **:md:text-sm lg:col-span-full" />
         </div>
       </PageContent>
     </PageContainer>
