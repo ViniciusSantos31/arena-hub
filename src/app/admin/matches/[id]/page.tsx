@@ -1,10 +1,5 @@
 import { getAdminMatchDetail } from "@/actions/admin/matches/detail";
-import {
-  PageContainer,
-  PageContent,
-  PageHeader,
-  PageHeaderContent,
-} from "@/app/(protected)/_components/page-structure";
+import { AdminPageShell } from "@/app/admin/_components/admin-page-shell";
 import { MatchAdminDetailView } from "@/app/admin/matches/_components/match-admin-detail-view";
 import { Button } from "@/components/ui/button";
 import { getStatusLabel } from "@/utils/status";
@@ -51,22 +46,18 @@ export default async function AdminMatchDetailPage({
   }
 
   return (
-    <PageContainer>
-      <PageHeader>
-        <PageHeaderContent
-          title={result.data.match.title}
-          description={getStatusLabel(result.data.match.status)}
-        />
-      </PageHeader>
-      <PageContent className="space-y-4">
-        <Button variant="outline" size="sm" asChild className="w-fit">
-          <Link href="/admin/matches">
-            <ChevronLeftIcon className="h-4 w-4" />
-            Voltar
-          </Link>
-        </Button>
-        <MatchAdminDetailView data={result.data} />
-      </PageContent>
-    </PageContainer>
+    <AdminPageShell
+      title={result.data.match.title}
+      description={getStatusLabel(result.data.match.status)}
+      contentClassName="space-y-4"
+    >
+      <Button variant="outline" size="sm" asChild className="w-fit">
+        <Link href="/admin/matches">
+          <ChevronLeftIcon className="h-4 w-4" />
+          Voltar
+        </Link>
+      </Button>
+      <MatchAdminDetailView data={result.data} />
+    </AdminPageShell>
   );
 }

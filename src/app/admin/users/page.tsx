@@ -1,10 +1,5 @@
 import { listAdminUsers } from "@/actions/admin/users/list";
-import {
-  PageContainer,
-  PageContent,
-  PageHeader,
-  PageHeaderContent,
-} from "@/app/(protected)/_components/page-structure";
+import { AdminPageShell } from "@/app/admin/_components/admin-page-shell";
 import { UsersTable } from "@/app/admin/users/_components/users-table";
 
 export const dynamic = "force-dynamic";
@@ -36,19 +31,14 @@ export default async function AdminUsersPage({
   };
 
   return (
-    <PageContainer>
-      <PageHeader>
-        <PageHeaderContent
-          title="Usuários"
-          description="Listagem e suporte à base de usuários da plataforma"
-        />
-      </PageHeader>
-      <PageContent>
-        <UsersTable
-          initialData={data}
-          initialFilters={{ page: 1, pageSize: 20 }}
-        />
-      </PageContent>
-    </PageContainer>
+    <AdminPageShell
+      title="Usuários"
+      description="Listagem e suporte à base de usuários da plataforma"
+    >
+      <UsersTable
+        initialData={data}
+        initialFilters={{ page: 1, pageSize: 20 }}
+      />
+    </AdminPageShell>
   );
 }

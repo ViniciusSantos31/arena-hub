@@ -1,10 +1,5 @@
 import { adminListFeatureAnnouncements } from "@/actions/feature-announcements/admin";
-import {
-  PageContainer,
-  PageContent,
-  PageHeader,
-  PageHeaderContent,
-} from "@/app/(protected)/_components/page-structure";
+import { AdminPageShell } from "@/app/admin/_components/admin-page-shell";
 import { FeatureAnnouncementsAdmin } from "@/app/admin/announcements/_components/feature-announcements-admin";
 
 export const dynamic = "force-dynamic";
@@ -25,17 +20,13 @@ export default async function AdminAnnouncementsPage() {
   const announcements = res.data?.announcements ?? [];
 
   return (
-    <PageContainer>
-      <PageHeader>
-        <PageHeaderContent
-          title="Novidades"
-          description="Gerencie modais de novidades exibidos para usuários elegíveis"
-        />
-      </PageHeader>
-      <PageContent className="space-y-4">
-        <FeatureAnnouncementsAdmin announcements={announcements} />
-      </PageContent>
-    </PageContainer>
+    <AdminPageShell
+      title="Novidades"
+      description="Gerencie modais de novidades exibidos para usuários elegíveis"
+      contentClassName="space-y-4"
+    >
+      <FeatureAnnouncementsAdmin announcements={announcements} />
+    </AdminPageShell>
   );
 }
 

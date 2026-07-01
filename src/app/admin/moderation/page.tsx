@@ -2,16 +2,12 @@ import {
   adminModerationMetrics,
   listAdminCrossGroupPunishments,
 } from "@/actions/admin/moderation/metrics";
-import {
-  PageContainer,
-  PageContent,
-  PageHeader,
-  PageHeaderContent,
-} from "@/app/(protected)/_components/page-structure";
+import { AdminPageShell } from "@/app/admin/_components/admin-page-shell";
 import { MetricCard } from "@/app/admin/_components/metric-card";
+import { AdminSection } from "@/app/admin/_components/admin-section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -21,7 +17,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  AlertTriangleIcon,
   BanIcon,
   MessageSquareIcon,
   ShieldIcon,
@@ -71,18 +66,16 @@ export default async function AdminModerationPage({
     (punishmentsResult.serverError && !punishmentsResult.data)
   ) {
     return (
-      <PageContainer>
-        <PageContent>
-          <div className="flex-1 items-center justify-center space-y-6 p-6">
-            <h2 className="text-2xl font-semibold tracking-tight">
-              Erro ao carregar moderação
-            </h2>
-            <p className="text-muted-foreground">
-              Não foi possível buscar as métricas ou punições. Tente novamente.
-            </p>
-          </div>
-        </PageContent>
-      </PageContainer>
+      <AdminPageShell title="Moderação">
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 py-12 text-center">
+          <h2 className="text-xl font-semibold tracking-tight">
+            Erro ao carregar moderação
+          </h2>
+          <p className="text-muted-foreground max-w-md text-sm">
+            Não foi possível buscar as métricas ou punições. Tente novamente.
+          </p>
+        </div>
+      </AdminPageShell>
     );
   }
 
@@ -96,63 +89,62 @@ export default async function AdminModerationPage({
   };
 
   return (
-    <PageContainer>
-      <PageHeader>
-        <PageHeaderContent
-          title="Moderação"
-          description="Qualidade da comunidade, feedbacks e punições"
-        />
-      </PageHeader>
-      <PageContent>
-        <ModerationDashboardClient days={days}>
-          <div className="flex justify-end">
-            <Button asChild variant="outline" size="sm">
-              <Link href="/admin/feedbacks">
-                <MessageSquareIcon className="mr-2 h-4 w-4" />
-                Ver feedbacks
-              </Link>
-            </Button>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <MetricCard
-              title="Rating médio"
-              value={metrics?.avgFeedbackRating ?? 0}
-              description="Média de todos os feedbacks"
-              icon={StarIcon}
-            />
-            <MetricCard
-              title="Feedbacks pendentes"
-              value={metrics?.pendingFeedbacks ?? 0}
-              description="Aguardando moderação"
-              icon={MessageSquareIcon}
-              badge={
-                (metrics?.pendingFeedbacks ?? 0) > 0
-                  ? { text: "Atenção", variant: "destructive" as const }
-                  : undefined
-              }
-            />
-            <MetricCard
-              title="Punições no período"
-              value={metrics?.punishmentsInPeriod ?? 0}
-              description="Aplicadas no intervalo selecionado"
-              icon={ShieldIcon}
-            />
-            <MetricCard
-              title="Membros suspensos"
-              value={metrics?.suspendedMembers ?? 0}
-              description="Com suspensão ativa"
-              icon={BanIcon}
-            />
-          </div>
+    <AdminPageShell
+      title="Moderação"
+      description="Qualidade da comunidade, feedbacks e punições"
+    >
+      <ModerationDashboardClient days={days}>
+          <AdminSection
+            title="Indicadores"
+            description="Qualidade da comunidade no período selecionado"
+            action={
+              <Button asChild variant="outline" size="sm">
+                <Link href="/admin/feedbacks">
+                  <MessageSquareIcon className="mr-2 h-4 w-4" aria-hidden="true" />
+                  Ver feedbacks
+                </Link>
+              </Button>
+            }
+          >
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <MetricCard
+                title="Rating médio"
+                value={metrics?.avgFeedbackRating ?? 0}
+                description="Média de todos os feedbacks"
+                icon={StarIcon}
+              />
+              <MetricCard
+                title="Feedbacks pendentes"
+                value={metrics?.pendingFeedbacks ?? 0}
+                description="Aguardando moderação"
+                icon={MessageSquareIcon}
+                badge={
+                  (metrics?.pendingFeedbacks ?? 0) > 0
+                    ? { text: "Atenção", variant: "destructive" as const }
+                    : undefined
+                }
+              />
+              <MetricCard
+                title="Punições no período"
+                value={metrics?.punishmentsInPeriod ?? 0}
+                description="Aplicadas no intervalo selecionado"
+                icon={ShieldIcon}
+              />
+              <MetricCard
+                title="Membros suspensos"
+                value={metrics?.suspendedMembers ?? 0}
+                description="Com suspensão ativa"
+                icon={BanIcon}
+              />
+            </div>
+          </AdminSection>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <AlertTriangleIcon className="h-4 w-4" />
-                Grupos com alta taxa de cancelamento
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+          <AdminSection
+            title="Grupos com alta taxa de cancelamento"
+            description="Grupos com mínimo de 3 partidas finalizadas ou canceladas"
+          >
+          <Card className="border-border/60">
+            <CardContent className="pt-6">
               {(metrics?.highCancellationGroups.length ?? 0) === 0 ? (
                 <p className="text-muted-foreground text-sm">
                   Nenhum grupo com taxa elevada (mín. 3 partidas finalizadas ou
@@ -198,14 +190,14 @@ export default async function AdminModerationPage({
               )}
             </CardContent>
           </Card>
+          </AdminSection>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">
-                Punições cross-grupo (read-only)
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <AdminSection
+            title="Punições cross-grupo"
+            description="Registro read-only de punições entre grupos"
+          >
+          <Card className="border-border/60">
+            <CardContent className="space-y-4 pt-6">
               <div className="overflow-hidden rounded-lg border">
                 <Table>
                   <TableHeader className="bg-muted">
@@ -300,8 +292,8 @@ export default async function AdminModerationPage({
               )}
             </CardContent>
           </Card>
+          </AdminSection>
         </ModerationDashboardClient>
-      </PageContent>
-    </PageContainer>
+    </AdminPageShell>
   );
 }

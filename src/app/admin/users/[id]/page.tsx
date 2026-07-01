@@ -1,10 +1,5 @@
 import { getAdminUserDetail } from "@/actions/admin/users/detail";
-import {
-  PageContainer,
-  PageContent,
-  PageHeader,
-  PageHeaderContent,
-} from "@/app/(protected)/_components/page-structure";
+import { AdminPageShell } from "@/app/admin/_components/admin-page-shell";
 import { UserAdminDetailView } from "@/app/admin/users/_components/user-admin-detail-view";
 import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon } from "lucide-react";
@@ -50,22 +45,18 @@ export default async function AdminUserDetailPage({
   }
 
   return (
-    <PageContainer>
-      <PageHeader>
-        <PageHeaderContent
-          title={result.data.profile.name}
-          description={result.data.profile.email}
-        />
-      </PageHeader>
-      <PageContent className="space-y-4">
-        <Button variant="outline" size="sm" asChild className="w-fit">
-          <Link href="/admin/users">
-            <ChevronLeftIcon className="h-4 w-4" />
-            Voltar
-          </Link>
-        </Button>
-        <UserAdminDetailView data={result.data} />
-      </PageContent>
-    </PageContainer>
+    <AdminPageShell
+      title={result.data.profile.name}
+      description={result.data.profile.email}
+      contentClassName="space-y-4"
+    >
+      <Button variant="outline" size="sm" asChild className="w-fit">
+        <Link href="/admin/users">
+          <ChevronLeftIcon className="h-4 w-4" />
+          Voltar
+        </Link>
+      </Button>
+      <UserAdminDetailView data={result.data} />
+    </AdminPageShell>
   );
 }

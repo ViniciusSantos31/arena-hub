@@ -17,10 +17,11 @@ import {
   UsersIcon,
   UsersRoundIcon,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-export function AdminSearchCommand() {
+export function AdminSearchCommand({ className }: { className?: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -73,15 +74,17 @@ export function AdminSearchCommand() {
   const showMinLengthHint = query.trim().length > 0 && query.trim().length < 2;
 
   return (
-    <>
+    <div className={cn("w-full", className)}>
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-muted-foreground hover:bg-muted/50 hover:text-foreground flex w-full items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors"
+        aria-label="Abrir busca global do admin"
+        aria-keyshortcuts="Meta+K Control+K"
+        className="border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted/50 hover:text-foreground focus-visible:ring-ring flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
       >
-        <SearchIcon className="size-4 shrink-0" />
-        <span className="flex-1 text-left">Buscar no admin...</span>
-        <kbd className="bg-muted pointer-events-none hidden rounded border px-1.5 font-mono text-[10px] font-medium sm:inline-block">
+        <SearchIcon className="size-4 shrink-0" aria-hidden="true" />
+        <span className="flex-1 text-left">Buscar usuários, grupos ou partidas...</span>
+        <kbd className="bg-background pointer-events-none hidden rounded border px-1.5 font-mono text-[10px] font-medium sm:inline-block">
           ⌘K
         </kbd>
       </button>
@@ -173,6 +176,6 @@ export function AdminSearchCommand() {
           )}
         </CommandList>
       </CommandDialog>
-    </>
+    </div>
   );
 }

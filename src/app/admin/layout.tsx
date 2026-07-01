@@ -1,5 +1,5 @@
 import { AdminSidebar } from "@/app/admin/_components/admin-sidebar";
-import { AdminSearchCommand } from "@/app/admin/_components/admin-search-command";
+import { AdminTopHeader } from "@/app/admin/_components/admin-top-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { cookies } from "next/headers";
@@ -32,10 +32,8 @@ export default async function AdminLayout({
       <AdminSidebar />
       <ReactQueryDevtools />
       <SidebarInset className="flex flex-col">
-        <div className="border-b px-4 py-3 md:px-6">
-          <AdminSearchCommand />
-        </div>
-        {children}
+        <AdminTopHeader />
+        <main className="flex min-h-0 flex-1 flex-col">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );

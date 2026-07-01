@@ -1,9 +1,4 @@
-import {
-  PageContainer,
-  PageContent,
-  PageHeader,
-  PageHeaderContent,
-} from "@/app/(protected)/_components/page-structure";
+import { AdminPageShell } from "@/app/admin/_components/admin-page-shell";
 
 export default function AdminDashboardLayout({
   children,
@@ -11,14 +6,11 @@ export default function AdminDashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <PageContainer>
-      <PageHeader>
-        <PageHeaderContent
-          title="Dashboard"
-          description="Visão geral das métricas e atividades recentes"
-        />
-      </PageHeader>
-      <PageContent>{children}</PageContent>
-    </PageContainer>
+    <AdminPageShell
+      title="Dashboard"
+      description="KPIs executivos, atividade e grupos em destaque"
+    >
+      {children}
+    </AdminPageShell>
   );
 }

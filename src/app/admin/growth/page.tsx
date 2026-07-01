@@ -1,11 +1,7 @@
 import { adminGrowthMetrics } from "@/actions/admin/growth/metrics";
-import {
-  PageContainer,
-  PageContent,
-  PageHeader,
-  PageHeaderContent,
-} from "@/app/(protected)/_components/page-structure";
+import { AdminPageShell } from "@/app/admin/_components/admin-page-shell";
 import { MetricCard } from "@/app/admin/_components/metric-card";
+import { AdminSection } from "@/app/admin/_components/admin-section";
 import {
   LinkIcon,
   PercentIcon,
@@ -50,18 +46,16 @@ export default async function AdminGrowthPage({
 
   if (metricsResult.serverError && !metricsResult.data) {
     return (
-      <PageContainer>
-        <PageContent>
-          <div className="flex-1 items-center justify-center space-y-6 p-6">
-            <h2 className="text-2xl font-semibold tracking-tight">
-              Erro ao carregar crescimento
-            </h2>
-            <p className="text-muted-foreground">
-              Não foi possível buscar as métricas de aquisição. Tente novamente.
-            </p>
-          </div>
-        </PageContent>
-      </PageContainer>
+      <AdminPageShell title="Crescimento">
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 py-12 text-center">
+          <h2 className="text-xl font-semibold tracking-tight">
+            Erro ao carregar crescimento
+          </h2>
+          <p className="text-muted-foreground max-w-md text-sm">
+            Não foi possível buscar as métricas de aquisição. Tente novamente.
+          </p>
+        </div>
+      </AdminPageShell>
     );
   }
 
@@ -77,79 +71,87 @@ export default async function AdminGrowthPage({
       : "Nenhum cadastro no período";
 
   return (
-    <PageContainer>
-      <PageHeader>
-        <PageHeaderContent
-          title="Crescimento"
-          description="Canais de aquisição, convites e pedidos de entrada"
-        />
-      </PageHeader>
-      <PageContent>
-        <GrowthDashboardClient days={days}>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <MetricCard
-              title="Links criados"
-              value={data?.inviteLinks.created ?? 0}
-              description="Links de convite no período"
-              icon={LinkIcon}
-            />
-            <MetricCard
-              title="Links revogados"
-              value={data?.inviteLinks.revoked ?? 0}
-              description="Revogados no período"
-              icon={LinkIcon}
-            />
-            <MetricCard
-              title="Links consumidos"
-              value={data?.inviteLinks.consumed ?? 0}
-              description="Usos registrados no período"
-              icon={UserPlusIcon}
-            />
-            <MetricCard
-              title="Taxa de conversão"
-              value={`${data?.inviteLinks.conversionRate ?? 0}%`}
-              description="Consumidos / criados no período"
-              icon={PercentIcon}
-            />
-            <MetricCard
-              title="Convites diretos"
-              value={data?.directInvitesSent ?? 0}
-              description="Enviados no período"
-              icon={SendIcon}
-            />
-            <MetricCard
-              title="Pedidos submetidos"
-              value={data?.joinRequests.submitted ?? 0}
-              description="Solicitações de entrada"
-              icon={UsersIcon}
-            />
-            <MetricCard
-              title="Pedidos aprovados"
-              value={data?.joinRequests.approved ?? 0}
-              description="Aprovados no período"
-              icon={UsersIcon}
-            />
-            <MetricCard
-              title="Pedidos rejeitados"
-              value={data?.joinRequests.rejected ?? 0}
-              description="Rejeitados no período"
-              icon={UsersIcon}
-            />
-            <MetricCard
-              title="LFG ativo"
-              value={data?.lfgActiveUsers ?? 0}
-              description="Usuários buscando grupo agora"
-              icon={SearchIcon}
-            />
-            <MetricCard
-              title="Novos usuários por provider"
-              value={providerEntries.reduce((sum, [, count]) => sum + count, 0)}
-              description={providerDescription}
-              icon={UserPlusIcon}
-            />
-          </div>
+    <AdminPageShell
+      title="Crescimento"
+      description="Canais de aquisição, convites e pedidos de entrada"
+    >
+      <GrowthDashboardClient days={days}>
+          <AdminSection
+            title="Convites e links"
+            description="Performance dos canais de convite no período"
+          >
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <MetricCard
+                title="Links criados"
+                value={data?.inviteLinks.created ?? 0}
+                description="Links de convite no período"
+                icon={LinkIcon}
+              />
+              <MetricCard
+                title="Links revogados"
+                value={data?.inviteLinks.revoked ?? 0}
+                description="Revogados no período"
+                icon={LinkIcon}
+              />
+              <MetricCard
+                title="Links consumidos"
+                value={data?.inviteLinks.consumed ?? 0}
+                description="Usos registrados no período"
+                icon={UserPlusIcon}
+              />
+              <MetricCard
+                title="Taxa de conversão"
+                value={`${data?.inviteLinks.conversionRate ?? 0}%`}
+                description="Consumidos / criados no período"
+                icon={PercentIcon}
+              />
+            </div>
+          </AdminSection>
+
+          <AdminSection
+            title="Entrada em grupos"
+            description="Convites diretos, pedidos e busca ativa"
+          >
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <MetricCard
+                title="Convites diretos"
+                value={data?.directInvitesSent ?? 0}
+                description="Enviados no período"
+                icon={SendIcon}
+              />
+              <MetricCard
+                title="Pedidos submetidos"
+                value={data?.joinRequests.submitted ?? 0}
+                description="Solicitações de entrada"
+                icon={UsersIcon}
+              />
+              <MetricCard
+                title="Pedidos aprovados"
+                value={data?.joinRequests.approved ?? 0}
+                description="Aprovados no período"
+                icon={UsersIcon}
+              />
+              <MetricCard
+                title="Pedidos rejeitados"
+                value={data?.joinRequests.rejected ?? 0}
+                description="Rejeitados no período"
+                icon={UsersIcon}
+              />
+              <MetricCard
+                title="LFG ativo"
+                value={data?.lfgActiveUsers ?? 0}
+                description="Usuários buscando grupo agora"
+                icon={SearchIcon}
+              />
+              <MetricCard
+                title="Novos usuários"
+                value={providerEntries.reduce((sum, [, count]) => sum + count, 0)}
+                description={providerDescription}
+                icon={UserPlusIcon}
+              />
+            </div>
+          </AdminSection>
         </GrowthDashboardClient>
-      </PageContent>
-    </PageContainer>
+    </AdminPageShell>
   );
 }

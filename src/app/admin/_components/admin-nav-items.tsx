@@ -1,7 +1,9 @@
 "use client";
 
 import {
+  SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -21,91 +23,89 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const adminNavItems = [
+type NavItem = {
+  title: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  matchPrefix?: boolean;
+};
+
+type NavSection = {
+  label: string;
+  items: NavItem[];
+};
+
+const adminNavSections: NavSection[] = [
   {
-    title: "Dashboard",
-    href: "/admin/dashboard",
-    icon: LayoutDashboardIcon,
+    label: "Visão geral",
+    items: [
+      {
+        title: "Dashboard",
+        href: "/admin/dashboard",
+        icon: LayoutDashboardIcon,
+      },
+    ],
   },
   {
-    title: "Usuários",
-    href: "/admin/users",
-    icon: UsersIcon,
+    label: "Operações",
+    items: [
+      { title: "Usuários", href: "/admin/users", icon: UsersIcon, matchPrefix: true },
+      { title: "Grupos", href: "/admin/groups", icon: UsersRoundIcon, matchPrefix: true },
+      { title: "Partidas", href: "/admin/matches", icon: SwordsIcon, matchPrefix: true },
+    ],
   },
   {
-    title: "Grupos",
-    href: "/admin/groups",
-    icon: UsersRoundIcon,
+    label: "Negócio",
+    items: [
+      { title: "Billing", href: "/admin/billing", icon: CreditCardIcon },
+      { title: "Crescimento", href: "/admin/growth", icon: TrendingUpIcon },
+    ],
   },
   {
-    title: "Billing",
-    href: "/admin/billing",
-    icon: CreditCardIcon,
-  },
-  {
-    title: "Crescimento",
-    href: "/admin/growth",
-    icon: TrendingUpIcon,
-  },
-  {
-    title: "Feedbacks",
-    href: "/admin/feedbacks",
-    icon: MessageSquareIcon,
-  },
-  {
-    title: "Moderação",
-    href: "/admin/moderation",
-    icon: ShieldIcon,
-  },
-  {
-    title: "Partidas",
-    href: "/admin/matches",
-    icon: SwordsIcon,
-  },
-  {
-    title: "Tutorial",
-    href: "/admin/tutorial",
-    icon: BookOpenIcon,
-  },
-  {
-    title: "Novidades",
-    href: "/admin/announcements",
-    icon: SparklesIcon,
+    label: "Produto",
+    items: [
+      { title: "Feedbacks", href: "/admin/feedbacks", icon: MessageSquareIcon },
+      { title: "Moderação", href: "/admin/moderation", icon: ShieldIcon },
+      { title: "Tutorial", href: "/admin/tutorial", icon: BookOpenIcon },
+      { title: "Novidades", href: "/admin/announcements", icon: SparklesIcon },
+    ],
   },
 ];
+
+function isNavItemActive(pathname: string, item: NavItem) {
+  if (item.matchPrefix) {
+    return pathname.startsWith(item.href);
+  }
+  return pathname === item.href;
+}
 
 export function AdminNavItems() {
   const pathname = usePathname();
 
   return (
     <>
-      {adminNavItems.map((section) => (
-        <SidebarGroupContent key={section.title} className="h-full">
-          <SidebarMenu className="h-full">
-            {section.href ? (
-              <SidebarMenuItem className="items-center">
-                <SidebarMenuButton
-                  asChild
-                  isActive={
-                    section.href === "/admin/users"
-                      ? pathname.startsWith("/admin/users")
-                      : section.href === "/admin/matches"
-                        ? pathname.startsWith("/admin/matches")
-                        : section.href === "/admin/groups"
-                          ? pathname.startsWith("/admin/groups")
-                          : pathname === section.href
-                  }
-                  tooltip={section.title}
-                >
-                  <Link href={section.href} className="mx-auto items-center">
-                    <section.icon className="h-4 w-4" />
-                    <span>{section.title}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ) : null}
-          </SidebarMenu>
-        </SidebarGroupContent>
+      {adminNavSections.map((section) => (
+        <SidebarGroup key={section.label}>
+          <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {section.items.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isNavItemActive(pathname, item)}
+                    tooltip={item.title}
+                  >
+                    <Link href={item.href}>
+                      <item.icon className="h-4 w-4" aria-hidden="true" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       ))}
     </>
   );

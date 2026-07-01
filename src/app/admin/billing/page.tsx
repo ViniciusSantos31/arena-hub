@@ -1,11 +1,6 @@
 import { adminBillingMetrics } from "@/actions/admin/billing/metrics";
 import { listAdminSubscriptions } from "@/actions/admin/billing/subscriptions";
-import {
-  PageContainer,
-  PageContent,
-  PageHeader,
-  PageHeaderContent,
-} from "@/app/(protected)/_components/page-structure";
+import { AdminPageShell } from "@/app/admin/_components/admin-page-shell";
 import { BillingDashboard } from "@/app/admin/billing/_components/subscriptions-table";
 
 export const dynamic = "force-dynamic";
@@ -62,22 +57,17 @@ export default async function AdminBillingPage({
   };
 
   return (
-    <PageContainer>
-      <PageHeader>
-        <PageHeaderContent
-          title="Billing"
-          description="MRR, assinaturas e sinais de churn da plataforma"
-        />
-      </PageHeader>
-      <PageContent>
-        <BillingDashboard
-          initialMetrics={metrics}
-          initialPeriodDays={periodDays}
-          subscriptions={{
-            initialData: subscriptions,
-          }}
-        />
-      </PageContent>
-    </PageContainer>
+    <AdminPageShell
+      title="Billing"
+      description="MRR, assinaturas e sinais de churn da plataforma"
+    >
+      <BillingDashboard
+        initialMetrics={metrics}
+        initialPeriodDays={periodDays}
+        subscriptions={{
+          initialData: subscriptions,
+        }}
+      />
+    </AdminPageShell>
   );
 }

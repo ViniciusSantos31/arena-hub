@@ -1,10 +1,5 @@
 import { getAdminGroupDetail } from "@/actions/admin/groups/detail";
-import {
-  PageContainer,
-  PageContent,
-  PageHeader,
-  PageHeaderContent,
-} from "@/app/(protected)/_components/page-structure";
+import { AdminPageShell } from "@/app/admin/_components/admin-page-shell";
 import { GroupAdminDetailView } from "@/app/admin/_components/groups/detail/group-admin-detail-view";
 import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon } from "lucide-react";
@@ -66,24 +61,18 @@ export default async function AdminGroupDetailPage({
   }
 
   return (
-    <PageContainer>
-      <PageHeader>
-        <PageHeaderContent
-          title={res.data.group.name}
-          description={
-            res.data.group.private ? "Grupo privado" : "Grupo público"
-          }
-        />
-      </PageHeader>
-      <PageContent className="space-y-4">
-        <Button variant="outline" size="sm" asChild className="w-fit">
-          <Link href="/admin/groups">
-            <ChevronLeftIcon className="h-4 w-4" />
-            Voltar
-          </Link>
-        </Button>
-        <GroupAdminDetailView data={res.data} />
-      </PageContent>
-    </PageContainer>
+    <AdminPageShell
+      title={res.data.group.name}
+      description={res.data.group.private ? "Grupo privado" : "Grupo público"}
+      contentClassName="space-y-4"
+    >
+      <Button variant="outline" size="sm" asChild className="w-fit">
+        <Link href="/admin/groups">
+          <ChevronLeftIcon className="h-4 w-4" />
+          Voltar
+        </Link>
+      </Button>
+      <GroupAdminDetailView data={res.data} />
+    </AdminPageShell>
   );
 }

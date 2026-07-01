@@ -1,11 +1,6 @@
 import { adminResume } from "@/actions/admin/resume";
 import { getTutorialOverallStats } from "@/actions/admin/tutorial";
-import {
-  PageContainer,
-  PageContent,
-  PageHeader,
-  PageHeaderContent,
-} from "@/app/(protected)/_components/page-structure";
+import { AdminPageShell } from "@/app/admin/_components/admin-page-shell";
 import { ResumeChart } from "@/app/admin/dashboard/_components/resume-chart";
 import { TutorialProgressTable } from "@/app/admin/dashboard/_components/tutorial-progress-table";
 import { TutorialStepDropOffTable } from "@/app/admin/dashboard/_components/tutorial-step-dropoff-table";
@@ -40,30 +35,25 @@ export default async function AdminTutorialDashboard() {
   }));
 
   return (
-    <PageContainer>
-      <PageHeader>
-        <PageHeaderContent
-          title="Tutorial"
-          description="Acompanhamento de progresso e impacto do tutorial na plataforma"
-        />
-      </PageHeader>
-      <PageContent>
-        <div className="mb-4 flex justify-end">
-          <Button size="sm" asChild>
-            <Link href="/admin/tutorial/content">Gerenciar conteúdo</Link>
-          </Button>
+    <AdminPageShell
+      title="Tutorial"
+      description="Acompanhamento de progresso e impacto do tutorial na plataforma"
+    >
+      <div className="mb-4 flex justify-end">
+        <Button size="sm" asChild>
+          <Link href="/admin/tutorial/content">Gerenciar conteúdo</Link>
+        </Button>
+      </div>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4 lg:grid-cols-5">
+        <div className="col-span-1 lg:col-span-3">
+          <ResumeChart data={data || []} />
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-4 lg:grid-cols-5">
-          <div className="col-span-1 lg:col-span-3">
-            <ResumeChart data={data || []} />
-          </div>
-          <div className="col-span-1 md:col-span-2">
-            <UserTutorialChart data={tutorialStats.data} />
-          </div>
-          <TutorialProgressTable className="col-span-1 **:text-xs md:col-span-4 **:md:text-sm lg:col-span-full" />
-          <TutorialStepDropOffTable className="col-span-1 **:text-xs md:col-span-4 **:md:text-sm lg:col-span-full" />
+        <div className="col-span-1 md:col-span-2">
+          <UserTutorialChart data={tutorialStats.data} />
         </div>
-      </PageContent>
-    </PageContainer>
+        <TutorialProgressTable className="col-span-1 **:text-xs md:col-span-4 **:md:text-sm lg:col-span-full" />
+        <TutorialStepDropOffTable className="col-span-1 **:text-xs md:col-span-4 **:md:text-sm lg:col-span-full" />
+      </div>
+    </AdminPageShell>
   );
 }

@@ -1,11 +1,6 @@
 import { listAdminGroups } from "@/actions/admin/groups/list";
 import { listAdminMatches } from "@/actions/admin/matches/list";
-import {
-  PageContainer,
-  PageContent,
-  PageHeader,
-  PageHeaderContent,
-} from "@/app/(protected)/_components/page-structure";
+import { AdminPageShell } from "@/app/admin/_components/admin-page-shell";
 import { MatchesTable } from "@/app/admin/matches/_components/matches-table";
 
 export const dynamic = "force-dynamic";
@@ -68,23 +63,18 @@ export default async function AdminMatchesPage({
   }));
 
   return (
-    <PageContainer>
-      <PageHeader>
-        <PageHeaderContent
-          title="Partidas"
-          description="Métricas operacionais e listagem global de partidas"
-        />
-      </PageHeader>
-      <PageContent>
-        <MatchesTable
-          initialData={data}
-          initialFilters={{
-            page: 1,
-            pageSize: 20,
-          }}
-          organizations={organizations}
-        />
-      </PageContent>
-    </PageContainer>
+    <AdminPageShell
+      title="Partidas"
+      description="Métricas operacionais e listagem global de partidas"
+    >
+      <MatchesTable
+        initialData={data}
+        initialFilters={{
+          page: 1,
+          pageSize: 20,
+        }}
+        organizations={organizations}
+      />
+    </AdminPageShell>
   );
 }

@@ -24,6 +24,8 @@ const chartConfig = {
   matches: { label: "Partidas", color: "var(--chart-1)" },
 } satisfies ChartConfig;
 
+const chartKeys = ["users", "groups", "matches"] as const;
+
 export function OverviewActivityChart({
   className,
   data,
@@ -46,35 +48,51 @@ export function OverviewActivityChart({
   );
 
   return (
-    <Card className={cn("h-full py-0", className)}>
+    <Card className={cn("border-border/60 h-full py-0", className)}>
       <CardHeader className="flex flex-col items-stretch border-b p-0! sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:py-0!">
           <CardTitle>Atividade ({days} dias)</CardTitle>
           <CardDescription>
-            Criações por dia (usuários, grupos e partidas)
+            Criações por dia — usuários, grupos e partidas
           </CardDescription>
         </div>
-        <div className="flex">
-          {(["users", "groups", "matches"] as const).map((key) => (
+        <div
+          className="flex"
+          role="tablist"
+          aria-label="Métricas do gráfico de atividade"
+        >
+          {chartKeys.map((key) => (
             <button
               key={key}
-              data-active={activeChart === key}
-              className="data-[active=true]:bg-muted/50 relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l sm:border-t-0 sm:border-l sm:px-8 sm:py-6"
-              onClick={() => setActiveChart(key)}
               type="button"
+              role="tab"
+              id={`activity-tab-${key}`}
+              aria-selected={activeChart === key}
+              aria-controls="activity-chart-panel"
+              data-active={activeChart === key}
+              className={cn(
+                "data-[active=true]:bg-muted/50 relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l sm:border-t-0 sm:border-l sm:px-8 sm:py-6",
+                "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
+              )}
+              onClick={() => setActiveChart(key)}
             >
               <span className="text-muted-foreground text-xs">
                 {chartConfig[key].label}
               </span>
-              <span className="text-lg leading-none font-bold sm:text-3xl">
-                {total[key].toLocaleString()}
+              <span className="text-lg leading-none font-bold tabular-nums sm:text-3xl">
+                {total[key].toLocaleString("pt-BR")}
               </span>
             </button>
           ))}
         </div>
       </CardHeader>
 
-      <CardContent className="px-2 sm:p-6">
+      <CardContent
+        id="activity-chart-panel"
+        role="tabpanel"
+        aria-labelledby={`activity-tab-${activeChart}`}
+        className="px-2 sm:p-6"
+      >
         <ChartContainer config={chartConfig} className="w-full">
           <BarChart
             accessibilityLayer
@@ -118,4 +136,3 @@ export function OverviewActivityChart({
     </Card>
   );
 }
-

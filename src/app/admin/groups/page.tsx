@@ -1,10 +1,5 @@
 import { listAdminGroups } from "@/actions/admin/groups/list";
-import {
-  PageContainer,
-  PageContent,
-  PageHeader,
-  PageHeaderContent,
-} from "@/app/(protected)/_components/page-structure";
+import { AdminPageShell } from "@/app/admin/_components/admin-page-shell";
 import { GroupsCardsGrid } from "@/app/admin/_components/groups/groups-cards-grid";
 
 export const dynamic = "force-dynamic";
@@ -25,16 +20,11 @@ export default async function AdminGroupsPage() {
   const groupsData = groups.data?.groups ?? [];
 
   return (
-    <PageContainer>
-      <PageHeader>
-        <PageHeaderContent
-          title="Grupos"
-          description="Gerencie e acompanhe os grupos criados na plataforma"
-        />
-      </PageHeader>
-      <PageContent>
-        <GroupsCardsGrid groups={groupsData} />
-      </PageContent>
-    </PageContainer>
+    <AdminPageShell
+      title="Grupos"
+      description="Gerencie e acompanhe os grupos criados na plataforma"
+    >
+      <GroupsCardsGrid groups={groupsData} />
+    </AdminPageShell>
   );
 }

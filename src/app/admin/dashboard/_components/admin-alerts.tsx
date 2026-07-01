@@ -44,34 +44,56 @@ export function AdminAlerts({
   if (items.length === 0) return null;
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
-      {items.map((alert) => (
-        <Link key={alert.type} href={alert.href}>
-          <Card
-            className={cn(
-              "border-destructive/30 bg-destructive/5 transition-colors hover:bg-destructive/10",
-            )}
-          >
-            <CardContent className="flex items-center gap-3 p-4">
-              {alert.type === "pending_feedbacks" ? (
-                <MessageSquareWarningIcon className="text-destructive h-5 w-5 shrink-0" />
-              ) : (
-                <AlertTriangleIcon className="text-destructive h-5 w-5 shrink-0" />
+    <section aria-label="Alertas que requerem atenção">
+      <ul className="grid list-none gap-3 sm:grid-cols-2">
+        {items.map((alert) => (
+          <li key={alert.type}>
+            <Link
+              href={alert.href}
+              className={cn(
+                "block rounded-xl transition-colors",
+                "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
               )}
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium">{alert.label}</p>
-                <p className="text-muted-foreground text-xs">
-                  {alert.count}{" "}
-                  {alert.count === 1 ? "item requer atenção" : "itens requerem atenção"}
-                </p>
-              </div>
-              <span className="text-destructive text-lg font-bold">
-                {alert.count}
-              </span>
-            </CardContent>
-          </Card>
-        </Link>
-      ))}
-    </div>
+            >
+              <Card className="border-destructive/30 bg-destructive/5 transition-colors hover:bg-destructive/10">
+                <CardContent className="flex items-center gap-3 p-4">
+                  {alert.type === "pending_feedbacks" ? (
+                    <MessageSquareWarningIcon
+                      className="text-destructive h-5 w-5 shrink-0"
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    <AlertTriangleIcon
+                      className="text-destructive h-5 w-5 shrink-0"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium">{alert.label}</p>
+                    <p className="text-muted-foreground text-xs">
+                      {alert.count}{" "}
+                      {alert.count === 1
+                        ? "item requer atenção"
+                        : "itens requerem atenção"}
+                    </p>
+                  </div>
+                  <span
+                    className="text-destructive text-lg font-bold tabular-nums"
+                    aria-hidden="true"
+                  >
+                    {alert.count}
+                  </span>
+                  <span className="sr-only">
+                    {alert.count}{" "}
+                    {alert.count === 1 ? "item pendente" : "itens pendentes"} —
+                    clique para ver
+                  </span>
+                </CardContent>
+              </Card>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
