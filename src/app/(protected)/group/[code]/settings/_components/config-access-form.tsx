@@ -1,10 +1,12 @@
 import { upsertGroup } from "@/actions/group/create";
+import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { InputField } from "@/components/ui/input/field";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
 import { Role } from "@/utils/role";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SaveIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useCallback, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -43,8 +45,8 @@ export const ConfigAccessForm = ({
   const isOwner = userRole === "owner";
 
   const schema = useMemo(
-    () => configAccessSchema(maxPlayersLimit ?? 100),
-    [maxPlayersLimit],
+    () => configAccessSchema(group.memberCount ?? 1, maxPlayersLimit),
+    [group.memberCount, maxPlayersLimit],
   );
 
   const methods = useForm({
@@ -76,6 +78,11 @@ export const ConfigAccessForm = ({
       toast.error("Ocorreu um erro ao atualizar as informações do grupo.");
     },
   });
+
+  const isAbleToSaveChanges = useMemo(
+    () => isOwner && methods.formState.isDirty && methods.formState.isValid,
+    [isOwner, methods.formState.isDirty, methods.formState.isValid],
+  );
 
   const onSubmit = useCallback(
     async (data: ConfigAccessFormData) => {
@@ -142,14 +149,32 @@ export const ConfigAccessForm = ({
                 </div>
               </SettingsField>
             ) : (
-              <div className="text-muted-foreground space-y-1">
-                <p className="text-sm">
-                  Seu plano permite que o grupo tenha membros ilimitados.
+              <div className="space-y-1">
+                <p className="text-muted-foreground text-sm">
+                  Seu plano permite que o grupo tenha membros ilimitados. Porém,
+                  você pode limitar o número de membros do grupo.
                 </p>
-                <p className="text-foreground text-sm">
-                  {group.memberCount}
-                  {group.memberCount === 1 ? " membro" : " membros"} no grupo
-                </p>
+
+                <SettingsField
+                  label="Máximo de Jogadores"
+                  description="Número máximo de membros que podem participar do grupo"
+                  className="mt-4"
+                  required
+                >
+                  <InputField
+                    name="maxPlayers"
+                    type="number"
+                    min={1}
+                    className="w-fit"
+                  />
+                </SettingsField>
+                <Button
+                  className="mt-4 self-end"
+                  disabled={!isAbleToSaveChanges}
+                >
+                  <SaveIcon />
+                  Salvar
+                </Button>
               </div>
             )}
           </PermissionWrapper>
