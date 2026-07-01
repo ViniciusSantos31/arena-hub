@@ -4,7 +4,7 @@ export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
   basic: { maxGroups: 1, maxMembersPerGroup: 30, maxInviteLinksTotal: 3 },
   intermediate: {
     maxGroups: 3,
-    maxMembersPerGroup: 60,
+    maxMembersPerGroup: 60, // TODO: change to 60
     maxInviteLinksTotal: 6,
   },
   premium: {

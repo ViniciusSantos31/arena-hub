@@ -1,15 +1,8 @@
 import { db } from "@/db";
-import type { PlanTier } from "./types";
-import {
-  EARLY_ADOPTER_FREE_GROUPS,
-  PLAN_LIMITS,
-} from "./plan-tiers";
-import {
-  countActiveInviteLinksForOwner,
-  countOwnedGroups,
-} from "./queries";
+import { EARLY_ADOPTER_FREE_GROUPS, PLAN_LIMITS } from "./plan-tiers";
+import { countActiveInviteLinksForOwner, countOwnedGroups } from "./queries";
 import { isSubscriptionEffectivelyActive } from "./subscription-status";
-import type { PlanLimits, UserPlanContext } from "./types";
+import type { PlanLimits, PlanTier, UserPlanContext } from "./types";
 
 export function resolveGroupLimit(ctx: UserPlanContext): number {
   if (ctx.subscription?.isEffectivelyActive) {
@@ -74,7 +67,11 @@ export async function getUserPlanContext(
     userId,
     isEarlyAdopter,
     subscription: subscriptionContext,
-    limits: { maxGroups: 0, maxMembersPerGroup: null, maxInviteLinksTotal: null },
+    limits: {
+      maxGroups: 0,
+      maxMembersPerGroup: null,
+      maxInviteLinksTotal: null,
+    },
     usage: {
       ownedGroups,
       activeInviteLinks,

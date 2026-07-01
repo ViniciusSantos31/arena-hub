@@ -53,7 +53,7 @@ export const MatchCard = ({
       <Card className="border-border/60 hover:border-primary/20 h-full transition-all duration-200">
         <CardHeader className="gap-3 pb-3">
           <div className="flex items-start justify-between gap-2">
-            <div className="flex flex-1 items-center gap-3">
+            <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
               <div className="bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
                 <SportIcon className="text-primary h-5 w-5" />
               </div>

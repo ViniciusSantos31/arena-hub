@@ -7,7 +7,7 @@ import type { SubscriptionPayment } from "@/lib/stripe-billing/list-subscription
 import type { AccountDeletionImpact } from "@/lib/user-account/delete-user-account";
 import type { SubscriptionSummary } from "@/lib/user-plan/subscription-summary";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   CheckCircle2Icon,
   CircleDotIcon,
@@ -28,13 +28,6 @@ const tabTriggerClass =
   "group relative w-fit cursor-pointer max-w-fit rounded-none border-0 border-b-2 border-transparent px-4 text-center data-[state=active]:bg-background data-[state=active]:text-primary dark:data-[state=active]:bg-background";
 
 type ProfileTab = "profile" | "subscription" | "invites" | "settings";
-
-const TAB_ORDER: ProfileTab[] = [
-  "profile",
-  "subscription",
-  "invites",
-  "settings",
-];
 
 type ProfileData = {
   profile: {
@@ -111,42 +104,9 @@ export function ProfileTabs({
   deletionImpact,
 }: ProfileTabsProps) {
   const [activeTab, setActiveTab] = useState<ProfileTab>(defaultTab);
-  const [direction, setDirection] = useState(0);
-  const shouldReduceMotion = useReducedMotion();
-
-  const contentTransition = shouldReduceMotion
-    ? { duration: 0 }
-    : { duration: 0.25, ease: "easeInOut" as const };
-
-  const slideOffset = 32;
-
-  const contentVariants = shouldReduceMotion
-    ? {
-        enter: { opacity: 1, x: 0 },
-        center: { opacity: 1, x: 0 },
-        exit: { opacity: 1, x: 0 },
-      }
-    : {
-        enter: (slideDirection: number) => ({
-          opacity: 0,
-          x: slideDirection > 0 ? slideOffset : -slideOffset,
-        }),
-        center: { opacity: 1, x: 0 },
-        exit: (slideDirection: number) => ({
-          opacity: 0,
-          x: slideDirection > 0 ? -slideOffset : slideOffset,
-        }),
-      };
 
   function handleTabChange(value: string) {
     const newTab = value as ProfileTab;
-    const currentIndex = TAB_ORDER.indexOf(activeTab);
-    const newIndex = TAB_ORDER.indexOf(newTab);
-
-    if (newIndex !== currentIndex) {
-      setDirection(newIndex > currentIndex ? 1 : -1);
-    }
-
     setActiveTab(newTab);
   }
 
@@ -154,7 +114,7 @@ export function ProfileTabs({
     <Tabs
       value={activeTab}
       onValueChange={handleTabChange}
-      className="flex flex-col gap-0 overflow-x-hidden"
+      className="flex w-full flex-col gap-0 overflow-hidden"
     >
       <TabsList className="bg-background sticky top-0 z-10 min-h-12 w-full justify-start rounded-none border-b p-0">
         <AnimatedTabTrigger
@@ -225,17 +185,12 @@ export function ProfileTabs({
       </TabsList>
 
       <AnimatePresence mode="wait" initial={false}>
-        <motion.div
+        <div
           key={activeTab}
-          custom={direction}
           role="tabpanel"
           id={`tabpanel-${activeTab}`}
           aria-labelledby={`tab-${activeTab}`}
-          variants={contentVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          transition={contentTransition}
+          className="overflow-y-auto"
         >
           {activeTab === "profile" && (
             <div className="space-y-5 px-4 py-5">
@@ -359,7 +314,7 @@ export function ProfileTabs({
               />
             </div>
           )}
-        </motion.div>
+        </div>
       </AnimatePresence>
     </Tabs>
   );

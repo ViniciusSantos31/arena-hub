@@ -51,7 +51,11 @@ export const PageHeader = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const PageTitle = ({ children }: { children: React.ReactNode }) => {
-  return <h1 className="text-foreground text-base font-semibold tracking-tight">{children}</h1>;
+  return (
+    <h1 className="text-foreground text-base font-semibold tracking-tight">
+      {children}
+    </h1>
+  );
 };
 
 export const PageDescription = ({
@@ -72,7 +76,7 @@ export const PageContent = ({
   return (
     <div
       className={cn(
-        "@container flex h-full flex-1 flex-col overflow-y-scroll p-4 pr-2",
+        "@container flex h-full w-full flex-1 flex-col overflow-y-auto p-4 pr-2",
         className,
       )}
     >

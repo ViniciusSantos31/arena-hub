@@ -10,7 +10,7 @@ import {
   Users2Icon,
 } from "lucide-react";
 import Link from "next/link";
-import { useSelectedLayoutSegment } from "next/navigation";
+import { useSelectedLayoutSegments } from "next/navigation";
 
 const NavLink = ({
   href,
@@ -23,10 +23,10 @@ const NavLink = ({
   icon: LucideIcon;
   isNew?: boolean;
 }) => {
-  const segment = useSelectedLayoutSegment();
-  const segments = href.split("/");
-  const lastSegment = segments[segments.length - 1];
-  const isActive = segment === lastSegment;
+  const segments = useSelectedLayoutSegments();
+  const hrefSegments = href.split("/").slice(3);
+
+  const isActive = segments[0] === hrefSegments[0];
 
   return (
     <li className="flex w-full">
@@ -73,7 +73,7 @@ export const GroupNav = ({ code }: { code: string }) => {
           icon={ChartLineIcon}
         />
         <NavLink
-          href={buildHref("/members")}
+          href={buildHref("/members/active")}
           title="Membros"
           icon={Users2Icon}
         />

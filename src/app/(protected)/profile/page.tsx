@@ -50,7 +50,7 @@ export default async function ProfilePage({
   const pendingInvites = pendingInvitesResult?.data ?? [];
 
   return (
-    <PageContainer>
+    <PageContainer className="px-0">
       <PageHeader>
         <PageHeaderContent title="Perfil" />
       </PageHeader>
