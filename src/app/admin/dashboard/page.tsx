@@ -1,14 +1,15 @@
 import { adminExecutiveMetrics } from "@/actions/admin/executive-metrics";
 import { listAdminGroups } from "@/actions/admin/groups/list";
+import { AdminSection } from "@/app/admin/_components/admin-section";
 import { GroupAdminCard } from "@/app/admin/_components/groups/group-admin-card";
 import { MetricCard } from "@/app/admin/_components/metric-card";
-import { AdminSection } from "@/app/admin/_components/admin-section";
+import { Button } from "@/components/ui/button";
 import { PLAN_TIER_LABELS } from "@/lib/user-plan/plan-tiers";
 import {
   BellIcon,
   CreditCardIcon,
-  PercentIcon,
   MessageSquareIcon,
+  PercentIcon,
   SparklesIcon,
   TrendingUpIcon,
   UserCheckIcon,
@@ -18,7 +19,6 @@ import Link from "next/link";
 import { AdminAlerts } from "./_components/admin-alerts";
 import { AdminDashboardClient } from "./_components/admin-dashboard-client";
 import { OverviewActivityChart } from "./_components/overview-activity-chart";
-import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -51,6 +51,9 @@ export default async function AdminDashboard({
     adminExecutiveMetrics({ days }),
     listAdminGroups(),
   ]);
+
+  console.log(metricsResult);
+  console.log(groupsResult);
 
   if (metricsResult.serverError && !metricsResult.data) {
     return (
@@ -131,10 +134,7 @@ export default async function AdminDashboard({
         </div>
       </AdminSection>
 
-      <OverviewActivityChart
-        data={data?.activitySeries ?? []}
-        days={days}
-      />
+      <OverviewActivityChart data={data?.activitySeries ?? []} days={days} />
 
       <AdminSection
         id="engajamento"

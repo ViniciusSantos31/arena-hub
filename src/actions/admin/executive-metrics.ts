@@ -55,16 +55,16 @@ function countActiveUsersSql(cutoff: Date) {
   return sql<number>`(
     SELECT COUNT(DISTINCT user_id)::int FROM (
       SELECT ${playersTable.userId} AS user_id
-      FROM ${playersTable}
-      WHERE ${playersTable.userId} IS NOT NULL
-        AND ${playersTable.createdAt} >= ${cutoff}
+      FROM ${playersTable} p
+      WHERE p.user_id IS NOT NULL
+        AND p.created_at >= ${cutoff}
       UNION
-      SELECT ${member.userId} AS user_id
-      FROM ${member}
-      INNER JOIN ${matchesTable}
-        ON ${matchesTable.organizationId} = ${member.organizationId}
-      WHERE ${matchesTable.createdAt} >= ${cutoff}
-        AND ${member.role} IN ('owner', 'admin')
+      SELECT mb.user_id AS user_id
+      FROM ${member} mb
+      INNER JOIN ${matchesTable} m
+        ON m.organization_id = mb.organization_id
+      WHERE m.created_at >= ${cutoff}
+        AND mb.role IN ('owner', 'admin')
     ) AS active_users
   )`;
 }
