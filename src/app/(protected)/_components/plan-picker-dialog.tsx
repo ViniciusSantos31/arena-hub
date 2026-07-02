@@ -2,10 +2,7 @@
 
 import { createPlanCheckoutSession } from "@/actions/user-plan/create-checkout-session";
 import { ResponsiveDialog } from "@/components/responsive-dialog";
-import {
-  PLAN_TIERS,
-  PLAN_TIER_LABELS,
-} from "@/lib/user-plan/plan-tiers";
+import { PLAN_TIERS, PLAN_TIER_LABELS } from "@/lib/user-plan/plan-tiers";
 import type { PlanPickerReason, PlanTier } from "@/lib/user-plan/types";
 import { CreditCardIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
@@ -19,6 +16,7 @@ type PlanPickerDialogProps = {
   reason: PlanPickerReason;
   currentTier?: PlanTier;
   ownedGroups?: number;
+  children?: React.ReactNode;
 };
 
 const REASON_COPY: Record<
@@ -56,6 +54,7 @@ export function PlanPickerDialog({
   reason,
   currentTier,
   ownedGroups,
+  children,
 }: PlanPickerDialogProps) {
   const [loadingTier, setLoadingTier] = useState<PlanTier | null>(null);
   const copy = REASON_COPY[reason];
@@ -127,6 +126,8 @@ export function PlanPickerDialog({
           )}
         </div>
       }
-    />
+    >
+      {children}
+    </ResponsiveDialog>
   );
 }

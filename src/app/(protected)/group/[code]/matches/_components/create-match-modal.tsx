@@ -6,21 +6,9 @@ import { ResponsiveDialog } from "@/components/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import { useGuard } from "@/hooks/use-guard";
 import { CalendarPlusIcon, CreditCardIcon } from "lucide-react";
-import { cloneElement, isValidElement, useState } from "react";
+import { useState } from "react";
 import { useMatchesPlan } from "../_contexts/matches-plan";
 import { CreateMatchForm } from "./create-match-form";
-
-function withOpenTrigger(
-  children: React.ReactNode,
-  onOpen: () => void,
-): React.ReactNode {
-  if (!isValidElement(children)) return children;
-
-  return cloneElement(
-    children as React.ReactElement<{ onClick?: () => void }>,
-    { onClick: onOpen },
-  );
-}
 
 export const CreateMatchDialog = ({
   children,
@@ -41,7 +29,6 @@ export const CreateMatchDialog = ({
   }
 
   if (!ownerCanCreateMatch) {
-    const trigger = withOpenTrigger(children, () => setBlockedOpen(true));
     const isOwner = member?.role === "owner";
 
     if (isOwner) {
@@ -51,8 +38,9 @@ export const CreateMatchDialog = ({
             open={blockedOpen}
             onOpenChange={setBlockedOpen}
             reason="subscription_required_for_match"
-          />
-          {trigger}
+          >
+            {children}
+          </PlanPickerDialog>
         </>
       );
     }
@@ -68,8 +56,8 @@ export const CreateMatchDialog = ({
           <div className="space-y-4">
             <p className="text-muted-foreground text-sm leading-relaxed">
               O organizador do grupo precisa ter uma assinatura ativa para criar
-              novas partidas. Entre em contato com o organizador para regularizar
-              o plano.
+              novas partidas. Entre em contato com o organizador para
+              regularizar o plano.
             </p>
             <Button className="w-full" onClick={() => setBlockedOpen(false)}>
               Entendi

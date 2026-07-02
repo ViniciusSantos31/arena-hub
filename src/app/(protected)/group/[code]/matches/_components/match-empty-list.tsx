@@ -25,7 +25,7 @@ export const MatchEmptyList = () => {
       </EmptyHeader>
       <EmptyContent className="flex-row justify-center gap-2">
         <CreateMatchDialog>
-          <Button asChild>Criar partida</Button>
+          <Button>Criar partida</Button>
         </CreateMatchDialog>
       </EmptyContent>
     </Empty>

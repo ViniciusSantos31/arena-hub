@@ -1,11 +1,11 @@
 "use client";
 
 import { getGroupDetails } from "@/actions/group/detail";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 import { MatchCard, MatchCardLoading } from "../_components/match-card";
 import { MatchEmptyList } from "../_components/match-empty-list";
 import { useMatchesFilter } from "../_contexts/matches-filter";
-import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
 
 export default function MatchesPage() {
   const { code } = useParams<{ code: string }>();
